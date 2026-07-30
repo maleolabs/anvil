@@ -1,0 +1,109 @@
+# Automates Anvil releases using Anvil itself.
+#
+# Triggered by pushing a git tag matching v* (e.g., v1.2.0).
+# The workflow:
+#   1. Extracts the version from the tag
+#   2. Detects pre-release from tag suffix (-alpha, -beta, -rc)
+#   3. Builds the CLI binary for multiple platforms
+#   4. Packages the source artifact via anvil artifact package
+#   5. Creates a GitHub Release (stable or pre-release) with all assets
+#
+# The version is determined by the git tag — the developer's decision.
+# Anvil executes the build and packaging; it does not decide the version.
+#
+# Tag convention:
+#   v1.0.0          → stable release (from main)
+#   v1.1.0-alpha.1  → pre-release (from develop)
+#   v1.2.0-beta.2   → pre-release (from develop)
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Set up Anvil
+        run: |
+          go build -o /usr/local/bin/anvil .
+
+      - name: Extract version and detect release type
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+          # Detect pre-release by tag convention: alpha or beta suffix
+          if [[ "$VERSION" == *-alpha* || "$VERSION" == *-beta* || "$VERSION" == *-rc* ]]; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Sync version from tag to anvil.yaml
+        run: |
+          anvil project version set "${{ steps.version.outputs.version }}"
+
+      - name: Run CI pipeline
+        run: |
+          anvil pipeline ci
+
+      - name: Build binaries
+        run: |
+          mkdir -p dist/binaries
+          VERSION="${{ steps.version.outputs.version }}"
+          LDFLAGS="-X maleolabs.com/anvil/cmd.CliVersion=$VERSION"
+
+          GOOS=linux   GOARCH=amd64 go build -ldflags="$LDFLAGS" -o "dist/binaries/anvil-linux-amd64" .
+          GOOS=linux   GOARCH=arm64 go build -ldflags="$LDFLAGS" -o "dist/binaries/anvil-linux-arm64" .
+          GOOS=darwin  GOARCH=amd64 go build -ldflags="$LDFLAGS" -o "dist/binaries/anvil-darwin-amd64" .
+          GOOS=darwin  GOARCH=arm64 go build -ldflags="$LDFLAGS" -o "dist/binaries/anvil-darwin-arm64" .
+
+      - name: Package source artifact
+        run: |
+          anvil artifact package --output dist/artifacts
+
+      - name: Generate checksums
+        working-directory: dist
+        run: |
+          sha256sum binaries/* > SHA256SUMS.txt
+          sha256sum artifacts/* >> SHA256SUMS.txt
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PRERELEASE="${{ steps.version.outputs.prerelease }}"
+
+          PRERELEASE_FLAG=""
+          if [[ "$PRERELEASE" == "true" ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+
+          gh release create "v$VERSION" \
+            --title "v$VERSION" \
+            --generate-notes \
+            $PRERELEASE_FLAG \
+            dist/binaries/* \
+            dist/artifacts/* \
+            dist/SHA256SUMS.txt
