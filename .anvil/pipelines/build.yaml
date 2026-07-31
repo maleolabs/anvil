@@ -1,0 +1,15 @@
+pipeline:
+    name: build
+    stages:
+        - name: dependencies
+          tasks:
+            - name: download
+              command: go
+              args:
+                - mod
+                - download
+            - name: verify
+              command: go
+              args:
+                - mod
+                - verify
