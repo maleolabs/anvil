@@ -1,0 +1,16 @@
+project:
+    name: anvil
+    version: 0.1.0
+    description: "Release lifecycle engine for single-server deployments"
+    codename: "Genesis"
+    status: development
+    minimum_go: "1.25"
+artifact:
+    include: []
+    exclude:
+        - .git/**
+        - .github/**
+        - .anvil/**
+        - docs/**
+        - "**/*_test.go"
+        - "**/*.md"
