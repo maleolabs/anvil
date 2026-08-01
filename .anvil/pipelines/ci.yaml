@@ -1,0 +1,24 @@
+pipeline:
+    name: ci
+    stages:
+        - name: quality
+          tasks:
+            - name: format
+              command: go
+              args:
+                - fmt
+                - ./...
+            - name: vet
+              command: go
+              args:
+                - vet
+                - ./...
+        - name: test
+          tasks:
+            - name: unit-tests
+              command: go
+              args:
+                - test
+                - -race
+                - -count=1
+                - ./...
