@@ -1,0 +1,611 @@
+# Maleo Anvil
+
+**Standalone CLI toolkit for packaging immutable Artifacts, orchestrating delivery, and managing Releases on a Server Runtime.**
+
+Anvil is a single binary with no runtime dependencies that standardizes how applications are packaged, verified, and deployed — regardless of framework, language, or infrastructure.
+
+---
+
+## Table of Contents
+
+- [Problem](#problem)
+- [Solution](#solution)
+- [Key Capabilities](#key-capabilities)
+- [Framework Adapters](#framework-adapters)
+- [SSH Transport](#ssh-transport)
+- [Pipeline Templates](#pipeline-templates)
+- [CI/CD Integration](#cicd-integration)
+- [Architecture](#architecture)
+- [Quick Start](#quick-start)
+- [Command Reference](#command-reference)
+  - [Development](#development)
+  - [Deployment](#deployment)
+  - [Server Runtime](#server-runtime)
+  - [Runtime](#runtime)
+  - [System](#system)
+- [Runtime Model](#runtime-model)
+- [License](#license)
+
+---
+
+## Problem
+
+Every software project that deploys to a server faces the same challenges:
+
+- **Ad-hoc release machinery** — deployment logic embedded in CI YAML, project-specific shell scripts, or framework-bound tooling that cannot be reused
+- **No standard vocabulary** — inconsistent terminology for build, package, deploy, activate, and rollback across teams
+- **Framework lock-in** — deployment tooling tied to specific frameworks that breaks when teams switch stacks
+- **Untested rollbacks** — rollback procedures that are undocumented and stressful to execute under pressure
+- **Integrity gaps** — no standardized mechanism to verify artifact integrity before deployment
+
+These problems are universal — and solved from scratch every time a new project starts.
+
+---
+
+## Solution
+
+Anvil occupies the gap between application projects and deployment platforms. It is not an application framework, a CI platform, or a server configuration manager. It provides the contracts that connect them.
+
+**Positioned between projects and platforms** — Anvil receives Artifacts from development or CI workflows and delivers them to Runtime environments. Deployment orchestration is a separate context; Server Runtime owns installation and Release lifecycle execution.
+
+**Positioned between frameworks** — Anvil treats all applications the same: a set of files to package, verify, and activate. Framework-specific behavior is handled by adapters, not by the core.
+
+**Positioned between environments** — Anvil uses the same commands and configuration schema regardless of whether the target is a developer laptop, a staging server, or production.
+
+---
+
+## Key Capabilities
+
+| Capability | Description |
+|---|---|
+| **Project Lifecycle** | Initialize, configure, and manage projects with consistent identity and structure |
+| **Configuration Management** | Multi-source configuration with canonical schema validation and environment overrides |
+| **Artifact Lifecycle** | Package source into immutable, verified Artifacts with embedded `manifest.json` and integrity checksums |
+| **Deployment Orchestration** | Transport Artifacts to targets without reading Runtime internals |
+| **Server Runtime Management** | Initialize Runtime config, register projects, manage the Runtime Registry and State |
+| **Release Lifecycle** | Install, activate, rollback, and cleanup Releases through defined stages |
+| **Verification & Diagnostics** | System health checks, pre-activation readiness, diagnostic reporting |
+| **Framework Adapters** | Adapter metadata for framework-specific behavior (extensible) |
+| **CLI Experience** | Task-oriented, predictable commands with built-in help and deterministic exit codes |
+
+---
+
+## Framework Adapters
+
+Framework adapters give Anvil framework-specific behavior — build pipelines, deployment models, activation/rollback phases, verification checks, and configuration keys — without coupling the Core to any framework. Adapters are standalone executables discovered on `PATH`; usage documentation lives in the [Adapters Wiki](wiki/).
+
+**Supported frameworks:** Laravel (implemented) · Flutter (implemented)
+
+- [Laravel Adapter Usage Guide](wiki/adapters/laravel/)
+- [Adapters Wiki](wiki/)
+
+#### Adapter CLI commands
+
+| Command | Description |
+|---|---|
+| `anvil adapter list` | List installed adapters (detected from the CLI directory and PATH); `--available` lists adapters published in the latest release (`--json`) |
+| `anvil adapter inspect <name>` | Display an adapter's declared capabilities: deployment model, build phases, activation phases, verification checks, config keys (`--json`) |
+| `anvil adapter use <name>` | Set the active framework in `anvil.yaml`; generates the build pipeline template when missing (`--force` to override an already configured framework) |
+| `anvil adapter install <name>` | Install an adapter binary from the latest release, checksum-verified, next to the CLI (`--force` to reinstall, `--json`) |
+| `anvil adapter uninstall <name>` | Remove an installed adapter binary (`--json`) |
+
+`anvil init <name> --framework <name>` selects a framework at project creation; `anvil adapter use <name>` applies the same selection to an existing project. Adapters are standalone executables named `anvil-adapter-<framework>`, installed next to the Anvil CLI and discovered on `PATH`.
+
+#### Installing adapters
+
+Adapter binaries ship with every Anvil release as `anvil-adapter-<framework>-<os>-<arch>` assets. Install them at setup time or per project:
+
+```bash
+# At install time — alongside the CLI (laravel, flutter only)
+curl -fsSL https://github.com/maleolabs/anvil/releases/latest/download/install.sh | sh -s -- --with-adapters laravel,flutter
+
+# Post-install — one adapter at a time
+anvil adapter install laravel
+anvil adapter uninstall flutter
+```
+
+`anvil update` refreshes installed adapters automatically; it never installs new ones — adapter ownership stays explicit via `install`/`uninstall`.
+
+---
+
+## SSH Transport
+
+Deployment uploads (`anvil deployment upload <target-id> <artifact-path>`) deliver Artifacts to targets over SSH (SCP). Credentials are read from environment variables per [ADR-019](docs/decisions/019-environment-variable-substitution-for-secrets.md) — they are injected by your CI/CD pipeline and are **never stored in Anvil configuration**.
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `DEPLOY_SERVER_HOST` | yes | — | Server hostname or IP address |
+| `DEPLOY_SERVER_USER` | yes | — | SSH username |
+| `DEPLOY_SERVER_PORT` | no | `22` | SSH port |
+| `DEPLOY_SSH_KEY` | yes | — | Path to the SSH private key file |
+
+Example:
+
+```bash
+export DEPLOY_SERVER_HOST=deploy.example.com
+export DEPLOY_SERVER_USER=deployer
+export DEPLOY_SERVER_PORT=22
+export DEPLOY_SSH_KEY=~/.ssh/id_ed25519
+
+anvil deployment upload my-target ./artifact.tar.gz
+```
+
+Use `--json` for machine-readable output. `--server-root` overrides the config root (including the `ANVIL_SERVER_ROOT` env var).
+
+### Troubleshooting
+
+| Symptom | Likely Cause | Solution |
+|---|---|---|
+| Connection refused | Server not reachable | Check the server address (`DEPLOY_SERVER_HOST`) and that the SSH service is running on `DEPLOY_SERVER_PORT` |
+| Authentication failed | Invalid credentials | Check `DEPLOY_SERVER_USER` and `DEPLOY_SSH_KEY` |
+| Permission denied | Key not authorized on the server | Check the server's `authorized_keys` for the deploy key |
+| Missing credentials | Required environment variables not set | Set `DEPLOY_SERVER_HOST`, `DEPLOY_SERVER_USER`, and `DEPLOY_SSH_KEY` in the environment |
+
+---
+
+## Pipeline Templates
+
+`anvil init <name> --framework laravel|flutter` generates a build pipeline template at `.anvil/pipelines/build.yaml` during project creation. `anvil adapter use <name>` generates the same template for an existing project — only when the file does not exist (existing pipeline files are never overwritten).
+
+### Laravel template
+
+Generated by `anvil init laravel-demo --framework laravel`:
+
+```yaml
+pipeline:
+    name: build
+    stages:
+        - name: dependencies
+          tasks:
+            - name: composer-install
+              command: composer
+              args:
+                - install
+                - --no-dev
+                - --optimize-autoloader
+        - name: assets
+          tasks:
+            - name: npm-build
+              command: npm
+              args:
+                - run
+                - build
+        - name: optimize
+          tasks:
+            - name: cache-config
+              command: php
+              args:
+                - artisan
+                - config:cache
+            - name: cache-route
+              command: php
+              args:
+                - artisan
+                - route:cache
+            - name: cache-view
+              command: php
+              args:
+                - artisan
+                - view:cache
+```
+
+### Flutter template
+
+Generated by `anvil init flutter-demo --framework flutter`. Tasks are platform-aware: `metadata.platforms` declares the platforms a task can run on, and `metadata.target` names the build target (web, apk, ios).
+
+```yaml
+pipeline:
+    name: build
+    stages:
+        - name: build
+          tasks:
+            - name: flutter-web
+              command: flutter
+              args:
+                - build
+                - web
+              metadata:
+                platforms:
+                    - linux
+                    - darwin
+                    - windows
+                target: web
+            - name: flutter-apk
+              command: flutter
+              args:
+                - build
+                - apk
+                - --release
+              metadata:
+                platforms:
+                    - linux
+                    - darwin
+                    - windows
+                target: apk
+            - name: flutter-ios
+              command: flutter
+              args:
+                - build
+                - ios
+                - --release
+              metadata:
+                platforms:
+                    - linux
+                    - darwin
+                    - windows
+                target: ios
+```
+
+Platform-aware execution: without `--target`, all compatible targets build and unsupported targets are skipped with a warning. `--target <names>` restricts execution to named targets (comma-separated, e.g. `web,apk`). `--strict` turns unsupported targets into failures instead of skipping them (e.g. `flutter-ios` on non-macOS).
+
+---
+
+## CI/CD Integration
+
+Anvil is a runtime orchestrator — it handles build, package, verify, and deploy, but does not replace your CI platform. Use Anvil commands inside your existing CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins, or any platform that runs shell commands).
+
+**Common CI/CD commands:**
+
+| Command | Purpose |
+|---|---|
+| `anvil pipeline ci` | Run quality gates (lint, tests) |
+| `anvil pipeline build` | Build the application |
+| `anvil artifact package` | Package into immutable artifact |
+| `anvil artifact verify <path>` | Verify artifact integrity |
+| `anvil deployment upload/install/activate` | Deploy to target server |
+
+- [CI/CD Integration Guide](wiki/ci-cd/README.md)
+- [GitHub Actions](wiki/ci-cd/github-actions.md)
+- [GitLab CI](wiki/ci-cd/gitlab-ci.md)
+- [Jenkins](wiki/ci-cd/jenkins.md)
+
+---
+
+## Architecture
+
+Anvil separates three execution contexts:
+
+| Context | Scope | Requires |
+|---|---|---|
+| **Development** | Repository-aware build, package, verify | `anvil.yaml` in project root |
+| **Deployment** | Transport and orchestrate Artifacts | Published Runtime commands |
+| **Server Runtime** | Runtime-aware Release management | `/etc/anvil/` configuration |
+
+### Bounded Domains
+
+Architecture follows four bounded domains with one-way dependency:
+
+```text
+Project → Artifact → Deployment → Server Runtime
+```
+
+- **Project Domain** — repository-aware initialization, validation, build, package preparation, and CI workflows
+- **Artifact Domain** — immutable deployment payloads whose identity comes from embedded `manifest.json`, never from a filename
+- **Deployment Domain** — delivery and orchestration between Artifact producers and Runtime targets
+- **Server Runtime Domain** — Runtime Registry, Runtime State, Artifact installation, Release lifecycle, activation, rollback, and health
+
+---
+
+## Quick Start
+
+### Install
+
+**Latest version:**
+
+```bash
+curl -fsSL https://github.com/maleolabs/anvil/releases/latest/download/install.sh | sh
+```
+
+**Specific version:**
+
+```bash
+# Install version 1.2.0
+curl -fsSL https://github.com/maleolabs/anvil/releases/download/v1.2.0/install.sh | sh
+
+# Install pre-release version
+curl -fsSL https://github.com/maleolabs/anvil/releases/download/v1.3.0-alpha.1/install.sh | sh
+```
+
+The install script automatically detects your platform (linux/darwin, amd64/arm64) and installs the appropriate binary to `/usr/local/bin/anvil`.
+
+**Installing framework adapters:**
+
+Pass `--with-adapters` to install adapter binaries alongside the CLI (whitelist: `laravel`, `flutter`). Each adapter is downloaded from the release, verified against `SHA256SUMS.txt`, and installed as `anvil-adapter-<name>` next to the `anvil` binary:
+
+```bash
+# Install the CLI plus the Laravel and Flutter adapters
+curl -fsSL https://github.com/maleolabs/anvil/releases/latest/download/install.sh | sh -s -- --with-adapters laravel,flutter
+```
+
+Without the flag, only the CLI is installed. Add adapters later with `anvil adapter install <name>` (see [Framework Adapters](#framework-adapters)).
+
+### Update
+
+```bash
+anvil update
+```
+
+`anvil update` replaces the CLI binary and then refreshes any installed adapters (`anvil-adapter-*` next to the CLI) to the latest release — each refresh is checksum-verified and atomic. It never installs new adapters: installation stays explicit via `install.sh --with-adapters` or `anvil adapter install <name>`.
+
+### Basic Workflow
+
+```bash
+# 1. Initialize a project (Development context)
+anvil init my-project
+cd my-project
+
+# 2. Package source into an immutable Artifact
+anvil artifact package
+
+# 3. Verify Artifact integrity
+anvil artifact verify .anvil/artifacts/<artifact>.tar.gz
+
+# 4. Initialize Server Runtime (on target server)
+anvil server init
+
+# 5. Register the project on the server
+anvil server project register \
+  --project-id my-project \
+  --install-root /srv/apps/my-project \
+  --non-interactive
+
+# 6. Install the Artifact as a Release
+anvil server release install my-project ./<artifact>.tar.gz
+
+# 7. Activate the Release
+anvil server release activate my-project <release-id>
+```
+
+### Deployment Context (Remote)
+
+```bash
+# Upload artifact to a remote target
+anvil deployment upload <target-id> ./<artifact>.tar.gz
+
+# Install on remote target
+anvil deployment install <target-id> ./<artifact>.tar.gz
+
+# Activate on remote target
+anvil deployment activate <target-id> my-project <release-id>
+```
+
+---
+
+## Command Reference
+
+### Development
+
+Project initialization, configuration, artifact packaging, and CI workflows. All commands require a valid `anvil.yaml` in the project root.
+
+#### Project Management
+
+| Command | Description | Flags |
+|---|---|---|
+| `anvil init <name>` | Initialize a new Anvil project | `--path`, `--framework` |
+| `anvil status` | Display current project status | — |
+| `anvil project status` | Display project lifecycle stage | — |
+| `anvil project remove` | Remove project configuration | `--force` |
+| `anvil project version` | Display current version | — |
+
+#### Adapter Commands
+
+| Command | Description | Flags |
+|---|---|---|
+| `anvil adapter list` | List installed adapters (deployment model, version) | `--available`, `--json` |
+| `anvil adapter inspect <name>` | Display an adapter's declared capabilities | `--json` |
+| `anvil adapter use <name>` | Set the active framework in `anvil.yaml`; generates the build pipeline template when missing | `--force` |
+| `anvil adapter install <name>` | Install an adapter binary from the latest release, checksum-verified, next to the CLI | `--force`, `--json` |
+| `anvil adapter uninstall <name>` | Remove an installed adapter binary | `--json` |
+
+Adapter executables are discovered on `PATH` as `anvil-adapter-<framework>`. `anvil init --framework <name>` is the project-creation equivalent of `anvil adapter use <name>`. Adapter binaries are distributed as release assets; see [Framework Adapters](#framework-adapters) for the installation options.
+
+#### Version Management
+
+| Command | Description |
+|---|---|
+| `anvil project version set <version>` | Set version to an explicit value |
+| `anvil project version bump:patch` | Bump patch version (0.0.X) |
+| `anvil project version bump:minor` | Bump minor version (0.X.0) |
+| `anvil project version bump:major` | Bump major version (X.0.0) |
+| `anvil project version generate` | Generate VERSION file for runtime consumption |
+
+#### Configuration
+
+| Command | Description |
+|---|---|
+| `anvil config get <key>` | Get resolved value for a configuration key |
+| `anvil config list` | List all resolved configuration values |
+| `anvil config levels` | Display configuration values by scope level |
+
+#### Artifact Lifecycle
+
+| Command | Description | Flags |
+|---|---|---|
+| `anvil artifact package` | Package project into an immutable Artifact | `--output`/`-o`, `--format`/`-f`, `--json` |
+| `anvil artifact verify <path>` | Verify Artifact integrity checksums | — |
+| `anvil artifact verify-immutability <path>` | Verify Artifact immutability contract | — |
+| `anvil artifact status <identity>` | Display Artifact status by identity | `--state-dir` |
+
+#### Pipeline
+
+| Command | Description | Flags |
+|---|---|---|
+| `anvil pipeline build` | Execute build pipeline | `--env`, `--output`/`-o`, `--target`, `--strict` |
+| `anvil pipeline ci` | Execute CI pipeline | — |
+
+**Pipeline Build with Output Directory:**
+
+The `--output` flag sets the output directory for build artifacts. The resolved absolute path is injected as `ANVIL_OUTPUT_DIR` into every task's environment, so pipeline tasks can reference it via `${ANVIL_OUTPUT_DIR}`.
+
+```bash
+# Build with output directory
+anvil pipeline build --output dist/binaries
+
+# Combined with environment
+anvil pipeline build -o dist/binaries --env production
+```
+
+**Platform-aware targets:**
+
+The `--target` flag restricts execution to named build targets (comma-separated, e.g. `web,apk`); without it, all compatible targets build. Tasks declare their target and compatible platforms via `metadata.target` / `metadata.platforms` (see [Pipeline Templates](#pipeline-templates)). The `--strict` flag fails instead of skipping targets unsupported on the current platform.
+
+Example `build.yaml` with cross-platform compilation:
+
+```yaml
+pipeline:
+    name: build
+    stages:
+        - name: dependencies
+          tasks:
+            - name: download
+              command: go
+              args: [mod, download]
+        - name: compile
+          tasks:
+            - name: linux-amd64
+              command: go
+              args: [build, -o, ${ANVIL_OUTPUT_DIR}/app-linux-amd64, .]
+              env:
+                GOOS: linux
+                GOARCH: amd64
+            - name: darwin-arm64
+              command: go
+              args: [build, -o, ${ANVIL_OUTPUT_DIR}/app-darwin-arm64, .]
+              env:
+                GOOS: darwin
+                GOARCH: arm64
+```
+
+---
+
+### Deployment
+
+Transport and orchestrate Artifacts to Runtime targets. Deployment commands operate on target identifiers and do not read Runtime internals.
+
+> **Note:** `deployment` commands and `server release` commands perform the same underlying operations but serve different user personas:
+> - **`deployment`** — target-centric, designed for CI/CD pipelines. Auto-extracts project ID from artifact manifest. Requires `target-id` as first argument.
+> - **`server release`** — project-centric, designed for server operators. Requires `project-id` as first argument.
+>
+> Both delegate to the same `ServerReleaseCoordinator` internally. Choose based on your workflow context.
+
+| Command | Description | Flags |
+|---|---|---|
+| `anvil deployment info <target-id>` | Display deployment target information | `--server-root`, `--json` |
+| `anvil deployment upload <target-id> <artifact-path>` | Upload Artifact to target via SSH transport | `--server-root`, `--json` |
+| `anvil deployment install <target-id> <artifact-path>` | Install Artifact on target | `--server-root`, `--json` |
+| `anvil deployment activate <target-id> <project-id> <release-id>` | Activate a Release on target | `--server-root`, `--json` |
+| `anvil deployment rollback <target-id> <project-id>` | Rollback to previous Release on target | `--server-root`, `--json` |
+
+**SSH transport:** `anvil deployment upload` delivers the Artifact over SSH. Credentials are read from environment variables per ADR-019 — `DEPLOY_SERVER_HOST` (required), `DEPLOY_SERVER_USER` (required), `DEPLOY_SERVER_PORT` (optional, default `22`), `DEPLOY_SSH_KEY` (required). See [SSH Transport](#ssh-transport).
+
+---
+
+### Server Runtime
+
+Runtime-aware commands for managing projects, Releases, and configuration on the server. Requires Runtime initialization (`anvil server init`).
+
+#### Runtime Configuration
+
+| Command | Description | Flags |
+|---|---|---|
+| `anvil server init` | Initialize Runtime configuration at `/etc/anvil/` | `--server-root` |
+| `anvil server status [<project-id>]` | Display Runtime or project status | `--server-root` |
+| `anvil server config get <key>` | Get Runtime configuration value | `--server-root` |
+| `anvil server config set <key> <value>` | Set Runtime configuration value | `--server-root` |
+
+#### Project Registration
+
+| Command | Description | Flags |
+|---|---|---|
+| `anvil server project register` | Register a project in the Runtime Registry | `--project-id`, `--install-root`, `--display-name`, `--adapter`, `--owner`, `--group`, `--shared-link`, `--non-interactive`, `--server-root` |
+| `anvil server project get <project-id>` | Look up registered project details | `--server-root` |
+
+#### Release Lifecycle
+
+> **See also:** [Deployment](#deployment) for the target-centric equivalent of these commands.
+
+| Command | Description | Flags |
+|---|---|---|
+| `anvil server release install <project-id> <artifact-path>` | Install Artifact as a new Release | `--server-root`, `--json` |
+| `anvil server release activate <project-id> <release-id>` | Activate a Release | `--server-root` |
+| `anvil server release rollback <project-id>` | Rollback to previous Release | `--server-root` |
+| `anvil server release cleanup <project-id> <release-id>` | Remove a specific Release | `--server-root` |
+| `anvil server release history <project-id> <release-id>` | Display Release history | `--server-root`, `--json` |
+| `anvil server release active <project-id>` | Display currently active Release | `--server-root`, `--json` |
+| `anvil server doctor` | Platform health assessment (healthy/degraded/unhealthy) | `--server-root`, `--json` |
+| `anvil server readiness <project-id> <release-id>` | Pre-activation readiness check for a Release | `--server-root`, `--json` |
+
+---
+
+### Runtime
+
+Provision and inspect Runtime environments. These commands manage Runtime lifecycle independent of Server Runtime configuration.
+
+| Command | Description | Flags |
+|---|---|---|
+| `anvil runtime provision` | Provision a new Runtime environment | `--name`, `--environment`, `--install-path` |
+| `anvil runtime readiness` | Check Runtime readiness | `--install-root` |
+| `anvil runtime status` | Display Runtime operational state | `--state-file` |
+| `anvil runtime list` | List all provisioned Runtimes | `--runtimes-path` |
+| `anvil runtime verify-shared` | Verify shared resources | `--install-root` |
+
+---
+
+### System
+
+| Command | Description | Flags |
+|---|---|---|
+| `anvil system health` | Check system health | `--server-root`, `--json` |
+| `anvil system inspect <component> [<project-id> <release-id>]` | Targeted component inspection (environment, runtime, config, release, deps) | `--server-root`, `--json` |
+| `anvil system diagnose` | Context-aware diagnostic report with owner and next action per finding | `--server-root`, `--json` |
+| `anvil update` | Update Anvil CLI to latest version; refreshes installed adapters (never installs new ones) | `--check`, `--force` |
+
+---
+
+## Runtime Model
+
+Runtime configuration lives on the server, not in the repository.
+
+### Directory Structure
+
+```text
+/etc/anvil/
+├── config.yaml          # Global Runtime metadata
+└── projects/
+    ├── my-project.yaml  # Project Runtime Registry configuration
+    └── another-project.yaml
+```
+
+- `config.yaml` — global Runtime metadata
+- Project files — declarative Runtime Registry configuration: installation root, owner, group, shared paths, adapter metadata, display name
+
+Runtime State is stored separately and contains operational data: installed Releases, activation state, rollback history, and locks.
+
+### Release Lifecycle
+
+```text
+Artifact → Install → Release (Ready) → Activate → Running Release
+                                                    ↓
+                                              Rollback → Previous Release
+```
+
+| Stage | Description |
+|---|---|
+| **Ready** | Artifact installed, verified, and available for activation |
+| **Active** | Release is live and serving traffic |
+| **Rolled Back** | Release superseded by a rollback to a previous Release |
+| **Cleaned Up** | Release artifacts removed from disk |
+
+The embedded `manifest.json` is the authoritative Artifact contract. Artifact filenames and transport paths have no semantic identity.
+
+---
+
+## License
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+
+Anvil is licensed under the [Apache License 2.0](LICENSE).
+
+---
+
+*Anvil is a Maleo Labs project.*
