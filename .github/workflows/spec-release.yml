@@ -1,0 +1,79 @@
+# Publishes the delivery lifecycle specification artifacts from the spec/ tag
+# line (ADR-024 §3.5; ADR-029 §3).
+#
+# Triggered by pushing a git tag matching spec/* (e.g., spec/1.0.0).
+# The v* tag line (engine releases) is handled exclusively by release.yml;
+# the two tag lines never overlap and never share a tag (ADR-024 §3.5).
+# tag-sync.yml mirrors only v* tags to the public mirror, so spec/ tags stay
+# in the Core repository — this workflow does not touch tag-sync.yml.
+#
+# The workflow:
+#   1. Verifies the triggering tag version matches the Version row declared in
+#      the version-line document at that tag (data-integrity backstop)
+#   2. Validates the contract version declaration of the specification corpus
+#   3. Validates the corpus JSON Schemas against their fixtures
+#   4. Creates a GitHub Release for the tag and attaches the specification
+#      corpus artifacts (docs + JSON Schema)
+#
+# The version is determined by the git tag — the developer's decision.
+# Use scripts/spec-release.sh to bump the declaration, commit, and tag.
+# The tag-vs-declaration check makes a manually pushed tag that does not match
+# the declared version fail the workflow instead of publishing mismatched
+# artifacts.
+
+name: Spec Release
+
+on:
+  push:
+    tags:
+      - "spec/*"
+
+permissions:
+  contents: write
+
+jobs:
+  spec-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify tag matches declared version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="${TAG#spec/}"
+          DECLARED="$(git show "refs/tags/${TAG}:docs/specification-corpus/version-line.md" \
+            | grep -E '^\|\s*\*\*Version\*\*\s*\|' | head -1 \
+            | sed -E 's/^\|\s*\*\*[^*]+\*\*\s*\|\s*//; s/\s*\|\s*$//')"
+          if [ -z "${DECLARED}" ]; then
+            echo "::error::could not read the Version declaration at refs/tags/${TAG}" >&2
+            exit 1
+          fi
+          if [ "${DECLARED}" != "${VERSION}" ]; then
+            echo "::error::tag ${TAG} declares version ${VERSION} but the version-line document at that tag declares ${DECLARED}; create spec tags with scripts/spec-release.sh" >&2
+            exit 1
+          fi
+          echo "Tag ${TAG} matches the declared version ${DECLARED}"
+
+      - name: Validate contract version line
+        run: bash scripts/validate-contract-version.sh
+
+      - name: Validate specification corpus schemas
+        run: bash scripts/validate-schemas.sh
+
+      - name: Create specification release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="${TAG#spec/}"
+          echo "Publishing specification $VERSION from tag $TAG"
+          gh release create "$TAG" \
+            --title "Specification $VERSION" \
+            --generate-notes \
+            docs/specification-corpus/*.md \
+            docs/specification-corpus/*.schema.json
