@@ -1,0 +1,38 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "negative-missing-exchange-rules",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Negative: exchange rules omitted",
+    "description": "Violates command-contract.md §4.6: the exchange rules C1–C7 — the rules that make the exchange enforceable — are omitted entirely. The rule set is a floor, not a ceiling; a declaration that omits the rules leaves the invocation rules assumed rather than declared. Root required rejects the missing section.",
+    "capability": {
+        "lifecyclePhases": [],
+        "verificationChecks": [],
+        "configExtensions": [],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    }
+}

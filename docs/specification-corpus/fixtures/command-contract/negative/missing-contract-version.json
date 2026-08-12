@@ -1,0 +1,47 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "negative-missing-contract-version",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Negative: contract version omitted",
+    "description": "Violates command-contract.md §4.1 / ADR-024 §3 (PRD-002 §5.8): the contract-version field — the declared target version of the delivery lifecycle specification — is omitted. The v2 capability declaration gains the contract-version field so compatibility is declared, validated, and recorded rather than assumed; a standard that does not declare compatibility is rejected. Root required rejects the missing field.",
+    "capability": {
+        "lifecyclePhases": [],
+        "verificationChecks": [],
+        "configExtensions": [],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

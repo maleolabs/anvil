@@ -1,0 +1,32 @@
+{
+    "description": "Violates §4.6 / value constraint: the lifecycle state is not one of the governed states. The registry reflects only Published, Deprecated, and Retired (machine values published, deprecated, retired) per ADR-023 §3 and ADR-027 §3; the Proposed and Draft states of ADR-021 §3.3 are pre-registry authoring states, not registry availability states, and any other value is invalid.",
+    "id": "anvil-standard-laravel",
+    "version": "1.2.3",
+    "contractVersion": "1.0.0",
+    "capability": {
+        "frameworkVersion": [
+            "5.1.0"
+        ]
+    },
+    "distribution": {
+        "type": "github-releases",
+        "location": "https://github.com/maleolabs/anvil-standard-laravel/releases/download/v1.2.3/anvil-standard-laravel.tar.gz"
+    },
+    "lifecycle": {
+        "state": "draft"
+    },
+    "trust": {
+        "contentDigests": [
+            {
+                "algorithm": "sha-256",
+                "encoding": "base16",
+                "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+        ],
+        "attestation": {
+            "algorithm": "ed25519",
+            "signature": "c2lnbmF0dXJlLXZhbHVlLWJhc2U2NC1lbmNvZGVkLWRlbW8tc2lnbmF0dXJlLTEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5",
+            "publicKey": "cHVibGljLWtleS1iYXNlNjQtZW5jb2RlZC1kZW1vLXB1YmxpYy1rZXktMTIzNDU2Nzg5MA=="
+        }
+    }
+}

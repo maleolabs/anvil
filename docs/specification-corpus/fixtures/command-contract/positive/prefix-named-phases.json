@@ -1,0 +1,71 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "anvil-standard-rails-command-contract-prefix-named-phases",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Prefix-named phases command contract declaration (positive fixture)",
+    "description": "Positive fixture: a conforming command contract declaration whose framework phases are prefix-named — 'prepared' (a prefix of the reserved 'prepare') and 'verify-notes' (a prefix of the reserved 'verify'). A prefix of a reserved phase name is not a collision: the reserved-name rule rejects only a full-token collision with the reserved phase names prepare, configure, verify, promote (case-insensitive, command-contract.md §4.2); the phaseSequence pattern bounds the reserved-name rejection to complete tokens. Verification checks, config extensions, and templates declare nothing; the full exchange rule set C1–C7 plus the declared-surface bound is affirmed.",
+    "capability": {
+        "lifecyclePhases": [
+            {
+                "id": "prepared",
+                "description": "A framework phase whose name starts with the reserved word 'prepare' but does not collide with it.",
+                "failureSemantics": {
+                    "failureMeaningDeclared": true
+                },
+                "rollbackSemantics": {
+                    "reversalDeclared": true,
+                    "irreversible": false
+                }
+            },
+            {
+                "id": "verify-notes",
+                "description": "A framework phase whose name starts with the reserved word 'verify' but does not collide with it.",
+                "failureSemantics": {
+                    "failureMeaningDeclared": true
+                },
+                "rollbackSemantics": {
+                    "reversalDeclared": true,
+                    "irreversible": false
+                }
+            }
+        ],
+        "verificationChecks": [],
+        "configExtensions": [],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,prepared,verify-notes,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

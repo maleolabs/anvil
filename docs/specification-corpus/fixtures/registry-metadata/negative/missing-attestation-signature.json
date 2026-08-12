@@ -1,0 +1,31 @@
+{
+    "description": "Violates §4.7 / required field: the attestation is missing the signature field entirely. The attestation is an Ed25519 signature over the canonical attestation payload (id, version, content digests) (PM decision D-01); without a signature the release carries no publisher attestation and is rejected at adoption (ADR-022 §3; ADR-023 §3).",
+    "id": "anvil-standard-laravel",
+    "version": "1.2.3",
+    "contractVersion": "1.0.0",
+    "capability": {
+        "frameworkVersion": [
+            "5.1.0"
+        ]
+    },
+    "distribution": {
+        "type": "github-releases",
+        "location": "https://github.com/maleolabs/anvil-standard-laravel/releases/download/v1.2.3/anvil-standard-laravel.tar.gz"
+    },
+    "lifecycle": {
+        "state": "published"
+    },
+    "trust": {
+        "contentDigests": [
+            {
+                "algorithm": "sha-256",
+                "encoding": "base16",
+                "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+        ],
+        "attestation": {
+            "algorithm": "ed25519",
+            "publicKey": "cHVibGljLWtleS1iYXNlNjQtZW5jb2RlZC1kZW1vLXB1YmxpYy1rZXktMTIzNDU2Nzg5MA=="
+        }
+    }
+}

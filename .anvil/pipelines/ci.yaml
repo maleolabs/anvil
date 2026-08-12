@@ -1,0 +1,103 @@
+pipeline:
+    name: ci
+    stages:
+        - name: quality
+          tasks:
+            - name: format
+              command: go
+              args:
+                - fmt
+                - ./...
+            - name: vet
+              command: go
+              args:
+                - vet
+                - ./...
+            # Core framework-free proof (TS-015-01-03, ADR-026 decision 4;
+            # Laravel entries removed in TS-016-01-01, Flutter entries
+            # removed in TS-016-02-01, ADR-025 §6.2): the Core runtime
+            # import graph (cmd/ + internal/, excluding the framework
+            # package catalog, ADR-009 §8.1) must show zero framework
+            # packages. Runs explicitly so the proof — the re-checkable
+            # evidence for the governance review (ADR-026 §3, Transition
+            # Plan §11.2) — is a visible CI step; the same proof also runs
+            # inside the unit-tests task via `go test ./...`
+            # (internal/frameworkfree).
+            - name: framework-free-check
+              command: bash
+              args:
+                - scripts/framework-free-check.sh
+            # Diagnostics non-gating + read-only proof (TS-015-05-03,
+            # ADR-036 §3): lifecycle code paths contain no dependency on
+            # diagnostics results (structural import-graph check), and the
+            # diagnostics command surface is read-only against a populated
+            # lifecycle tree (behavioral byte-identical-tree check). Runs
+            # explicitly so the proof — the re-checkable evidence for the
+            # governance review (ADR-036 §3, §6) — is a visible CI step;
+            # the same proof also runs inside the unit-tests task via `go
+            # test ./...` (internal/nongating, cmd).
+            - name: non-gating-check
+              command: bash
+              args:
+                - scripts/non-gating-check.sh
+            # Ordered extraction sequence state proof (TS-017-03-01,
+            # ANVIL_V2_EXTRACTION_SEQUENCE): the completed state of the
+            # four extraction steps — framework packages, template content,
+            # config knowledge, adapter binaries — all left Core
+            # (Transition Plan §6.5, ADR-028 §3). Re-runs the framework-free
+            # proof as the step-1 evidence (ADR-026 decision 4). Runs
+            # explicitly so the proof — the re-checkable evidence for the
+            # governance review — is a visible CI step.
+            - name: extraction-sequence-check
+              command: bash
+              args:
+                - scripts/extraction-sequence-check.sh
+            # Per-step contract-stability verification (TS-017-03-02,
+            # ANVIL_V2_EXTRACTION_SEQUENCE §4–§5): at every extraction
+            # step the engine keeps working against extracted standard
+            # content and the subprocess contract — activation,
+            # verification, config extension, capability declaration — is
+            # preserved (ADR-028 §3, Transition Plan §6.5). Each step is
+            # independently verifiable; a regression at any step fails the
+            # step and blocks the next step. Runs explicitly so the
+            # proof — the re-checkable evidence for the governance review —
+            # is a visible CI step; the same verification also runs inside
+            # the unit-tests task via `go test ./...`
+            # (internal/contractstability).
+            - name: contract-stability-check
+              command: bash
+              args:
+                - scripts/contract-stability-check.sh
+            - name: validate-schemas
+              command: bash
+              args:
+                - scripts/validate-schemas.sh
+            - name: validate-contract-version
+              command: bash
+              args:
+                - scripts/validate-contract-version.sh
+        - name: test
+          tasks:
+            - name: unit-tests
+              command: go
+              args:
+                - test
+                - -race
+                - -count=1
+                - ./...
+            # Conformance harness (EPIC-013 / TS-013-05-03): validates the
+            # runtime's observable behavior against the published contracts of
+            # the specification corpus for the declared contract version
+            # (docs/specification-corpus/; ADR-029 §3). Runs explicitly with
+            # -v so the conformance report — the re-checkable evidence — is
+            # visible in CI logs; a deviation fails the pipeline.
+            - name: conformance
+              command: go
+              args:
+                - test
+                - -race
+                - -count=1
+                - -run
+                - TestConformance$
+                - -v
+                - ./internal/conformance

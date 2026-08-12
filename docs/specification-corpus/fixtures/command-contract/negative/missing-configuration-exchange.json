@@ -1,0 +1,43 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "negative-missing-configuration-exchange",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Negative: configuration-extension exchange omitted",
+    "description": "Violates command-contract.md §4.5 (007 §7): the configuration-extension exchange — the namespace-isolation rules — is omitted entirely. Extended configuration is exchanged under the framework's own namespace with the runtime enforcing isolation; a declaration that omits the exchange leaves the isolation of its extended values assumed rather than declared. Root required rejects the missing section.",
+    "capability": {
+        "lifecyclePhases": [],
+        "verificationChecks": [],
+        "configExtensions": [],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

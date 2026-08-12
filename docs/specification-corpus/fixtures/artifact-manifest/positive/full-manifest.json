@@ -1,0 +1,26 @@
+{
+    "$schema": "urn:anvil:spec:artifact-manifest:1.0.0",
+    "id": "anvil-artifact-manifest-full",
+    "contractVersion": "2.1.0",
+    "identity": {
+        "contentHash": {
+            "algorithm": "sha-512",
+            "encoding": "base64",
+            "digest": "z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg=="
+        }
+    },
+    "manifestLocation": {
+        "path": ".anvil/manifest.json",
+        "format": "json"
+    },
+    "verificationEvidence": {
+        "verifiedAt": "2026-08-04T12:00:00Z",
+        "verifier": "anvil-runtime-v2.0.0",
+        "algorithm": "sha-512"
+    },
+    "invariants": {
+        "deterministicOutput": true,
+        "filenamesCarryIdentity": false,
+        "verificationBeforeTrust": true
+    }
+}

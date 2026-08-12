@@ -1,0 +1,33 @@
+{
+    "description": "Violates §5 runtime-agnostic requirement: the document carries an extra root field 'golangVersion' — a Go-runtime-typed field that has no place in the format. The registry metadata format must remain runtime-agnostic, with no Go-specific fields (ADR-023 §3; Transition Plan §5.10); root additionalProperties rejects any field the schema does not declare.",
+    "id": "anvil-standard-laravel",
+    "version": "1.2.3",
+    "contractVersion": "1.0.0",
+    "capability": {
+        "frameworkVersion": [
+            "5.1.0"
+        ]
+    },
+    "distribution": {
+        "type": "github-releases",
+        "location": "https://github.com/maleolabs/anvil-standard-laravel/releases/download/v1.2.3/anvil-standard-laravel.tar.gz"
+    },
+    "lifecycle": {
+        "state": "published"
+    },
+    "trust": {
+        "contentDigests": [
+            {
+                "algorithm": "sha-256",
+                "encoding": "base16",
+                "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+        ],
+        "attestation": {
+            "algorithm": "ed25519",
+            "signature": "c2lnbmF0dXJlLXZhbHVlLWJhc2U2NC1lbmNvZGVkLWRlbW8tc2lnbmF0dXJlLTEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5",
+            "publicKey": "cHVibGljLWtleS1iYXNlNjQtZW5jb2RlZC1kZW1vLXB1YmxpYy1rZXktMTIzNDU2Nzg5MA=="
+        }
+    },
+    "golangVersion": "1.25.12"
+}

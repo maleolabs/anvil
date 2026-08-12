@@ -1,0 +1,45 @@
+{
+    "$schema": "urn:anvil:spec:verification-contract:1.0.0",
+    "id": "anvil-standard-verification-verify-phase-only",
+    "contractVersion": "1.0.0",
+    "title": "Verify-phase-only verification declaration (positive fixture)",
+    "description": "Positive fixture: a conforming verification declaration declaring lifecycle-conformity checks at the verify phase only. The Verify stage binding declares zero checks — the stage gate remains (the integrity gate belongs to the artifact manifest contract, artifact-manifest.md §5.1, and structural/lifecycle-conformity content at the stage is declared, not assumed), and an empty binding is a no-op gate, not an open door (§4.4). The verify phase binds a lifecycle-conformity check at the fixed contract-level position immediately before the atomic promotion (lifecycle-model.md §5.1).",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [
+        {
+            "id": "rails-migrations-before-promotion",
+            "category": "lifecycle-conformity",
+            "description": "Migrations are timed relative to promotion.",
+            "evidence": {
+                "recheckable": true,
+                "embeddedOrRecorded": true,
+                "recorded": true
+            }
+        }
+    ],
+    "positions": {
+        "verifyStage": {
+            "checks": []
+        },
+        "verifyPhase": {
+            "checks": [
+                "rails-migrations-before-promotion"
+            ]
+        }
+    }
+}

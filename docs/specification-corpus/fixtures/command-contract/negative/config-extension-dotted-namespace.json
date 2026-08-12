@@ -1,0 +1,59 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "negative-config-extension-dotted-namespace",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Negative: configuration extension namespace with multiple segments",
+    "description": "Violates command-contract.md §4.5 / 007 §7: a configuration extension declares namespace 'my.rails' — a multi-segment namespace. Extended configuration lives under the framework's own namespace, a single dot-free, space-free segment (the v1.x adapter namespace convention, preserved — 005 §6.1); a multi-segment namespace does not declare a single framework namespace and cannot be isolated. The namespace pattern rejects the value.",
+    "capability": {
+        "lifecyclePhases": [],
+        "verificationChecks": [],
+        "configExtensions": [
+            {
+                "namespace": "my.rails",
+                "keys": [
+                    {
+                        "name": "ruby-version",
+                        "description": "Ruby version used to build the artifact.",
+                        "required": true
+                    }
+                ]
+            }
+        ],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

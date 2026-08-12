@@ -1,0 +1,41 @@
+{
+    "description": "Violates E1 (verification-contract.md §5.1, §5.4): a declared check's evidence is a textual claim ('the framework wiring is correct') instead of the evidence declaration. A claim is not evidence — declaring a property is not proving it; evidence is the re-checkable output of a verification operation. The evidence declaration shape requires the recheckable / embeddedOrRecorded / recorded affirmations; a claim-like evidence object is rejected by additionalProperties and the required affirmations.",
+    "id": "negative-claim-is-not-evidence",
+    "contractVersion": "1.0.0",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [
+        {
+            "id": "rails-shared-resource-wiring",
+            "category": "lifecycle-conformity",
+            "description": "Shared resources are wired at the declared lifecycle point.",
+            "evidence": {
+                "claim": "the framework wiring is correct"
+            }
+        }
+    ],
+    "positions": {
+        "verifyStage": {
+            "checks": [
+                "rails-shared-resource-wiring"
+            ]
+        },
+        "verifyPhase": {
+            "checks": []
+        }
+    }
+}
