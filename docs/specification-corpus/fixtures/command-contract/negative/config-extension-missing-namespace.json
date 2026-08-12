@@ -1,0 +1,58 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "negative-config-extension-missing-namespace",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Negative: configuration extension without namespace",
+    "description": "Violates command-contract.md §4.5 / 007 §7: a configuration extension omits its namespace. Extended configuration lives under the framework's own namespace — the namespace is the isolation boundary the runtime enforces; an extension without a namespace cannot be isolated. configExtensionDeclaration required rejects the omission.",
+    "capability": {
+        "lifecyclePhases": [],
+        "verificationChecks": [],
+        "configExtensions": [
+            {
+                "keys": [
+                    {
+                        "name": "ruby-version",
+                        "description": "Ruby version used to build the artifact.",
+                        "required": true
+                    }
+                ]
+            }
+        ],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

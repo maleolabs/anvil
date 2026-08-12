@@ -1,0 +1,35 @@
+{
+    "description": "Violates the declared-capability rule (verification-contract.md §6.2; Manifesto §7; Transition Plan §5.9): the declaration adds a top-level 'customVerification' section. The runtime invokes only declared verification checks at the declared positions; undeclared capability is never called. The declaration shape is fixed by the contract — an unknown section is undeclared capability and is rejected by root additionalProperties.",
+    "id": "negative-undeclared-capability-section",
+    "contractVersion": "1.0.0",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [],
+    "positions": {
+        "verifyStage": {
+            "checks": []
+        },
+        "verifyPhase": {
+            "checks": []
+        }
+    },
+    "customVerification": {
+        "hooks": [
+            "pre-deploy"
+        ]
+    }
+}

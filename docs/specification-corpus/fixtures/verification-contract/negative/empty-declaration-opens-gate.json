@@ -1,0 +1,30 @@
+{
+    "description": "Violates the no-op gate nuance (verification-contract.md §4.4; lifecycle-model.md §5.1): gates.emptyDeclarationKeepsGate is declared false — the declaration asserts that declaring zero checks opens the gate. Declaring no content does not open the gate: the gate position remains and the gate remains — a no-op gate, not an open door. The const-true declaration rejects 'false'.",
+    "id": "negative-empty-declaration-opens-gate",
+    "contractVersion": "1.0.0",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": false
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [],
+    "positions": {
+        "verifyStage": {
+            "checks": []
+        },
+        "verifyPhase": {
+            "checks": []
+        }
+    }
+}

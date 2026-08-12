@@ -1,0 +1,23 @@
+{
+    "description": "Violates §5 (verification-contract.md §5; E1–E5): the declaration omits the evidence requirements section entirely. Evidence requirements are part of the contract — evidence is embedded and re-checkable, a claim is not evidence, outcomes merge into the verification report and are recorded as lifecycle evidence. A declaration that does not affirm the evidence floor is non-conforming; the root required declaration rejects the missing 'evidence' section.",
+    "id": "negative-evidence-omission",
+    "contractVersion": "1.0.0",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "checks": [],
+    "positions": {
+        "verifyStage": {
+            "checks": []
+        },
+        "verifyPhase": {
+            "checks": []
+        }
+    }
+}

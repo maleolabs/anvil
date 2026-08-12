@@ -1,0 +1,18 @@
+{
+    "description": "Violates §4.7 / required field: the document is missing the trust fields (trust) entirely. Trust fields are part of the registry metadata schema from day one (ADR-022 §3, §6.5): integrity verification material and publisher attestation are required; a release without trust material cannot be verified at install and is rejected (ADR-022 §3; ADR-023 §3).",
+    "id": "anvil-standard-laravel",
+    "version": "1.2.3",
+    "contractVersion": "1.0.0",
+    "capability": {
+        "frameworkVersion": [
+            "5.1.0"
+        ]
+    },
+    "distribution": {
+        "type": "github-releases",
+        "location": "https://github.com/maleolabs/anvil-standard-laravel/releases/download/v1.2.3/anvil-standard-laravel.tar.gz"
+    },
+    "lifecycle": {
+        "state": "published"
+    }
+}

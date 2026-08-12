@@ -1,0 +1,21 @@
+{
+    "description": "Violates §4.1 / identity.contentHash.digest minLength: the digest is empty. The digest IS the artifact's identity — a missing or empty digest means the artifact has no identity and is invalid. Content-derived identity requires a non-empty hash of the artifact's payload.",
+    "id": "negative-empty-digest",
+    "contractVersion": "1.0.0",
+    "identity": {
+        "contentHash": {
+            "algorithm": "sha-256",
+            "encoding": "base16",
+            "digest": ""
+        }
+    },
+    "manifestLocation": {
+        "path": ".anvil/manifest.json",
+        "format": "json"
+    },
+    "verificationEvidence": {
+        "verifiedAt": "2026-08-04T12:00:00Z",
+        "verifier": "anvil-runtime-v2.0.0",
+        "algorithm": "sha-256"
+    }
+}

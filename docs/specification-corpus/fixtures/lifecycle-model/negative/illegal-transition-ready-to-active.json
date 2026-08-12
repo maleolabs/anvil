@@ -1,0 +1,53 @@
+{
+    "$schema": "urn:anvil:spec:lifecycle-model:1.0.0",
+    "id": "negative-illegal-transition-ready-to-active",
+    "contractVersion": "1.0.0",
+    "title": "Negative: illegal transition Ready -> Active",
+    "description": "Violates §6.4 / R2 (transitions are graph-validated, never advised against): Ready may transition only to Activating, Archived, or Removed — a direct Ready -> Active transition is illegal; a Release cannot skip the Activating stage (ADR-003 §9.7). The schema rejects this because 'Active' is not in the legal target set for Ready.",
+    "states": {
+        "Ready": {
+            "transitions": ["Active"]
+        },
+        "Activating": {
+            "transitions": ["Active", "Rolling Back", "Failed"]
+        },
+        "Active": {
+            "transitions": ["Rolling Back", "Archived"]
+        },
+        "Rolling Back": {
+            "transitions": ["Rolled Back", "Failed"]
+        },
+        "Rolled Back": {
+            "transitions": ["Archived", "Removed"]
+        },
+        "Archived": {
+            "transitions": ["Active", "Removed"]
+        },
+        "Failed": {
+            "transitions": ["Ready", "Archived", "Removed"]
+        },
+        "Removed": {
+            "transitions": []
+        }
+    },
+    "activation": {
+        "phaseSequence": "prepare,configure,migrate,verify,promote",
+        "verify": {
+            "checks": []
+        }
+    },
+    "rollback": {
+        "targetSelection": "newest-archived-previously-active",
+        "targetState": "Archived"
+    },
+    "installation": {
+        "operation": "install",
+        "createsState": "Ready",
+        "isStateTransition": false
+    },
+    "invariants": {
+        "oneActiveRelease": true,
+        "activationIsAtomic": true,
+        "interruptedIsNotAState": true
+    }
+}

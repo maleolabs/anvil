@@ -1,0 +1,25 @@
+{
+    "description": "Violates §4.7 / required field: the trust object is missing the content digests (contentDigests) entirely. A release without integrity material cannot be verified at install — including offline/bundled installs, which carry the same integrity verification (ADR-022 §3; ADR-023 §3).",
+    "id": "anvil-standard-laravel",
+    "version": "1.2.3",
+    "contractVersion": "1.0.0",
+    "capability": {
+        "frameworkVersion": [
+            "5.1.0"
+        ]
+    },
+    "distribution": {
+        "type": "github-releases",
+        "location": "https://github.com/maleolabs/anvil-standard-laravel/releases/download/v1.2.3/anvil-standard-laravel.tar.gz"
+    },
+    "lifecycle": {
+        "state": "published"
+    },
+    "trust": {
+        "attestation": {
+            "algorithm": "ed25519",
+            "signature": "c2lnbmF0dXJlLXZhbHVlLWJhc2U2NC1lbmNvZGVkLWRlbW8tc2lnbmF0dXJlLTEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5",
+            "publicKey": "cHVibGljLWtleS1iYXNlNjQtZW5jb2RlZC1kZW1vLXB1YmxpYy1rZXktMTIzNDU2Nzg5MA=="
+        }
+    }
+}
