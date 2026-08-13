@@ -1,0 +1,59 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "anvil-standard-rails-command-contract-verify-only",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Verification-only command contract declaration (positive fixture)",
+    "description": "Positive fixture: a conforming command contract declaration that declares capability in exactly one category — verification checks (two structural checks in the contract categories). The lifecycle-phases, config-extensions, and templates categories declare nothing; the activation sequence is exactly prepare, configure, verify, promote — the runtime proceeds with its generic operations at the framework-phases position. The verification exchange declares its rules at the fixed 'verify' position; the full exchange rule set C1–C7 plus the declared-surface bound is affirmed.",
+    "capability": {
+        "lifecyclePhases": [],
+        "verificationChecks": [
+            {
+                "id": "rails-lockfile-present",
+                "category": "structural",
+                "description": "The artifact contains the framework lockfile."
+            },
+            {
+                "id": "rails-config-files-present",
+                "category": "structural",
+                "description": "The artifact contains the framework configuration files."
+            }
+        ],
+        "configExtensions": [],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

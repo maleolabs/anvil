@@ -1,0 +1,234 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "urn:anvil:spec:verification-contract:1.0.0",
+    "title": "Verification Contract — Delivery Lifecycle Specification (ANVIL)",
+    "description": "Machine-readable authority for the verification contract, corpus document 'verification-contract' (TS-013-04-02; human-readable counterpart TS-013-04-01). Encodes: gate semantics — verification is a lifecycle gate, mandatory and unskippable before a release may advance; a standard adds checks, it never weakens gates; an empty declaration leaves a no-op gate, not an open door (verification-contract.md §4, G1–G6; lifecycle-model.md §5.1) — and evidence requirements — evidence is the re-checkable output of a verification operation, a claim is not evidence; outcomes merge into the runtime's verification report and are recorded as lifecycle evidence (verification-contract.md §5, E1–E5). A verification declaration is what a standard declares as its verification content against this contract (verification-contract.md §6.2; ADR-033 §3): declared checks in the two contract categories (structural, lifecycle-conformity) bound to the two fixed gate positions (Verify stage, verify phase); the runtime invokes only declared capability (Manifesto §7; Transition Plan §5.9). Declarations that weaken gates and evidence that cannot be re-checked are rejected. Where this schema and verification-contract.md disagree, the schema governs (ADR-029 §3).",
+    "$comment": "Dialect: draft-07, chosen for the widest validator support (python jsonschema, ajv, and mature independent implementations) — maximizing engine-path-independence per ADR-029 §3 and Transition Plan §5.10; no draft-2020-12-only feature is required. Version line (ADR-024 §3.1): the specification carries its own semver line decoupled from runtime releases; the contract major version is the unit of compatibility. This document is corpus version 1.0.0. A breaking change to this contract — any change to gate semantics or evidence requirements that breaks compatibility — is a governed event requiring an ADR and shipping with a Core major version (ADR-035 §3.1; verification-contract.md §2.4); specification artifacts publish via the spec/ tag line (ADR-024 §3.5). $id is a stable URN — it references the corpus document (verification-contract) on its version line and is independent of engine or repository paths; resolvable publication URL mechanics are EPIC-013 scope. Engine-path independence: this schema references no engine paths, no engine internals, and no standard content — a future re-home of the specification is a move, not a rewrite (ADR-029 §3; Transition Plan §5.2, §5.10). Concrete check declaration and evidence formats are deliberately not specified here: format-level decisions are deferred to EPIC-013 implementation design (verification-contract.md §6.3); this schema defines the declaration shape, not the formats.",
+    "type": "object",
+    "required": [
+        "id",
+        "contractVersion",
+        "gates",
+        "evidence",
+        "checks",
+        "positions"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "Optional declaration of the schema this verification declaration targets (the $id of verification-contract.schema.json)."
+        },
+        "title": {
+            "type": "string",
+            "description": "Optional human-readable title of the verification declaration."
+        },
+        "description": {
+            "type": "string",
+            "description": "Optional human-readable description of the verification declaration."
+        },
+        "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$",
+            "description": "Stable identifier of the verification declaration (the Verification part of a standard). Follows the corpus id convention: lowercase alphanumeric with hyphens."
+        },
+        "contractVersion": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+            "description": "Target contract version of the delivery lifecycle specification (ADR-024 §3.1): semver, decoupled from runtime releases; major version is the compatibility unit. A declaration that targets an unsupported contract version is rejected by the runtime before any lifecycle operation."
+        },
+        "gates": {
+            "$ref": "#/definitions/gates"
+        },
+        "evidence": {
+            "$ref": "#/definitions/evidence"
+        },
+        "checks": {
+            "$ref": "#/definitions/checks"
+        },
+        "positions": {
+            "$ref": "#/definitions/positions"
+        }
+    },
+    "definitions": {
+        "gates": {
+            "type": "object",
+            "description": "Gate semantics (verification-contract.md §4; G1–G6; PRD-002 §5.2–§5.3; Manifesto §3.2, §4.1): verification is a lifecycle gate, not an optional command. Each gate rule is encoded as a required const-true declaration — the gate set is a floor, not a ceiling; a declaration that omits a gate rule or asserts a weaker value is rejected (§4.4: content that weakens a gate is invalid; the machine-readable schema encodes this rejection).",
+            "required": [
+                "verificationIsMandatory",
+                "enforcedAsTransition",
+                "verificationPrecedesAdvancement",
+                "standardAddsChecksNeverWeakensGates",
+                "allVerificationLayersMandatory",
+                "failedVerificationRejectsOperation",
+                "emptyDeclarationKeepsGate"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "verificationIsMandatory": {
+                    "const": true,
+                    "description": "G1: verification is mandatory — no lifecycle operation proceeds from unverified inputs; verification is a transition that cannot be skipped, not an optional command (Manifesto §3.2; PRD-002 §5.2–§5.3; lifecycle-model.md §6.2 R1). A declaration that asserts 'false' here weakens the gate and is rejected."
+                },
+                "enforcedAsTransition": {
+                    "const": true,
+                    "description": "G2: gates are enforced, not requested — verification is enforced as a transition; the lifecycle cannot be bypassed; illegal transitions are rejected, not advised against (Manifesto §4.1; PRD-002 §5.2; lifecycle-model.md §6.2 R2). A declaration that asserts 'false' here weakens the gate and is rejected."
+                },
+                "verificationPrecedesAdvancement": {
+                    "const": true,
+                    "description": "G3: verification precedes advancement — verification is mandatory before a release may advance, before any lifecycle operation consumes the artifact, and before the atomic promotion (Manifesto §3.2, §5.5; PRD-002 §5.3; artifact-manifest.md §5.1; lifecycle-model.md §5.1). A declaration that asserts 'false' here weakens the gate and is rejected."
+                },
+                "standardAddsChecksNeverWeakensGates": {
+                    "const": true,
+                    "description": "G4: a standard adds checks; it never weakens gates — a standard declares verification content against this contract; it may not remove, skip, or relax a gate (007 §6; ADR-033 §3). The gate set is a floor, not a ceiling (§4.4); weakening a gate is a contract change — a governed event requiring an ADR, not a standard decision (ADR-035 §3.1). A declaration that asserts 'false' here is rejected."
+                },
+                "allVerificationLayersMandatory": {
+                    "const": true,
+                    "description": "G5: all verification layers are mandatory — integrity, structural, and lifecycle-conformity verification are all gates; none may be skipped (artifact-manifest.md §5.2). A declaration that asserts 'false' here weakens the gate and is rejected."
+                },
+                "failedVerificationRejectsOperation": {
+                    "const": true,
+                    "description": "G6: failed verification rejects the operation — an artifact that fails verification is rejected; no lifecycle operation proceeds from unverified inputs (artifact-manifest.md §5.3; PRD-002 §5.2). A gate that fails rejects the operation that violates it, it does not warn (verification-contract.md §1). A declaration that asserts 'false' here is rejected."
+                },
+                "emptyDeclarationKeepsGate": {
+                    "const": true,
+                    "description": "§4.4 no-op gate nuance: declaring no content does not open the gate — a standard may declare zero verification checks; the gate position remains and the gate remains — a no-op gate, not an open door (lifecycle-model.md §5.1). A declaration that asserts 'false' here asserts the gate can be opened by declaring nothing and is rejected."
+                }
+            }
+        },
+        "evidence": {
+            "type": "object",
+            "description": "Evidence requirements (verification-contract.md §5; E1–E5; PRD-002 §5.3; Manifesto §3.2): evidence is embedded and re-checkable — a claim is not evidence; verification outcomes merge into the runtime's verification report and are recorded as lifecycle evidence. Each evidence rule is encoded as a required const-true declaration; a declaration that omits a rule or asserts a weaker value is rejected (E5: evidence that cannot be re-checked is invalid — the schema encodes this rejection).",
+            "required": [
+                "claimIsNotEvidence",
+                "evidenceIsRecheckable",
+                "outcomesMergeIntoVerificationReport",
+                "outcomesRecordedAsLifecycleEvidence",
+                "nonRecheckableEvidenceIsInvalid"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "claimIsNotEvidence": {
+                    "const": true,
+                    "description": "E1: a claim is not evidence — declaring a property is not proving it; evidence is the re-checkable output of a verification operation (PRD-002 §5.3; Manifesto §3.2). The artifact manifest contract demonstrates the distinction in concrete form: the manifest declares the expected hash — the claim; the verification operation recomputes the hash from the artifact's content and compares — the evidence (artifact-manifest.md §5.1). A declaration that asserts 'false' here is rejected."
+                },
+                "evidenceIsRecheckable": {
+                    "const": true,
+                    "description": "E2: evidence is re-checkable — any consumer (the runtime, a CI pipeline, a human operator) can re-verify the same evidence; evidence is embedded and recorded, not held in the memory of the verifying process (Manifesto §3.2, §5.3; PRD-002 §5.3; artifact-manifest.md §5.1). A declaration that asserts 'false' here is rejected."
+                },
+                "outcomesMergeIntoVerificationReport": {
+                    "const": true,
+                    "description": "E3: outcomes merge into the runtime's verification report — verification outcomes are not left in the verifying process; they merge into the report the runtime keeps (007 §6). A declaration that asserts 'false' here is rejected."
+                },
+                "outcomesRecordedAsLifecycleEvidence": {
+                    "const": true,
+                    "description": "E4: outcomes are recorded as lifecycle evidence — part of the persisted, queryable, authoritative lifecycle state from which decisions derive (007 §6; PRD-002 §5.4; lifecycle-model.md §6.2 R8). A declaration that asserts 'false' here is rejected."
+                },
+                "nonRecheckableEvidenceIsInvalid": {
+                    "const": true,
+                    "description": "E5: evidence that cannot be re-checked is invalid — declarations whose evidence cannot be re-checked are rejected; the machine-readable schema encodes this rejection per check (checks[].evidence.recheckable must be true) (TS-013-04-02 §2; ADR-029 §3). A declaration that asserts 'false' here is rejected."
+                }
+            }
+        },
+        "checks": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "$ref": "#/definitions/check"
+            },
+            "description": "Declared verification content (verification-contract.md §6.2; ADR-033 §3): the checks the standard declares as its verification content against this contract — declared capability. The runtime invokes only declared verification checks, at the declared positions; undeclared capability is never called (Manifesto §7; Transition Plan §5.9). Exactly the two contract categories may be declared — structural checks (the artifact contains what the framework requires: files, structures; the verified v1.x surface, preserved) and lifecycle-conformity checks (framework behavior at lifecycle points: shared-resource wiring, migration timing relative to promotion, queue restart, rollback behavior; the v2 verification depth). A check whose category the contract does not declare is undeclared capability and is rejected. The array may be empty: declaring no content does not open the gate — a no-op gate, not an open door (§4.4; lifecycle-model.md §5.1). Duplicated check declarations (deep equality) are rejected; id-based uniqueness is additionally enforced by the runtime at adoption."
+        },
+        "check": {
+            "type": "object",
+            "required": [
+                "id",
+                "category",
+                "evidence"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "description": "Stable identifier of the declared check. Position bindings (positions.*.checks) and lifecycle definitions reference checks by id; the schema validates the id shape only — draft-07 cannot cross-validate id references between arrays, so id-to-declared-check resolution is additionally enforced by the runtime at adoption: undeclared capability is never called (Manifesto §7; Transition Plan §5.9)."
+                },
+                "category": {
+                    "type": "string",
+                    "enum": [
+                        "structural",
+                        "lifecycle-conformity"
+                    ],
+                    "description": "The check category (verification-contract.md §6.2): 'structural' — the artifact contains what the framework requires (files, structures); the verified v1.x surface, preserved. 'lifecycle-conformity' — framework behavior at lifecycle points: shared-resource wiring, migration timing relative to promotion, queue restart, rollback behavior; the v2 verification depth. Exactly these two categories exist; any other category is capability this contract does not declare — e.g. integrity is owned by the artifact manifest contract (artifact-manifest.md §5), not standard content — and is rejected as undeclared capability."
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Optional human-readable description of what this check verifies."
+                },
+                "evidence": {
+                    "$ref": "#/definitions/checkEvidence"
+                }
+            }
+        },
+        "checkEvidence": {
+            "type": "object",
+            "description": "Per-check evidence declaration (verification-contract.md §5; E2, E4, E5): what the check's outcome must be to count as evidence. A claim is not evidence (E1): the evidence declaration is a set of affirmations about the check's evidence, not a prose claim. Evidence that cannot be re-checked is invalid (E5) — a check whose evidence declaration omits an affirmation or asserts 'false' is rejected at declaration time.",
+            "required": [
+                "recheckable",
+                "embeddedOrRecorded",
+                "recorded"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "recheckable": {
+                    "const": true,
+                    "description": "E2 / E5: the check's evidence is re-checkable — any consumer (the runtime, a CI pipeline, a human operator) can re-verify using the same evidence; evidence is embedded and recorded, not held in the memory of the verifying process (Manifesto §3.2, §5.3; artifact-manifest.md §5.1). 'false' is rejected: evidence that cannot be re-checked is invalid (E5)."
+                },
+                "embeddedOrRecorded": {
+                    "const": true,
+                    "description": "E2: the check's evidence is embedded in the artifact (e.g. a manifest entry) or recorded as lifecycle evidence — never held in the memory of the verifying process (Manifesto §5.3; verification-contract.md §5.2). 'false' is rejected."
+                },
+                "recorded": {
+                    "const": true,
+                    "description": "E3 / E4: the check's outcome merges into the runtime's verification report and is recorded as lifecycle evidence — part of the persisted, queryable, authoritative lifecycle state from which decisions derive (007 §6; PRD-002 §5.4; lifecycle-model.md §6.2 R8). 'false' is rejected."
+                }
+            }
+        },
+        "positions": {
+            "type": "object",
+            "description": "Position bindings (verification-contract.md §4.2): where the declared checks execute. The gate positions are fixed by the specification; a standard supplies content within the defined lifecycle — it does not invent gates or move gate positions (Manifesto §3.1; 007 §5). Exactly the two contract positions may be declared: the Verify stage (artifact lifecycle — before any lifecycle operation may consume the artifact; structural and lifecycle-conformity verification follow the integrity gate, artifact-manifest.md §5.2) and the verify phase (activation sequence — the fixed contract-level position immediately before the atomic promotion, lifecycle-model.md §5.1). A binding may declare zero checks: the phase is a no-op gate, not an open door (§4.4; lifecycle-model.md §5.1).",
+            "required": [
+                "verifyStage",
+                "verifyPhase"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "verifyStage": {
+                    "$ref": "#/definitions/positionBinding",
+                    "description": "Checks bound to the Verify stage (artifact lifecycle): structural and lifecycle-conformity verification executed after the integrity gate passes (artifact-manifest.md §5.2). May be empty — the integrity gate belongs to the artifact manifest contract and remains."
+                },
+                "verifyPhase": {
+                    "$ref": "#/definitions/positionBinding",
+                    "description": "Checks bound to the verify phase (activation sequence): activation-time verification content at the fixed contract-level position immediately before the atomic promotion (lifecycle-model.md §5.1). May be empty — a no-op gate, not an open door (§4.4)."
+                }
+            }
+        },
+        "positionBinding": {
+            "type": "object",
+            "required": [
+                "checks"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "checks": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "description": "Declared checks bound to this position, referenced by id (see checks[].id). May be empty — a no-op gate, not an open door (§4.4; lifecycle-model.md §5.1). The schema validates the id shape only; id-to-declared-check resolution is enforced by the runtime at adoption — undeclared capability is never called (Manifesto §7; Transition Plan §5.9)."
+                }
+            }
+        }
+    }
+}

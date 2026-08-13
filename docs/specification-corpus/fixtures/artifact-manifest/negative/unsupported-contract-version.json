@@ -1,0 +1,21 @@
+{
+    "description": "Violates §4.2 / contractVersion pattern: the contractVersion is not valid semver. The contract version must be semver (major.minor.patch); a manifest that declares a non-semver version cannot be matched against supported contract versions and makes the artifact invalid.",
+    "id": "negative-unsupported-contract-version",
+    "contractVersion": "v1.0",
+    "identity": {
+        "contentHash": {
+            "algorithm": "sha-256",
+            "encoding": "base16",
+            "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+    },
+    "manifestLocation": {
+        "path": ".anvil/manifest.json",
+        "format": "json"
+    },
+    "verificationEvidence": {
+        "verifiedAt": "2026-08-04T12:00:00Z",
+        "verifier": "anvil-runtime-v2.0.0",
+        "algorithm": "sha-256"
+    }
+}

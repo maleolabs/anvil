@@ -1,0 +1,34 @@
+{
+    "$schema": "urn:anvil:spec:lifecycle-model:1.0.0",
+    "id": "missing-archived-to-active",
+    "contractVersion": "1.0.0",
+    "description": "Non-conforming: drops the Archived→Active rollback restore edge. The edge set is fixed per §6.4 — omitting a legal edge (especially the rollback restore) makes rollback impossible and is non-conforming.",
+    "states": {
+        "Ready": { "transitions": ["Activating", "Archived", "Removed"] },
+        "Activating": { "transitions": ["Active", "Rolling Back", "Failed"] },
+        "Active": { "transitions": ["Rolling Back", "Archived"] },
+        "Rolling Back": { "transitions": ["Rolled Back", "Failed"] },
+        "Rolled Back": { "transitions": ["Archived", "Removed"] },
+        "Archived": { "transitions": ["Removed"] },
+        "Failed": { "transitions": ["Ready", "Archived", "Removed"] },
+        "Removed": { "transitions": [] }
+    },
+    "activation": {
+        "phaseSequence": "prepare,configure,verify,promote",
+        "verify": { "checks": [] }
+    },
+    "rollback": {
+        "targetSelection": "newest-archived-previously-active",
+        "targetState": "Archived"
+    },
+    "installation": {
+        "operation": "install",
+        "createsState": "Ready",
+        "isStateTransition": false
+    },
+    "invariants": {
+        "oneActiveRelease": true,
+        "activationIsAtomic": true,
+        "interruptedIsNotAState": true
+    }
+}

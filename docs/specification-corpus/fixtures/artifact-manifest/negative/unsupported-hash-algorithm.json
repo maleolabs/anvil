@@ -1,0 +1,21 @@
+{
+    "description": "Violates §4.1 / identity.contentHash.algorithm enum: the algorithm is not in the supported set. The schema is the machine-readable authority for the algorithm specification; only algorithms declared in the enum are valid. An unrecognized algorithm cannot be used for verification.",
+    "id": "negative-unsupported-hash-algorithm",
+    "contractVersion": "1.0.0",
+    "identity": {
+        "contentHash": {
+            "algorithm": "md5",
+            "encoding": "base16",
+            "digest": "d41d8cd98f00b204e9800998ecf8427e"
+        }
+    },
+    "manifestLocation": {
+        "path": ".anvil/manifest.json",
+        "format": "json"
+    },
+    "verificationEvidence": {
+        "verifiedAt": "2026-08-04T12:00:00Z",
+        "verifier": "anvil-runtime-v2.0.0",
+        "algorithm": "sha-256"
+    }
+}
