@@ -1,0 +1,46 @@
+{
+    "description": "Violates §4.2 (verification-contract.md §4.2; Manifesto §3.1): the declaration binds checks to an invented position 'postPromote'. The stage model, phase sequence, and transition rules are architectural objects: a standard supplies content within the defined lifecycle; it does not invent gates or move gate positions. Exactly the two contract positions (verifyStage, verifyPhase) may be bound; an invented position is rejected by positions additionalProperties.",
+    "id": "negative-invented-gate-position",
+    "contractVersion": "1.0.0",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [
+        {
+            "id": "rails-queue-restart-on-promotion",
+            "category": "lifecycle-conformity",
+            "description": "The queue restarts on promotion.",
+            "evidence": {
+                "recheckable": true,
+                "embeddedOrRecorded": true,
+                "recorded": true
+            }
+        }
+    ],
+    "positions": {
+        "verifyStage": {
+            "checks": []
+        },
+        "verifyPhase": {
+            "checks": []
+        },
+        "postPromote": {
+            "checks": [
+                "rails-queue-restart-on-promotion"
+            ]
+        }
+    }
+}

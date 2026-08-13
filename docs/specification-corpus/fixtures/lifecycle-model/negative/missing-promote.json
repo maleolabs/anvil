@@ -1,0 +1,53 @@
+{
+    "$schema": "urn:anvil:spec:lifecycle-model:1.0.0",
+    "id": "negative-missing-promote",
+    "contractVersion": "1.0.0",
+    "title": "Negative: activation sequence missing promote",
+    "description": "Violates §5.1 / ADR-003 §6.4: promote is the atomic commitment point — the last phase of activation. A sequence that ends without promote cannot commit the Release to Active; the schema rejects the sequence 'prepare,configure,verify' because it does not end with 'verify,promote'.",
+    "states": {
+        "Ready": {
+            "transitions": ["Activating", "Archived", "Removed"]
+        },
+        "Activating": {
+            "transitions": ["Active", "Rolling Back", "Failed"]
+        },
+        "Active": {
+            "transitions": ["Rolling Back", "Archived"]
+        },
+        "Rolling Back": {
+            "transitions": ["Rolled Back", "Failed"]
+        },
+        "Rolled Back": {
+            "transitions": ["Archived", "Removed"]
+        },
+        "Archived": {
+            "transitions": ["Active", "Removed"]
+        },
+        "Failed": {
+            "transitions": ["Ready", "Archived", "Removed"]
+        },
+        "Removed": {
+            "transitions": []
+        }
+    },
+    "activation": {
+        "phaseSequence": "prepare,configure,verify",
+        "verify": {
+            "checks": []
+        }
+    },
+    "rollback": {
+        "targetSelection": "newest-archived-previously-active",
+        "targetState": "Archived"
+    },
+    "installation": {
+        "operation": "install",
+        "createsState": "Ready",
+        "isStateTransition": false
+    },
+    "invariants": {
+        "oneActiveRelease": true,
+        "activationIsAtomic": true,
+        "interruptedIsNotAState": true
+    }
+}

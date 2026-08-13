@@ -1,0 +1,347 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "urn:anvil:spec:registry-metadata:1.0.0",
+    "title": "Registry Metadata — Delivery Lifecycle Specification (ANVIL)",
+    "description": "Machine-readable authority for the registry metadata format, corpus document 'registry-metadata' (TS-014-01-01). The registry metadata document is the distribution unit of the delivery lifecycle standard registry (ADR-023 §3): one metadata document describes one release of one delivery lifecycle standard. It encodes: standard identity (id) and release version (version) — the installation idempotency key 'standard identity plus version' (ADR-023 §3) — the declared contract version and capability declaration (contractVersion, capability — ADR-021 §3.2; PRD-002 §5.8: every standard declares the contract version it targets and the framework versions it supports; a standard that does not declare compatibility is rejected) — the distribution location (distribution — ADR-030: registry metadata lives in repositories and resolves content from the standard's own release channel; the registry is distribution metadata, not content hosting) — the lifecycle state (lifecycle — ADR-023 §3, ADR-027 §3: Published standards are discoverable, installable, and validated; Deprecated standards install with warning, receive no updates, and carry a removal date; Retired standards are removed from the registry with a documented migration path) — and the trust fields (trust — ADR-022: integrity verification material, publisher attestation, and version pinning are part of the registry metadata schema from day one, not retrofitted) — and the optional additive skills section (skills — TS-021-04; ADR-037 D2: a standard's per-skill assets, each covered by an attested named digest entry in trust.contentDigests, TS-014-04-04). Where this schema and registry-metadata.md disagree, the schema governs (ADR-029 §3).",
+    "$comment": "Dialect: draft-07, chosen for the widest validator support (python jsonschema, ajv, and mature independent implementations) — maximizing engine-path-independence per ADR-029 §3 and Transition Plan §5.10; draft-07 if/then/else is used for the cross-field constraints this schema enforces: removalDate is only allowed when lifecycle.state is 'deprecated', and the digest value is constrained per its declared encoding. Format annotations (format: uri, format: date-time) are advisory: draft-07 format keywords are annotations unless the validator applies a format checker — strict format parsing is the registry client's responsibility (TS-014-01-02); the schema's enforceable surface is shape, required fields, enum bounds, patterns, and if/then constraints. The only advisory policy note is the 'SHOULD carry removalDate once announced' guidance for deprecated releases (PM decision D-03: removalDate stays optional for deprecated). Version line (ADR-024 §3.1): the specification carries its own semver line decoupled from runtime releases; the contract major version is the unit of compatibility. This document is corpus version 1.0.0. A breaking change to this contract — any change to the metadata structure, trust semantics, or lifecycle semantics that breaks compatibility — is a governed event requiring an ADR and shipping with a Core major version (ADR-035 §3.1; registry-metadata.md §2.4); specification artifacts publish via the spec/ tag line (ADR-024 §3.5). $id is a stable URN — it references the corpus document (registry-metadata) on its version line and is independent of engine or repository paths; resolvable publication URL mechanics are EPIC-014 scope. Engine-path independence: this schema references no engine paths, no engine internals, and no standard content — the format is runtime-agnostic by design (ADR-023 §3; Transition Plan §5.10: independent runtime implementations remain structurally possible). The registry wire protocol between client and index is an EPIC-014 implementation detail — this schema defines the metadata format, not the protocol (TS-014-01-01 §2). Trust mechanism (ADR-022 §7): the cryptographic baseline is fixed — SHA-256 content digests and an Ed25519 attestation signature over the canonical attestation payload (id, version, content digests), with the publisher's Ed25519 verification public key carried in the document; key rotation is out of scope for this version (PM decision D-01). The attestation signed payload is the canonical byte-level composition utf8(id) || 0x00 || utf8(version) || 0x00 || concat(decoded digest bytes in contentDigests array order), where 0x00 is a single NUL byte, utf8(x) is the UTF-8 encoding of field x, and each digest is decoded from its declared encoding; consumers verify the signature over exactly these bytes — byte-for-byte. Lifecycle-state values are lowercase machine values (published, deprecated, retired); the capitalized forms in the ADRs and prose (Published, Deprecated, Retired) denote the same states. Additive extension (TS-021-04; ADR-037 D2; PM-approved forward-compat decision, recorded in registry-metadata.md §4.8): the optional skills section declares a standard's per-skill assets; the extension is additive-only within contract major 1 and does not change the declared contract majors. The root tolerates unknown-but-optional additive sections — keys the schema does not declare whose value is an object or an array — within the deprecation window, so an older parser accepts and ignores them instead of rejecting an otherwise-valid document (ADR-024 spirit; ADR-037 §6). Core fields remain strict: unknown root keys with scalar values are rejected, nested additionalProperties: false is unchanged, and malformed skill declarations (invalid name, missing asset, invalid or unbound digest) are rejected with actionable errors.",
+    "type": "object",
+    "required": [
+        "id",
+        "version",
+        "contractVersion",
+        "capability",
+        "distribution",
+        "lifecycle",
+        "trust"
+    ],
+    "additionalProperties": {
+        "type": [
+            "object",
+            "array"
+        ],
+        "description": "Forward-compat decision (TS-021-04; ADR-037 D2; PM-approved, recorded in registry-metadata.md §4.8): the root tolerates unknown-but-optional additive SECTIONS — keys the schema does not declare whose value is an object or an array — within the deprecation window, so an older parser meeting a newer additive section accepts and ignores it instead of rejecting an otherwise-valid document (ADR-024 spirit; ADR-037 §6). Unknown root keys with scalar values (strings, numbers, booleans, null) are rejected: they cannot be a section, and the runtime-agnostic requirement stays enforceable — a runtime-typed scalar field still fails. Nested additionalProperties: false inside every declared section is unchanged; core fields remain strict."
+    },
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "Optional declaration of the schema this metadata document targets (the $id of registry-metadata.schema.json)."
+        },
+        "title": {
+            "type": "string",
+            "description": "Optional human-readable title of the registry metadata document."
+        },
+        "description": {
+            "type": "string",
+            "description": "Optional human-readable description of the registry metadata document."
+        },
+        "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$",
+            "maxLength": 64,
+            "description": "Standard identity: the stable identifier of the delivery lifecycle standard this release belongs to (e.g. 'anvil-standard-laravel'; ADR-021 §3.1: standards are named anvil-standard-*). The id is stable across releases of the same standard — it is the identity half of the installation idempotency key 'standard identity plus version' (ADR-023 §3). Distinct from the release version (version) and from any content hash in trust.contentDigests: identity comes from the standard's identity declaration, not from content or location (ADR-030 §3; Manifesto §3.4). Follows the corpus id convention: lowercase alphanumeric with hyphens, at most 64 characters. The pattern rejects traversal-style separators (dots, slashes, path separators); the length bound keeps ids bounded for index use."
+        },
+        "version": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+            "maxLength": 64,
+            "description": "Release version of the standard, semver (major.minor.patch) without leading zeros. Standards are independently versioned — standard releases and runtime releases are decoupled (ADR-021 §3.4; ADR-025 §3). The version is the second half of the installation idempotency key 'standard identity plus version' (ADR-023 §3): installation of the same id at the same version is idempotent. The version is pinned at adoption: adoptions pin standard versions; resolution is explicit and recorded (ADR-022 §3)."
+        },
+        "contractVersion": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+            "maxLength": 64,
+            "description": "Declared contract version of the delivery lifecycle specification this release targets (ADR-024 §3.1): semver without leading zeros, decoupled from runtime releases; the major version is the compatibility unit. A standard is valid only against a published contract version; compatibility is negotiated at adoption — registry validation plus runtime verification (ADR-021 §3.4; ADR-023 §3). A release that declares an unsupported contract version is rejected at adoption (PRD-002 §5.8; ADR-023 §3)."
+        },
+        "capability": {
+            "$ref": "#/definitions/capability"
+        },
+        "distribution": {
+            "$ref": "#/definitions/distribution"
+        },
+        "lifecycle": {
+            "$ref": "#/definitions/lifecycle"
+        },
+        "trust": {
+            "$ref": "#/definitions/trust"
+        },
+        "skills": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "$ref": "#/definitions/skill"
+            },
+            "description": "Optional additive skills section (TS-021-04; ADR-037 D2): the standard's per-skill assets. Each entry declares a skill name, version, and the release asset carrying the skill content; the asset is covered by an attested named digest entry in trust.contentDigests (TS-014-04-04). The section is additive-only and optional — a release without it is valid and behaves exactly as before, and older parsers tolerate it as an unknown-but-optional section within the deprecation window (forward-compat decision, registry-metadata.md §4.8). Malformed skill declarations (invalid name, missing asset, invalid or unbound digest) are rejected with actionable errors."
+        }
+    },
+    "definitions": {
+        "capability": {
+            "type": "object",
+            "description": "Capability declaration (ADR-021 §3.2): the declared compatibility surface of the release — the framework-version support scope. The capability declaration carries contract-version and framework-version support scope, enabling real compatibility validation at adoption (ADR-021 §3.2; ADR-023 §3; PRD-002 §5.8: every standard declares the contract version it targets and the framework versions it supports; a standard that does not declare compatibility is rejected). The contract version is declared at the document top level (contractVersion); this object declares the framework-version support scope. The runtime-level operational declaration (activation phases, verification checks, command exchange) is the standard command contract's scope (command-contract.schema.json), not registry metadata.",
+            "required": [
+                "frameworkVersion"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "frameworkVersion": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string",
+                        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+                    },
+                    "description": "Framework-version support scope: the set of framework versions this release supports, declared per release so compatibility with the adopting project's framework version is a validation fact, not an assumption (ADR-021 §3.2; ADR-023 §3; PRD-002 §5.8). At least one supported framework version must be declared; a declaration that omits or malforms the scope is rejected at adoption. Follows the command-contract.schema.json frameworkVersion convention."
+                }
+            }
+        },
+        "distribution": {
+            "type": "object",
+            "description": "Distribution location (ADR-030): where the release content is resolved from. The registry is distribution metadata, not content hosting — metadata lives in repositories and resolves content from the standard's own release channel (ADR-030 §3). The registry indexes this location; content integrity is enforced at install by ADR-022 trust validation, not by the distribution channel itself (ADR-030 §3). The channel is https-only: content is resolved over TLS; no plaintext, file, or other scheme is accepted.",
+            "required": [
+                "type",
+                "location"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "github-releases"
+                    ],
+                    "description": "Distribution channel pattern. The only supported pattern is 'github-releases': standard content follows the existing GitHub-releases release workflow (tag-driven releases), so standard releases reuse release mechanics already in place (ADR-030 §3, §5). A new channel pattern is a schema evolution (governed event)."
+                },
+                "location": {
+                    "type": "string",
+                    "format": "uri",
+                    "pattern": "^https://",
+                    "minLength": 1,
+                    "description": "Location of the release content on the declared channel: the URL from which the standard release artifact is resolved at adoption. The scheme is pinned to https — content is resolved over TLS only; http, file, and any other scheme are rejected (registry-metadata.md §4.5). The location points at content on the standard's own release channel, never at a Core-operated service (ADR-030 §3). The value is a distribution address, not an identity: identity comes from the standard's id and the trust fields, not from the location (Manifesto §3.4; ADR-030 §3)."
+                }
+            }
+        },
+        "lifecycle": {
+            "type": "object",
+            "description": "Lifecycle state of the standard release in the registry (ADR-023 §3; ADR-027 §3; PRD-002 §5.7): Published standards are discoverable, installable, and validated; Deprecated standards install with warning, receive no updates, and carry a removal date; Retired standards are removed from the registry with a documented migration path. The schema reflects the governed states; client-side lifecycle behavior (warnings, update suppression, fresh-adoption refusal) is implemented by the registry client (TS-014-01-03). The removal date is only allowed on the deprecated state (if/then constraint); it stays optional for deprecated entries (PM decision D-03).",
+            "required": [
+                "state"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "state": {
+                    "type": "string",
+                    "enum": [
+                        "published",
+                        "deprecated",
+                        "retired"
+                    ],
+                    "description": "Lifecycle state of the standard release. Machine values are lowercase: 'published' (discoverable, installable, validated against the declared contract version — ADR-027 §3), 'deprecated' (installable with warning; no updates; removal date announced — ADR-027 §3), 'retired' (removed from the registry with a documented migration path — ADR-027 §3). The capitalized prose forms (Published/Deprecated/Retired) denote the same states. Any other value is invalid."
+                },
+                "removalDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Announced removal date of a deprecated standard (ISO 8601 date-time): the date after which the standard is removed from the registry with a documented migration path (ADR-023 §3; ADR-027 §3: a Deprecated standard carries an announced removal date). Only allowed when lifecycle.state is 'deprecated' (if/then constraint): a removal date on a published or retired entry is invalid. Optional per PM decision D-03: a deprecated release may carry the removal date when announced; the field SHOULD be present once the removal date is announced. The format annotation is advisory until strict parsing lands (TS-014-01-02)."
+                }
+            },
+            "if": {
+                "properties": {
+                    "state": {
+                        "const": "deprecated"
+                    }
+                },
+                "required": [
+                    "state"
+                ]
+            },
+            "then": {},
+            "else": {
+                "properties": {
+                    "removalDate": false
+                }
+            }
+        },
+        "trust": {
+            "type": "object",
+            "description": "Trust fields (ADR-022): integrity verification material, publisher attestation, and version pinning are part of the registry metadata schema from the start — introduced with the registry, not retrofitted (ADR-022 §3, §6.5). The trust model applies equally to first-party and community standards; there is no privileged path (ADR-022 §3). Cryptographic baseline (ADR-022 §7 deferred to implementation design; PM decision D-01): integrity is a SHA-256 content digest; publisher attestation is an Ed25519 signature over the canonical attestation payload (id, version, content digests); the publisher's Ed25519 verification public key is carried in the document. Key rotation is out of scope for this version. Content integrity is enforced at install by this trust validation — not by the distribution channel (ADR-030 §3).",
+            "required": [
+                "contentDigests",
+                "attestation"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "contentDigests": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/contentDigest"
+                    },
+                    "description": "Content digest(s) of the release: the integrity verification material (ADR-022 §3). At least one digest is required — a release without integrity material cannot be verified at install and is rejected (ADR-022 §3; ADR-023 §3: offline/bundled installs carry the same integrity verification). Entries must be unique. Entries WITHOUT a name are content digests: at adoption, EVERY one must match the recomputed hash of the content resolved from distribution.location — all-match, not any-match; entries may be different encodings of the same digest value (registry-metadata.md §4.7). Entries WITH a name (TS-014-04-04) are digests of named release assets of the same release (e.g. the adapter binaries); they are verified against the downloaded assets at install and are covered by the same publisher attestation. The digest algorithm is SHA-256 only (PM decision D-01); a release that declares any other algorithm violates the trust baseline."
+                },
+                "attestation": {
+                    "$ref": "#/definitions/attestation"
+                }
+            }
+        },
+        "contentDigest": {
+            "type": "object",
+            "description": "A content digest entry: the algorithm, encoding, and value of one digest over the release content resolved from distribution.location, or over a named release asset of the same release (TS-014-04-04 — e.g. the adapter binaries anvil-adapter-<framework>-<os>-<arch>; the optional name field binds the entry to the asset). The digest is the integrity claim; verification recomputes the hash from the resolved content and compares — a claim is not evidence (Manifesto §3.2, §3.4; artifact-manifest.md §5.1). The digest value is constrained per its declared encoding (if/then constraints): base16 is 64 lowercase hex characters; base32 is the RFC-4648 base32 encoding of a 32-byte SHA-256 digest (52 data characters plus up to 4 padding '=' characters); base64 is the RFC-4648 standard (padded) encoding of a 32-byte digest (43 data characters plus one '=' padding). Every entry — named or not — is covered by the publisher attestation, and the entry's name is SIGNED material: the canonical payload prefixes each named entry's digest bytes with utf8(name) || 0x00 (security review F-2), so a name can be neither stripped (forcing the checksum fallback) nor renamed across assets without invalidating the attestation; named entries are additionally verified against the downloaded asset at install, closing the same-channel-checksum trust gap (TS-016-04-01 §6 accepted risk 1; TS-014-04-04).",
+            "required": [
+                "algorithm",
+                "encoding",
+                "digest"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "algorithm": {
+                    "type": "string",
+                    "enum": [
+                        "sha-256"
+                    ],
+                    "description": "Cryptographic hash algorithm of the content digest. The trust baseline fixes SHA-256 (PM decision D-01); no other algorithm is supported by this version of the schema."
+                },
+                "encoding": {
+                    "type": "string",
+                    "enum": [
+                        "base16",
+                        "base32",
+                        "base64"
+                    ],
+                    "description": "Encoding of the digest value. base16 (hex) is the conventional default for hash digests; base32 and base64 are supported for channel interoperability. base16 digests are lowercase hex. base64 is the RFC-4648 standard alphabet with padding. Follows the artifact-manifest.schema.json identity.contentHash encoding convention."
+                },
+                "digest": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The SHA-256 digest of the release content resolved from distribution.location (unnamed entries) or of the named release asset, in the declared encoding and pinned to the exact length and alphabet of that encoding (if/then constraints): base16 — ^[0-9a-f]{64}$ (lowercase); base32 — ^[A-Z2-7]{52,56}=*$; base64 — ^[A-Za-z0-9+/]{43}=$ (RFC-4648 standard, padded). Must be non-empty: a missing or empty digest means the release has no integrity material and is invalid (ADR-022 §3)."
+                },
+                "name": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "maxLength": 128,
+                    "description": "Optional. Binds the entry to a named release asset of the SAME release (e.g. the adapter binary anvil-adapter-laravel-linux-amd64, TS-014-04-04); absent for content digests of the release content. The name is a safe asset identifier only (^[a-z0-9][a-z0-9-]*$), so it can never escape the release channel as a path component, and it is covered by the publisher attestation (the canonical payload signs utf8(name) || 0x00 || digest bytes — security review F-2). Names must be unique — two entries cannot bind the same asset; uniqueness is enforced by the registry client parser at parse time (draft-07 uniqueItems cannot express per-property uniqueness, so the schema does not carry it). Releases published before binary attestation carry no named entries and remain valid."
+                }
+            },
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "encoding": {
+                                "const": "base16"
+                            }
+                        },
+                        "required": [
+                            "encoding"
+                        ]
+                    },
+                    "then": {
+                        "properties": {
+                            "digest": {
+                                "pattern": "^[0-9a-f]{64}$"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "encoding": {
+                                "const": "base32"
+                            }
+                        },
+                        "required": [
+                            "encoding"
+                        ]
+                    },
+                    "then": {
+                        "properties": {
+                            "digest": {
+                                "pattern": "^[A-Z2-7]{52,56}=*$"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "encoding": {
+                                "const": "base64"
+                            }
+                        },
+                        "required": [
+                            "encoding"
+                        ]
+                    },
+                    "then": {
+                        "properties": {
+                            "digest": {
+                                "pattern": "^[A-Za-z0-9+/]{43}=$"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "attestation": {
+            "type": "object",
+            "description": "Publisher attestation (ADR-022 §3): the release carries attestation from its publisher, sufficient to establish origin; publishing with sufficient attestation is a standard responsibility (ADR-022 §3, §5.6). The attestation is an Ed25519 signature over a canonical payload that binds the release claims (id, version) together with the content digest(s) — not over content alone — so the signature cannot be detached and replayed against a different release of the same content (PM decision: attestation payload scope). The signed payload is the canonical byte-level composition: utf8(id) || 0x00 || utf8(version) || 0x00 || concat(entry bytes in contentDigests array order) — where 0x00 is a single NUL byte, utf8(x) is the UTF-8 encoding of field x, and each entry contributes its decoded digest bytes (base16 = lowercase hex, base32 = RFC-4648, base64 = RFC-4648 standard with padding), prefixed by utf8(name) || 0x00 when the entry carries a name — the asset binding is signed material (security review F-2). Consumers verify the signature over exactly these bytes, byte-for-byte; any deviation in the composition invalidates the attestation. Key rotation is out of scope for this version: a single verification key, no key identifiers. Exact verification mechanics are EPIC-014 implementation scope; the format fields and payload composition are fixed here.",
+            "required": [
+                "algorithm",
+                "signature",
+                "publicKey"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "algorithm": {
+                    "type": "string",
+                    "enum": [
+                        "ed25519"
+                    ],
+                    "description": "Signature algorithm of the publisher attestation. The trust baseline fixes Ed25519 (PM decision D-01); no other algorithm is supported by this version of the schema."
+                },
+                "signature": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The Ed25519 signature over the canonical attestation payload (utf8(id) || 0x00 || utf8(version) || 0x00 || concat(decoded digest bytes in contentDigests array order)), base64-encoded (RFC-4648 standard, padded). A missing or empty signature means the release carries no publisher attestation and is rejected (ADR-022 §3; ADR-023 §3: adoption-time validation checks trust attestation and integrity)."
+                },
+                "publicKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The publisher's Ed25519 verification public key, base64-encoded (RFC-4648 standard, padded): the key that verifies the attestation signature. Carried in the metadata document so attestation is self-contained and re-checkable at adoption (ADR-022 §3; ADR-023 §3). A missing or empty public key makes the attestation unverifiable and the release invalid."
+                }
+            }
+        },
+        "skill": {
+            "type": "object",
+            "description": "One skill declaration in the optional additive skills section (TS-021-04; ADR-037 D2): a standard's per-skill asset. The skill content is distributed as a named release asset of the same release (the physical file, e.g. anvil-skill-<name>-<version>.tar.gz, bound to a safe asset identifier such as anvil-skill-overview-1-0-0), declared here with its name, version, and asset, and covered by an attested named digest entry in trust.contentDigests (TS-014-04-04). The asset name is a safe identifier (no dots or slashes), so it can never escape the release channel as a path component — the asset binding is enforced by the registry client parser at parse time because draft-07 cannot express an array cross-reference (the same precedent as the contentDigests name-uniqueness rule). The section is additive-only and optional: a release without skills[] is valid and behaves exactly as before; older parsers tolerate the section as an unknown-but-optional addition within the deprecation window (forward-compat decision, registry-metadata.md §4.8). The declaration shape is strict — malformed declarations (invalid name, missing asset, invalid or unbound digest) are rejected with actionable errors.",
+            "required": [
+                "name",
+                "version",
+                "asset"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "maxLength": 64,
+                    "description": "Skill name: the install target of anvil skill install and the namespace component of skills/<standard-id>/<name> (ADR-037 §7). Safe identifier only (^[a-z0-9][a-z0-9-]*$, at most 64 characters — the corpus id convention); the pattern rejects traversal-style separators (dots, slashes, path separators). Names must be unique within one release; uniqueness is enforced by the registry client parser at parse time (draft-07 uniqueItems cannot express per-property uniqueness)."
+                },
+                "version": {
+                    "type": "string",
+                    "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+                    "maxLength": 64,
+                    "description": "Skill version, semver (major.minor.patch) without leading zeros. Skills are versioned content — the version is part of the per-skill asset name anvil-skill-<name>-<version>.tar.gz and the recorded identity in the installed-skills store."
+                },
+                "asset": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "maxLength": 128,
+                    "description": "Safe identifier of the release asset carrying the skill content (e.g. anvil-skill-overview-1-0-0; the physical file, e.g. anvil-skill-<name>-<version>.tar.gz, is bound to the identifier by the release pipeline). Safe asset identifier only (^[a-z0-9][a-z0-9-]*$, at most 128 characters, no dots or slashes), so it can never escape the release channel as a path component. The asset must be covered by an attested named digest entry in trust.contentDigests (TS-014-04-04; ADR-037 D2) — the binding is enforced by the registry client parser at parse time; an undeclared or unbound asset is rejected."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Optional human-readable description of the skill (what the agent gains by loading it). Advisory annotation; no validation semantics beyond being a string."
+                }
+            }
+        }
+    }
+}

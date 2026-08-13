@@ -1,0 +1,53 @@
+{
+    "$schema": "urn:anvil:spec:lifecycle-model:1.0.0",
+    "id": "negative-installation-creates-not-ready",
+    "contractVersion": "1.0.0",
+    "title": "Negative: installation creates a Release not in Ready",
+    "description": "Violates §6.3 / ADR-003 §4: installation is an operation, not a state-machine transition, and it creates a Runtime Release directly in Ready from a verified Artifact. Declaring that installation creates a Release in any other state (here 'Activating') is rejected — there is no separate public Release creation operation and Ready is the only entry state.",
+    "states": {
+        "Ready": {
+            "transitions": ["Activating", "Archived", "Removed"]
+        },
+        "Activating": {
+            "transitions": ["Active", "Rolling Back", "Failed"]
+        },
+        "Active": {
+            "transitions": ["Rolling Back", "Archived"]
+        },
+        "Rolling Back": {
+            "transitions": ["Rolled Back", "Failed"]
+        },
+        "Rolled Back": {
+            "transitions": ["Archived", "Removed"]
+        },
+        "Archived": {
+            "transitions": ["Active", "Removed"]
+        },
+        "Failed": {
+            "transitions": ["Ready", "Archived", "Removed"]
+        },
+        "Removed": {
+            "transitions": []
+        }
+    },
+    "activation": {
+        "phaseSequence": "prepare,configure,migrate,verify,promote",
+        "verify": {
+            "checks": []
+        }
+    },
+    "rollback": {
+        "targetSelection": "newest-archived-previously-active",
+        "targetState": "Archived"
+    },
+    "installation": {
+        "operation": "install",
+        "createsState": "Activating",
+        "isStateTransition": false
+    },
+    "invariants": {
+        "oneActiveRelease": true,
+        "activationIsAtomic": true,
+        "interruptedIsNotAState": true
+    }
+}

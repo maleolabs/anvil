@@ -1,0 +1,90 @@
+{
+    "$schema": "urn:anvil:spec:verification-contract:1.0.0",
+    "id": "anvil-standard-rails-verification-full",
+    "contractVersion": "1.0.0",
+    "title": "Full verification declaration (positive fixture)",
+    "description": "Positive fixture: a conforming verification declaration. Affirms the complete gate set (G1–G6) and the no-op gate nuance (emptyDeclarationKeepsGate), and the complete evidence requirement set (E1–E5). Declares five checks in the two contract categories — structural (rails-lockfile-present, rails-config-files-present) and lifecycle-conformity (rails-shared-resource-wiring, rails-migrations-before-promotion, rails-queue-restart-on-promotion) — each with a per-check evidence declaration (recheckable, embeddedOrRecorded, recorded). Binds them to the two fixed gate positions: the Verify stage (structural and lifecycle-conformity checks follow the integrity gate, artifact-manifest.md §5.2) and the verify phase (immediately before the atomic promotion, lifecycle-model.md §5.1).",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [
+        {
+            "id": "rails-lockfile-present",
+            "category": "structural",
+            "description": "The artifact contains the framework lockfile.",
+            "evidence": {
+                "recheckable": true,
+                "embeddedOrRecorded": true,
+                "recorded": true
+            }
+        },
+        {
+            "id": "rails-config-files-present",
+            "category": "structural",
+            "description": "The artifact contains the framework configuration files.",
+            "evidence": {
+                "recheckable": true,
+                "embeddedOrRecorded": true,
+                "recorded": true
+            }
+        },
+        {
+            "id": "rails-shared-resource-wiring",
+            "category": "lifecycle-conformity",
+            "description": "Shared resources are wired at the declared lifecycle point.",
+            "evidence": {
+                "recheckable": true,
+                "embeddedOrRecorded": true,
+                "recorded": true
+            }
+        },
+        {
+            "id": "rails-migrations-before-promotion",
+            "category": "lifecycle-conformity",
+            "description": "Migrations are timed relative to promotion.",
+            "evidence": {
+                "recheckable": true,
+                "embeddedOrRecorded": true,
+                "recorded": true
+            }
+        },
+        {
+            "id": "rails-queue-restart-on-promotion",
+            "category": "lifecycle-conformity",
+            "description": "The queue restarts on promotion.",
+            "evidence": {
+                "recheckable": true,
+                "embeddedOrRecorded": true,
+                "recorded": true
+            }
+        }
+    ],
+    "positions": {
+        "verifyStage": {
+            "checks": [
+                "rails-lockfile-present",
+                "rails-config-files-present",
+                "rails-shared-resource-wiring"
+            ]
+        },
+        "verifyPhase": {
+            "checks": [
+                "rails-migrations-before-promotion",
+                "rails-queue-restart-on-promotion"
+            ]
+        }
+    }
+}

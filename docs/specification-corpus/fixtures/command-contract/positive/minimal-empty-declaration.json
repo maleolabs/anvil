@@ -1,0 +1,48 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "anvil-standard-rails-command-contract-minimal-empty",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Minimal empty command contract declaration (positive fixture)",
+    "description": "Positive fixture: a conforming command contract declaration that declares nothing in any capability category — no lifecycle phases, no verification checks, no config extensions, no templates. A standard may declare nothing in a category, or nothing at all; the runtime proceeds with its generic operations for the lifecycle positions the standard does not cover (command-contract.md §4.1). The activation sequence is exactly prepare, configure, verify, promote — zero framework phases — with verify fixed immediately before promote. The verification exchange remains at the fixed 'verify' position with zero declared checks: a no-op gate, not an open door (verification-contract.md §4.4). The full exchange rule set C1–C7 plus the declared-surface bound (emptyDeclarationProceedsWithGenericOperations) is affirmed as the contract floor.",
+    "capability": {
+        "lifecyclePhases": [],
+        "verificationChecks": [],
+        "configExtensions": [],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

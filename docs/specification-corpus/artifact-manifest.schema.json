@@ -1,0 +1,178 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "urn:anvil:spec:artifact-manifest:1.0.0",
+    "title": "Artifact Manifest — Delivery Lifecycle Specification (ANVIL)",
+    "description": "Machine-readable authority for the artifact manifest contract, corpus document 'artifact-manifest' (TS-013-02-02; human-readable counterpart TS-013-02-01). Encodes: content-derived identity (artifact identity is a cryptographic hash of the artifact's payload, excluding the manifest itself — artifact-manifest.md §4.1), embedded manifest (the manifest is carried inside the artifact at a schema-defined location; declares identity, contract version, and evidence — §4.2), deterministic output (identical inputs produce byte-identical artifacts; fail rather than produce non-deterministic output — §4.3), filenames/paths carry no identity (identity is invariant under rename/relocation — §4.4), and verification-before-trust (artifact verified for integrity before any lifecycle operation consumes it — §5). The hash algorithm and encoding are declared in the manifest; the specific algorithm is an implementation choice constrained by the enum in identity.contentHash.algorithm. Where this schema and artifact-manifest.md disagree, the schema governs (ADR-029 §3).",
+    "$comment": "Dialect: draft-07, chosen for the widest validator support (python jsonschema, ajv, and mature independent implementations) — maximizing engine-path-independence per ADR-029 §3 and Transition Plan §5.10; no draft-2020-12-only feature is required. Version line (ADR-024 §3.1): the specification carries its own semver line decoupled from runtime releases; the contract major version is the unit of compatibility. This document is corpus version 1.0.0. A breaking change to this contract is a governed event requiring an ADR and shipping with a Core major version (ADR-035 §3.1); specification artifacts publish via the spec/ tag line (ADR-024 §3.5). $id is a stable URN — it references the corpus document (artifact-manifest) on its version line and is independent of engine or repository paths; resolvable publication URL mechanics are EPIC-013 scope.",
+    "type": "object",
+    "required": [
+        "id",
+        "contractVersion",
+        "identity",
+        "manifestLocation",
+        "verificationEvidence",
+        "invariants"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "Optional declaration of the schema this manifest targets (the $id of artifact-manifest.schema.json)."
+        },
+        "title": {
+            "type": "string",
+            "description": "Optional human-readable title of the artifact manifest."
+        },
+        "description": {
+            "type": "string",
+            "description": "Optional human-readable description of the artifact manifest."
+        },
+        "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$",
+            "description": "Stable identifier of the artifact manifest. Follows the same convention as lifecycle-model.schema.json: lowercase alphanumeric with hyphens. The id is a manifest-level identifier, distinct from the content-derived identity (identity.contentHash.digest) which identifies the artifact's payload content."
+        },
+        "contractVersion": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+            "description": "Target contract version of the delivery lifecycle specification (ADR-024 §3.1): semver, decoupled from runtime releases; major version is the compatibility unit. A manifest that declares an unsupported contract version makes the artifact invalid; the runtime rejects it before any lifecycle operation (artifact-manifest.md §4.2)."
+        },
+        "identity": {
+            "$ref": "#/definitions/identity"
+        },
+        "manifestLocation": {
+            "$ref": "#/definitions/manifestLocation"
+        },
+        "verificationEvidence": {
+            "$ref": "#/definitions/verificationEvidence"
+        },
+        "invariants": {
+            "$ref": "#/definitions/invariants"
+        }
+    },
+    "definitions": {
+        "identity": {
+            "type": "object",
+            "description": "Content-derived identity (artifact-manifest.md §4.1): the artifact's identity is a cryptographic hash of the artifact's payload — the content the artifact carries, excluding the manifest itself. The hash algorithm and encoding are declared here; the schema is the machine-readable authority for the algorithm specification. The same artifact installed twice is one release, not two — identity comes from content, not from names or paths (§4.4). Identity derivation rule: the contentHash.digest field IS the artifact's identity; two artifacts with the same digest are the same artifact.",
+            "required": [
+                "contentHash"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "contentHash": {
+                    "type": "object",
+                    "description": "The cryptographic hash that constitutes the artifact's content-derived identity. Derived from the artifact's payload (excluding the manifest). The same content always produces the same digest — deterministic output is a contract invariant (§4.3).",
+                    "required": [
+                        "algorithm",
+                        "encoding",
+                        "digest"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "algorithm": {
+                            "type": "string",
+                            "enum": [
+                                "sha-256",
+                                "sha-384",
+                                "sha-512"
+                            ],
+                            "description": "Cryptographic hash algorithm used to derive the artifact's content identity. The algorithm is an implementation choice from the supported set; the identity derivation rule (content hash = identity) is invariant across algorithms. sha-256 is the default recommendation."
+                        },
+                        "encoding": {
+                            "type": "string",
+                            "enum": [
+                                "base16",
+                                "base32",
+                                "base64"
+                            ],
+                            "description": "Encoding of the digest value. base16 (hex) is the conventional default for hash digests."
+                        },
+                        "digest": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "The hash digest of the artifact's payload (the content the artifact carries, excluding the manifest itself). This value IS the artifact's identity — content-derived, invariant under rename/relocation. The digest must be non-empty; a missing or empty digest means the artifact has no identity and is invalid."
+                        }
+                    }
+                }
+            }
+        },
+        "manifestLocation": {
+            "type": "object",
+            "description": "Embedded manifest location (artifact-manifest.md §4.2): the manifest is carried inside the artifact, not stored separately or referenced externally. The manifest is embedded at a defined, discoverable location within the artifact structure. The exact location is schema-defined here. This ensures the artifact is self-describing: no external registry lookup, no sidecar file, no filesystem convention is required to determine the artifact's identity or verify its integrity.",
+            "required": [
+                "path",
+                "format"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Relative path within the artifact where the manifest is embedded. The path is relative to the artifact root. The manifest travels with the artifact through every stage of the delivery lifecycle — packaging, distribution, installation, and verification (§4.2)."
+                },
+                "format": {
+                    "type": "string",
+                    "enum": [
+                        "json"
+                    ],
+                    "description": "Serialization format of the embedded manifest. json is the canonical format for the machine-readable authority (ADR-029 §3)."
+                }
+            }
+        },
+        "verificationEvidence": {
+            "type": "object",
+            "description": "Verification evidence (artifact-manifest.md §5): the integrity gate — the artifact is verified for integrity before any lifecycle operation may consume it. Evidence is embedded in the artifact (the manifest), not held in the memory of the verifying process; any consumer can re-verify at any time. A claim is not evidence: the manifest declares the expected hash (identity.contentHash.digest); the verification operation recomputes the hash from the artifact's content and compares. The embedded manifest is the claim; the recomputation is the evidence.",
+            "required": [
+                "verifiedAt",
+                "verifier",
+                "algorithm"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "verifiedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "ISO 8601 timestamp of when the artifact was last verified (the integrity gate passed). Re-verification overwrites this field. Verification is re-checkable: the evidence is embedded in the artifact, not held in the memory of the verifying process (§5.1)."
+                },
+                "verifier": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Identifier of the verifying entity (e.g., runtime version, CI pipeline ID). Informational; does not affect identity or integrity."
+                },
+                "algorithm": {
+                    "type": "string",
+                    "enum": [
+                        "sha-256",
+                        "sha-384",
+                        "sha-512"
+                    ],
+                    "description": "The hash algorithm used during verification. Must match the algorithm declared in identity.contentHash.algorithm — the verification operation recomputes the hash using the same algorithm and compares against identity.contentHash.digest."
+                }
+            }
+        },
+        "invariants": {
+            "type": "object",
+            "description": "Machine invariants declared by a conforming artifact manifest. These invariants encode the contract rules that hold for every artifact produced under this contract (artifact-manifest.md §4). They are encoded as documented constraints using const values, following the lifecycle-model.schema.json convention (isStateTransition pattern).",
+            "required": [
+                "deterministicOutput",
+                "filenamesCarryIdentity",
+                "verificationBeforeTrust"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "deterministicOutput": {
+                    "const": true,
+                    "description": "§4.3 / ADR-004: given identical inputs (source content, manifest contract version, packaging parameters), the packaging operation produces byte-identical output. No timestamps, no random values, no machine-specific data enter the artifact payload or the manifest's content hash. If the packaging operation cannot be made deterministic for a given input set, it fails rather than producing a non-deterministic artifact."
+                },
+                "filenamesCarryIdentity": {
+                    "const": false,
+                    "description": "§4.4 / PRD-002 §5.9: an artifact's identity is determined solely by its content hash. Filenames, directory paths, and other filesystem metadata carry no identity information. The runtime never uses filenames or paths to determine identity, compatibility, or contract version. Packaging operations do not encode identity in the filename."
+                },
+                "verificationBeforeTrust": {
+                    "const": true,
+                    "description": "§5 / PRD-002 §5.3 / Manifesto §3.2: verification is a lifecycle gate, not an optional command. An artifact is verified for integrity before any lifecycle operation — install, activate, or any subsequent stage — may consume it. A manifest that is missing, malformed, or declares an unsupported contract version makes the artifact invalid; the runtime rejects it before any lifecycle operation."
+                }
+            }
+        }
+    }
+}

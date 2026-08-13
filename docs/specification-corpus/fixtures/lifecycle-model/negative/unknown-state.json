@@ -1,0 +1,56 @@
+{
+    "$schema": "urn:anvil:spec:lifecycle-model:1.0.0",
+    "id": "negative-unknown-state",
+    "contractVersion": "1.0.0",
+    "title": "Negative: unknown state declared",
+    "description": "Violates §6.1 (the release state machine has exactly 8 states; a standard does not invent a lifecycle, Manifesto §3.1): the definition declares a state 'Deploying' that is not in the contract state set. The schema rejects it via the states propertyNames enum / additionalProperties.",
+    "states": {
+        "Ready": {
+            "transitions": ["Activating", "Archived", "Removed"]
+        },
+        "Activating": {
+            "transitions": ["Active", "Rolling Back", "Failed"]
+        },
+        "Active": {
+            "transitions": ["Rolling Back", "Archived"]
+        },
+        "Rolling Back": {
+            "transitions": ["Rolled Back", "Failed"]
+        },
+        "Rolled Back": {
+            "transitions": ["Archived", "Removed"]
+        },
+        "Archived": {
+            "transitions": ["Active", "Removed"]
+        },
+        "Failed": {
+            "transitions": ["Ready", "Archived", "Removed"]
+        },
+        "Removed": {
+            "transitions": []
+        },
+        "Deploying": {
+            "transitions": ["Ready"]
+        }
+    },
+    "activation": {
+        "phaseSequence": "prepare,configure,migrate,verify,promote",
+        "verify": {
+            "checks": []
+        }
+    },
+    "rollback": {
+        "targetSelection": "newest-archived-previously-active",
+        "targetState": "Archived"
+    },
+    "installation": {
+        "operation": "install",
+        "createsState": "Ready",
+        "isStateTransition": false
+    },
+    "invariants": {
+        "oneActiveRelease": true,
+        "activationIsAtomic": true,
+        "interruptedIsNotAState": true
+    }
+}
