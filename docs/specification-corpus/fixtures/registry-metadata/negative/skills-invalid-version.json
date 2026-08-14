@@ -1,0 +1,39 @@
+{
+    "description": "Negative fixture (TS-021-04): the skills declaration carries an invalid skill version '1.0' — semver requires three segments (major.minor.patch) without leading zeros. Skills are versioned content pinned at install; a malformed version is rejected.",
+    "id": "anvil-standard-laravel",
+    "version": "1.2.3",
+    "contractVersion": "1.0.0",
+    "capability": {
+        "frameworkVersion": [
+            "5.1.0"
+        ]
+    },
+    "distribution": {
+        "type": "github-releases",
+        "location": "https://github.com/maleolabs/anvil-standard-laravel/releases/download/v1.2.3/anvil-standard-laravel.tar.gz"
+    },
+    "lifecycle": {
+        "state": "published"
+    },
+    "trust": {
+        "contentDigests": [
+            {
+                "algorithm": "sha-256",
+                "encoding": "base16",
+                "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+        ],
+        "attestation": {
+            "algorithm": "ed25519",
+            "signature": "c2lnbmF0dXJlLXZhbHVlLWJhc2U2NC1lbmNvZGVkLWRlbW8tc2lnbmF0dXJlLTEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5",
+            "publicKey": "cHVibGljLWtleS1iYXNlNjQtZW5jb2RlZC1kZW1vLXB1YmxpYy1rZXktMTIzNDU2Nzg5MA=="
+        }
+    },
+    "skills": [
+        {
+            "name": "overview",
+            "version": "1.0",
+            "asset": "anvil-skill-overview-1-0-0"
+        }
+    ]
+}

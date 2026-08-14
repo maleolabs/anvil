@@ -1,0 +1,30 @@
+{
+    "description": "Violates G1 / G4 (verification-contract.md §4.3, §4.4): gates.verificationIsMandatory is declared false — the declaration asserts verification is skippable, weakening a mandatory gate. Verification is a transition that cannot be skipped, not an optional command; a standard adds checks, it never weakens gates. The schema encodes the rejection as a const-true gate declaration: 'false' fails the const.",
+    "id": "negative-gate-weakening-skippable",
+    "contractVersion": "1.0.0",
+    "gates": {
+        "verificationIsMandatory": false,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [],
+    "positions": {
+        "verifyStage": {
+            "checks": []
+        },
+        "verifyPhase": {
+            "checks": []
+        }
+    }
+}

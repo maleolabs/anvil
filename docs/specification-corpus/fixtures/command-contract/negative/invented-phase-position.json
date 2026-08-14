@@ -1,0 +1,60 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "negative-invented-phase-position",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Negative: invented phase position",
+    "description": "Violates C2 / C3 (command-contract.md §4.2; Manifesto §3.1; lifecycle-model.md §5.1): the activation sequence declares a phase 'cleanup' after promote — a position the defined activation sequence (prepare → configure → framework phases → verify → promote) does not have. Promote is the atomic commitment point, last in the sequence; a standard supplies content within the defined lifecycle, it invents neither phases nor positions. The phaseSequence pattern rejects the post-promote phase.",
+    "capability": {
+        "lifecyclePhases": [
+            {
+                "id": "migrate",
+                "description": "Applies the framework's database migrations.",
+                "failureSemantics": {
+                    "failureMeaningDeclared": true
+                },
+                "rollbackSemantics": {
+                    "reversalDeclared": true,
+                    "irreversible": false
+                }
+            }
+        ],
+        "verificationChecks": [],
+        "configExtensions": [],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,migrate,verify,promote,cleanup"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

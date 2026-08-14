@@ -1,0 +1,33 @@
+{
+    "description": "Violates §4.6 / cross-field constraint: the lifecycle object carries a removalDate while the state is 'published'. The removal date is only allowed on the deprecated state (if/then constraint): it announces the removal of a Deprecated standard (ADR-023 §3; ADR-027 §3) and has no meaning for a published or retired entry. The else branch (removalDate: false) rejects it.",
+    "id": "anvil-standard-laravel",
+    "version": "1.2.3",
+    "contractVersion": "1.0.0",
+    "capability": {
+        "frameworkVersion": [
+            "5.1.0"
+        ]
+    },
+    "distribution": {
+        "type": "github-releases",
+        "location": "https://github.com/maleolabs/anvil-standard-laravel/releases/download/v1.2.3/anvil-standard-laravel.tar.gz"
+    },
+    "lifecycle": {
+        "state": "published",
+        "removalDate": "2027-01-31T00:00:00Z"
+    },
+    "trust": {
+        "contentDigests": [
+            {
+                "algorithm": "sha-256",
+                "encoding": "base16",
+                "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+        ],
+        "attestation": {
+            "algorithm": "ed25519",
+            "signature": "c2lnbmF0dXJlLXZhbHVlLWJhc2U2NC1lbmNvZGVkLWRlbW8tc2lnbmF0dXJlLTEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5",
+            "publicKey": "cHVibGljLWtleS1iYXNlNjQtZW5jb2RlZC1kZW1vLXB1YmxpYy1rZXktMTIzNDU2Nzg5MA=="
+        }
+    }
+}

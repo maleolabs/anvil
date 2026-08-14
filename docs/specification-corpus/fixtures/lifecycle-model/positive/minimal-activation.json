@@ -1,0 +1,53 @@
+{
+    "$schema": "urn:anvil:spec:lifecycle-model:1.0.0",
+    "id": "anvil-release-lifecycle-minimal-activation",
+    "contractVersion": "1.0.0",
+    "title": "Minimal-activation lifecycle definition",
+    "description": "Positive fixture: a conforming lifecycle definition with an activation that declares zero framework phases (0..n permitted) and an empty verify (zero declared checks — the phase is a no-op gate). The sequence is exactly prepare, configure, verify, promote, with verify fixed immediately before promote. The state machine is the full 8-state contract machine.",
+    "states": {
+        "Ready": {
+            "transitions": ["Activating", "Archived", "Removed"]
+        },
+        "Activating": {
+            "transitions": ["Active", "Rolling Back", "Failed"]
+        },
+        "Active": {
+            "transitions": ["Rolling Back", "Archived"]
+        },
+        "Rolling Back": {
+            "transitions": ["Rolled Back", "Failed"]
+        },
+        "Rolled Back": {
+            "transitions": ["Archived", "Removed"]
+        },
+        "Archived": {
+            "transitions": ["Active", "Removed"]
+        },
+        "Failed": {
+            "transitions": ["Ready", "Archived", "Removed"]
+        },
+        "Removed": {
+            "transitions": []
+        }
+    },
+    "activation": {
+        "phaseSequence": "prepare,configure,verify,promote",
+        "verify": {
+            "checks": []
+        }
+    },
+    "rollback": {
+        "targetSelection": "newest-archived-previously-active",
+        "targetState": "Archived"
+    },
+    "installation": {
+        "operation": "install",
+        "createsState": "Ready",
+        "isStateTransition": false
+    },
+    "invariants": {
+        "oneActiveRelease": true,
+        "activationIsAtomic": true,
+        "interruptedIsNotAState": true
+    }
+}

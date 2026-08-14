@@ -1,0 +1,20 @@
+{
+    "description": "Violates §4.2 / required field: the manifest is missing the contractVersion field entirely. A manifest that declares an unsupported or missing contract version makes the artifact invalid; the runtime rejects it before any lifecycle operation (artifact-manifest.md §4.2). The contract version (ADR-024 §3.1) is semver, decoupled from runtime releases; major version is the compatibility unit. Without contractVersion, the runtime cannot determine which contract the manifest conforms to, and the artifact cannot enter any lifecycle stage.",
+    "id": "negative-missing-contract-version",
+    "identity": {
+        "contentHash": {
+            "algorithm": "sha-256",
+            "encoding": "base16",
+            "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+    },
+    "manifestLocation": {
+        "path": ".anvil/manifest.json",
+        "format": "json"
+    },
+    "verificationEvidence": {
+        "verifiedAt": "2026-08-04T12:00:00Z",
+        "verifier": "anvil-runtime-v2.0.0",
+        "algorithm": "sha-256"
+    }
+}

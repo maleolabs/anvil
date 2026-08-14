@@ -1,0 +1,56 @@
+{
+    "$schema": "urn:anvil:spec:lifecycle-model:1.0.0",
+    "id": "negative-interrupted-state",
+    "contractVersion": "1.0.0",
+    "title": "Negative: 'interrupted' declared as a state",
+    "description": "Violates the §6.1 note and ADR-003 §4: there is NO 'interrupted' state in the machine — the 8 states are Ready, Activating, Active, Rolling Back, Rolled Back, Archived, Failed, Removed; interruptions are handled by the recovery rules applied to the last persisted stage (§6.5), never by a dedicated state. The schema rejects the declaration of an 'interrupted' state.",
+    "states": {
+        "Ready": {
+            "transitions": ["Activating", "Archived", "Removed"]
+        },
+        "Activating": {
+            "transitions": ["Active", "Rolling Back", "Failed"]
+        },
+        "Active": {
+            "transitions": ["Rolling Back", "Archived"]
+        },
+        "Rolling Back": {
+            "transitions": ["Rolled Back", "Failed"]
+        },
+        "Rolled Back": {
+            "transitions": ["Archived", "Removed"]
+        },
+        "Archived": {
+            "transitions": ["Active", "Removed"]
+        },
+        "Failed": {
+            "transitions": ["Ready", "Archived", "Removed"]
+        },
+        "Removed": {
+            "transitions": []
+        },
+        "interrupted": {
+            "transitions": ["Active", "Failed"]
+        }
+    },
+    "activation": {
+        "phaseSequence": "prepare,configure,migrate,verify,promote",
+        "verify": {
+            "checks": []
+        }
+    },
+    "rollback": {
+        "targetSelection": "newest-archived-previously-active",
+        "targetState": "Archived"
+    },
+    "installation": {
+        "operation": "install",
+        "createsState": "Ready",
+        "isStateTransition": false
+    },
+    "invariants": {
+        "oneActiveRelease": true,
+        "activationIsAtomic": true,
+        "interruptedIsNotAState": true
+    }
+}

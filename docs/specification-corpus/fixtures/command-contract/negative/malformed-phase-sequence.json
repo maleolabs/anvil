@@ -1,0 +1,60 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "negative-malformed-phase-sequence",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Negative: activation sequence omits verify",
+    "description": "Violates command-contract.md §4.2 / lifecycle-model.md §5.1: the activation sequence omits verify — 'verify' is the fixed contract-level position immediately before the atomic promotion; the sequence must end prepare, ..., verify, promote. Omitting verify removes the gate position from the declared sequence. The phaseSequence pattern rejects the sequence.",
+    "capability": {
+        "lifecyclePhases": [
+            {
+                "id": "migrate",
+                "description": "Applies the framework's database migrations.",
+                "failureSemantics": {
+                    "failureMeaningDeclared": true
+                },
+                "rollbackSemantics": {
+                    "reversalDeclared": true,
+                    "irreversible": false
+                }
+            }
+        ],
+        "verificationChecks": [],
+        "configExtensions": [],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,migrate,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

@@ -1,0 +1,42 @@
+{
+    "description": "Violates E3 / E4 (verification-contract.md §5.3–§5.4): a declared check's evidence omits 'recorded'. Verification outcomes merge into the runtime's verification report and are recorded as lifecycle evidence — part of the persisted, queryable, authoritative lifecycle state from which decisions derive. A check whose evidence is not recorded cannot be re-checked by any consumer afterward; the required evidence declaration rejects the omission.",
+    "id": "negative-malformed-evidence",
+    "contractVersion": "1.0.0",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [
+        {
+            "id": "rails-config-files-present",
+            "category": "structural",
+            "description": "The artifact contains the framework configuration files.",
+            "evidence": {
+                "recheckable": true,
+                "embeddedOrRecorded": true
+            }
+        }
+    ],
+    "positions": {
+        "verifyStage": {
+            "checks": [
+                "rails-config-files-present"
+            ]
+        },
+        "verifyPhase": {
+            "checks": []
+        }
+    }
+}

@@ -1,0 +1,292 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "urn:anvil:spec:lifecycle-model:1.0.0",
+    "title": "Lifecycle Model — Delivery Lifecycle Specification (ANVIL)",
+    "description": "Machine-readable authority for the delivery lifecycle model, corpus document 'lifecycle-model' (TS-013-01-02; human-readable counterpart TS-013-01-01). Encodes: the 8-state release state machine with per-edge transition legality (lifecycle-model.md §6.1, §6.4; ADR-003 §4), the activation phase sequence with verify fixed immediately before promote (§5.1; ADR-003 §6.4), rollback target eligibility (R5, §5.2; ADR-003 §7.1, §7.3), installation as an operation creating a Release in Ready rather than a state transition (§6.3; ADR-003 §4), and the machine invariants (R3, R4; ADR-003 §9.1; §6.1 note). Where this schema and lifecycle-model.md disagree, the schema governs (ADR-029 §3).",
+    "$comment": "Dialect: draft-07, chosen for the widest validator support (python jsonschema, ajv, and mature independent implementations) — maximizing engine-path-independence per ADR-029 §3 and Transition Plan §5.10; no draft-2020-12-only feature is required. Version line (ADR-024 §3.1): the specification carries its own semver line decoupled from runtime releases; the contract major version is the unit of compatibility. This document is corpus version 1.0.0. A breaking change to this model is a governed event requiring an ADR and shipping with a Core major version (ADR-035 §3.1); specification artifacts publish via the spec/ tag line (ADR-024 §3.5). $id is a stable URN — it references the corpus document (lifecycle-model) on its version line and is independent of engine or repository paths; resolvable publication URL mechanics are EPIC-013 scope.",
+    "type": "object",
+    "required": [
+        "id",
+        "contractVersion",
+        "states",
+        "activation",
+        "rollback",
+        "installation",
+        "invariants"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "Optional declaration of the schema this lifecycle definition targets (the $id of lifecycle-model.schema.json)."
+        },
+        "title": {
+            "type": "string",
+            "description": "Optional human-readable title of the lifecycle definition."
+        },
+        "description": {
+            "type": "string",
+            "description": "Optional human-readable description of the lifecycle definition."
+        },
+        "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$",
+            "description": "Stable identifier of the lifecycle definition."
+        },
+        "contractVersion": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+            "description": "Target contract version of the delivery lifecycle specification (ADR-024 §3.1): semver, decoupled from runtime releases; major version is the compatibility unit."
+        },
+        "states": {
+            "type": "object",
+            "description": "The release state machine (lifecycle-model.md §6.1; ADR-003 §4): exactly the 8 contract states; each state declares its legal outgoing transitions per §6.4. There is no 'interrupted' state — recovery is a rule set applied to the last persisted stage (§6.5), not a state.",
+            "required": [
+                "Ready",
+                "Activating",
+                "Active",
+                "Rolling Back",
+                "Rolled Back",
+                "Archived",
+                "Failed",
+                "Removed"
+            ],
+            "propertyNames": {
+                "enum": [
+                    "Ready",
+                    "Activating",
+                    "Active",
+                    "Rolling Back",
+                    "Rolled Back",
+                    "Archived",
+                    "Failed",
+                    "Removed"
+                ],
+                "description": "Only the 8 contract states may be declared; invented states (e.g. 'interrupted') are rejected (ADR-003 §4; lifecycle-model.md §6.1 note)."
+            },
+            "additionalProperties": false,
+            "properties": {
+                "Ready": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/stateEntry"
+                        },
+                        {
+                            "properties": {
+                                "transitions": {
+                                    "const": ["Activating", "Archived", "Removed"],
+                                    "description": "Legal targets from Ready (§6.4): activation requested, set aside without activation, or deleted before activation. The edge set is fixed — omitting a legal edge is non-conforming (ADR-003 §4)."
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Activating": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/stateEntry"
+                        },
+                        {
+                            "properties": {
+                                "transitions": {
+                                    "const": ["Active", "Rolling Back", "Failed"],
+                                    "description": "Legal targets from Activating (§6.4): promotion commits, activation failed with rollback, or activation failed without rollback. The edge set is fixed — omitting a legal edge is non-conforming (ADR-003 §4)."
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Active": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/stateEntry"
+                        },
+                        {
+                            "properties": {
+                                "transitions": {
+                                    "const": ["Rolling Back", "Archived"],
+                                    "description": "Legal targets from Active (§6.4): rollback requested, or archived (automatic when a new Release is activated; explicit when retired). The edge set is fixed — omitting a legal edge is non-conforming (ADR-003 §4)."
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Rolling Back": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/stateEntry"
+                        },
+                        {
+                            "properties": {
+                                "transitions": {
+                                    "const": ["Rolled Back", "Failed"],
+                                    "description": "Legal targets from Rolling Back (§6.4): rollback completed as a forward transition, or rollback failed. The edge set is fixed — omitting a legal edge is non-conforming (ADR-003 §4)."
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Rolled Back": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/stateEntry"
+                        },
+                        {
+                            "properties": {
+                                "transitions": {
+                                    "const": ["Archived", "Removed"],
+                                    "description": "Legal targets from Rolled Back (§6.4): preserved for reference, or deleted. The edge set is fixed — omitting a legal edge is non-conforming (ADR-003 §4)."
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Archived": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/stateEntry"
+                        },
+                        {
+                            "properties": {
+                                "transitions": {
+                                    "const": ["Active", "Removed"],
+                                    "description": "Legal targets from Archived (§6.4): rollback restore — the forward transition rollback executes on the target (R5; ADR-003 §7.1, §7.3) — or explicit cleanup. The edge set is fixed — omitting a legal edge is non-conforming (ADR-003 §4)."
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Failed": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/stateEntry"
+                        },
+                        {
+                            "properties": {
+                                "transitions": {
+                                    "const": ["Ready", "Archived", "Removed"],
+                                    "description": "Legal targets from Failed (§6.4): retry activation after verification passed (recoverable), retired after failure, or deleted after failure. The edge set is fixed — omitting a legal edge is non-conforming (ADR-003 §4)."
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Removed": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/stateEntry"
+                        },
+                        {
+                            "properties": {
+                                "transitions": {
+                                    "const": [],
+                                    "description": "Removed is the terminal state (§6.4; ADR-003 §4.10): no further transitions — the transition list must be empty."
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "activation": {
+            "type": "object",
+            "description": "The activation phase sequence (lifecycle-model.md §5.1; ADR-003 §6.4): prepare → configure → framework phases (0..n declared) → verify (immediately before promote, may be empty) → promote. The phase sequence is defined by the Specification; phase content is declared by the standard.",
+            "required": ["phaseSequence", "verify"],
+            "additionalProperties": false,
+            "properties": {
+                "phaseSequence": {
+                    "type": "string",
+                    "pattern": "^prepare,configure(,((?!prepare|Prepare|configure|Configure|verify|Verify|promote|Promote)[^,]+))*,verify,promote$",
+                    "description": "Comma-separated declaration of the full phase sequence in execution order. Fixed positions: 'prepare' first, 'configure' second, 'verify' immediately before 'promote', 'promote' last (the atomic commitment point). Between configure and verify, 0..n declared framework phases may appear. Framework phase names must not collide with reserved phase names (case-insensitive); a sequence that omits promote, reorders prepare/configure, or places verify after promote is rejected."
+                },
+                "verify": {
+                    "type": "object",
+                    "description": "Declared verify content. Verify occupies the fixed position immediately before promote; a standard may declare zero checks, in which case the phase is a no-op gate (§5.1).",
+                    "required": ["checks"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "checks": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "description": "Declared verify checks (may be empty)."
+                        }
+                    }
+                }
+            }
+        },
+        "rollback": {
+            "type": "object",
+            "description": "Rollback is a first-class lifecycle operation, not a reverse activation (§5.2; ADR-003 §7): it restores the previously active Release by a forward transition and preserves the rolled-back Release for inspection. Legality is defined by state (R5).",
+            "required": ["targetSelection", "targetState"],
+            "additionalProperties": false,
+            "properties": {
+                "targetSelection": {
+                    "const": "newest-archived-previously-active",
+                    "description": "R5 / §5.2 operational definition: the rollback target is the Archived Release with the newest archival timestamp among Releases that were previously Active."
+                },
+                "targetState": {
+                    "const": "Archived",
+                    "description": "R5 / §5.2: the rollback target must be in state Archived — the state every superseded Active Release enters when a new Release is activated. Any other target state is rejected."
+                }
+            }
+        },
+        "installation": {
+            "type": "object",
+            "description": "Installation is an operation, not a state-machine transition (§6.3; ADR-003 §4): it creates a Release directly in Ready from a verified Artifact; it does not move an existing Release. Activation targets the resulting Release, never an uploaded Artifact.",
+            "required": ["operation", "createsState", "isStateTransition"],
+            "additionalProperties": false,
+            "properties": {
+                "operation": {
+                    "const": "install",
+                    "description": "The only lifecycle operation that creates a Release (§6.3)."
+                },
+                "createsState": {
+                    "const": "Ready",
+                    "description": "Installation creates the Release in state Ready (§6.3; ADR-003 §4)."
+                },
+                "isStateTransition": {
+                    "const": false,
+                    "description": "Installation creates a Release, it does not transition one (§6.3)."
+                }
+            }
+        },
+        "invariants": {
+            "type": "object",
+            "description": "Machine invariants declared by a conforming lifecycle definition. These invariants hold at all times (ADR-003 §9) and are encoded here as documented constraints because they span Releases and cannot be checked on a single definition document.",
+            "required": ["oneActiveRelease", "activationIsAtomic", "interruptedIsNotAState"],
+            "additionalProperties": false,
+            "properties": {
+                "oneActiveRelease": {
+                    "const": true,
+                    "description": "R3 / ADR-003 §9.1: at any time, at most one Release is in the Active state; when a new Release is activated, the previously active Release automatically becomes Archived."
+                },
+                "activationIsAtomic": {
+                    "const": true,
+                    "description": "R4 / §5.1: activation is atomic from the observer's perspective — either the new Release serves, or the previous one still does; nothing after the commitment point is assumed."
+                },
+                "interruptedIsNotAState": {
+                    "const": true,
+                    "description": "§6.1 note, §6.5: there is no 'interrupted' state in the machine; interruptions are recorded and reconciled explicitly by the recovery rules."
+                }
+            }
+        }
+    },
+    "definitions": {
+        "stateEntry": {
+            "type": "object",
+            "description": "A state entry: the list of legal outgoing transitions.",
+            "required": ["transitions"],
+            "additionalProperties": false,
+            "properties": {
+                "transitions": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "description": "Legal outgoing transitions from this state (lifecycle-model.md §6.4)."
+                }
+            }
+        }
+    }
+}

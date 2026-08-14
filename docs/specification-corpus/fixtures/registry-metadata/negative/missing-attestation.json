@@ -1,0 +1,27 @@
+{
+    "description": "Violates §4.7 / required field: the trust object is missing the publisher attestation (attestation) entirely. Standards carry attestation from their publisher, sufficient to establish origin; publishing with sufficient attestation is a standard responsibility (ADR-022 §3, §5.6). Adoption-time validation checks trust attestation and integrity (ADR-023 §3); a release without attestation is rejected.",
+    "id": "anvil-standard-laravel",
+    "version": "1.2.3",
+    "contractVersion": "1.0.0",
+    "capability": {
+        "frameworkVersion": [
+            "5.1.0"
+        ]
+    },
+    "distribution": {
+        "type": "github-releases",
+        "location": "https://github.com/maleolabs/anvil-standard-laravel/releases/download/v1.2.3/anvil-standard-laravel.tar.gz"
+    },
+    "lifecycle": {
+        "state": "published"
+    },
+    "trust": {
+        "contentDigests": [
+            {
+                "algorithm": "sha-256",
+                "encoding": "base16",
+                "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+        ]
+    }
+}

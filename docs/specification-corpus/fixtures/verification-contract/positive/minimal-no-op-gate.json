@@ -1,0 +1,32 @@
+{
+    "$schema": "urn:anvil:spec:verification-contract:1.0.0",
+    "id": "anvil-standard-verification-minimal-no-op",
+    "contractVersion": "1.0.0",
+    "title": "Minimal no-op-gate verification declaration (positive fixture)",
+    "description": "Positive fixture: a conforming verification declaration that declares zero verification checks. Declaring no content does not open the gate: the gate positions remain and the gates remain — a no-op gate, not an open door (§4.4; lifecycle-model.md §5.1). The complete gate set (G1–G6 + emptyDeclarationKeepsGate) and evidence requirement set (E1–E5) are affirmed as the contract floor, the checks array is empty, and both position bindings (Verify stage, verify phase) declare empty check lists.",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [],
+    "positions": {
+        "verifyStage": {
+            "checks": []
+        },
+        "verifyPhase": {
+            "checks": []
+        }
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "description": "Violates the declaration shape (verification-contract.md §6.2; Manifesto §7): a declared check has an empty id. Checks are declared capability referenced by position bindings and lifecycle definitions; an empty identifier is not a declared capability — the runtime could never invoke a check it cannot name. The id pattern rejects the empty string.",
+    "id": "negative-empty-check-id",
+    "contractVersion": "1.0.0",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [
+        {
+            "id": "",
+            "category": "structural",
+            "description": "The artifact contains the framework lockfile.",
+            "evidence": {
+                "recheckable": true,
+                "embeddedOrRecorded": true,
+                "recorded": true
+            }
+        }
+    ],
+    "positions": {
+        "verifyStage": {
+            "checks": []
+        },
+        "verifyPhase": {
+            "checks": []
+        }
+    }
+}

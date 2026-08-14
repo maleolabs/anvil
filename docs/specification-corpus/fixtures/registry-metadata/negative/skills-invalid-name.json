@@ -1,0 +1,39 @@
+{
+    "description": "Negative fixture (TS-021-04): the skills declaration carries an invalid skill name 'Bad.Name' — dots are traversal-style separators rejected by the name pattern ^[a-z0-9][a-z0-9-]*$ (the corpus id convention; ADR-037 §7). Malformed skill declarations are rejected with actionable errors; core fields stay strict.",
+    "id": "anvil-standard-laravel",
+    "version": "1.2.3",
+    "contractVersion": "1.0.0",
+    "capability": {
+        "frameworkVersion": [
+            "5.1.0"
+        ]
+    },
+    "distribution": {
+        "type": "github-releases",
+        "location": "https://github.com/maleolabs/anvil-standard-laravel/releases/download/v1.2.3/anvil-standard-laravel.tar.gz"
+    },
+    "lifecycle": {
+        "state": "published"
+    },
+    "trust": {
+        "contentDigests": [
+            {
+                "algorithm": "sha-256",
+                "encoding": "base16",
+                "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+        ],
+        "attestation": {
+            "algorithm": "ed25519",
+            "signature": "c2lnbmF0dXJlLXZhbHVlLWJhc2U2NC1lbmNvZGVkLWRlbW8tc2lnbmF0dXJlLTEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5",
+            "publicKey": "cHVibGljLWtleS1iYXNlNjQtZW5jb2RlZC1kZW1vLXB1YmxpYy1rZXktMTIzNDU2Nzg5MA=="
+        }
+    },
+    "skills": [
+        {
+            "name": "Bad.Name",
+            "version": "1.0.0",
+            "asset": "anvil-skill-overview-1-0-0"
+        }
+    ]
+}
