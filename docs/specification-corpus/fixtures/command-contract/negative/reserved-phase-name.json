@@ -1,0 +1,60 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "negative-reserved-phase-name",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Negative: framework phase collides with reserved name",
+    "description": "Violates C3 / command-contract.md §4.2 (lifecycle-model.md §5.1): a framework phase is named 'prepare' — colliding with the reserved, runtime-owned first position of the activation sequence. The phase sequence is the specification's; framework phase names must not collide with the reserved phase names (prepare, configure, verify, promote, case-insensitive). The phaseSequence pattern rejects the reserved-name collision.",
+    "capability": {
+        "lifecyclePhases": [
+            {
+                "id": "prepare",
+                "description": "A framework phase wrongly named after the runtime-owned prepare position.",
+                "failureSemantics": {
+                    "failureMeaningDeclared": true
+                },
+                "rollbackSemantics": {
+                    "reversalDeclared": true,
+                    "irreversible": false
+                }
+            }
+        ],
+        "verificationChecks": [],
+        "configExtensions": [],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,prepare,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

@@ -1,0 +1,53 @@
+{
+    "$schema": "urn:anvil:spec:lifecycle-model:1.0.0",
+    "id": "anvil-release-lifecycle-rollback-restore",
+    "contractVersion": "1.0.0",
+    "title": "Rollback-restore lifecycle definition",
+    "description": "Positive fixture: a conforming lifecycle definition exercising the rollback-restore path. Rollback restores the Release last superseded by a forward transition: the target (an Archived Release with the newest archival timestamp among previously Active Releases) returns to Active via the Archived -> Active edge, which this definition declares as legal. Activation declares one framework phase and an empty verify (no-op gate, which the contract permits).",
+    "states": {
+        "Ready": {
+            "transitions": ["Activating", "Archived", "Removed"]
+        },
+        "Activating": {
+            "transitions": ["Active", "Rolling Back", "Failed"]
+        },
+        "Active": {
+            "transitions": ["Rolling Back", "Archived"]
+        },
+        "Rolling Back": {
+            "transitions": ["Rolled Back", "Failed"]
+        },
+        "Rolled Back": {
+            "transitions": ["Archived", "Removed"]
+        },
+        "Archived": {
+            "transitions": ["Active", "Removed"]
+        },
+        "Failed": {
+            "transitions": ["Ready", "Archived", "Removed"]
+        },
+        "Removed": {
+            "transitions": []
+        }
+    },
+    "activation": {
+        "phaseSequence": "prepare,configure,migrate,verify,promote",
+        "verify": {
+            "checks": []
+        }
+    },
+    "rollback": {
+        "targetSelection": "newest-archived-previously-active",
+        "targetState": "Archived"
+    },
+    "installation": {
+        "operation": "install",
+        "createsState": "Ready",
+        "isStateTransition": false
+    },
+    "invariants": {
+        "oneActiveRelease": true,
+        "activationIsAtomic": true,
+        "interruptedIsNotAState": true
+    }
+}

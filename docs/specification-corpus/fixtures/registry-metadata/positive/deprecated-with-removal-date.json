@@ -1,0 +1,34 @@
+{
+    "$schema": "urn:anvil:spec:registry-metadata:1.0.0",
+    "id": "anvil-standard-flutter",
+    "version": "2.0.0",
+    "contractVersion": "1.0.0",
+    "capability": {
+        "frameworkVersion": [
+            "3.1.0",
+            "3.2.0"
+        ]
+    },
+    "distribution": {
+        "type": "github-releases",
+        "location": "https://github.com/maleolabs/anvil-standard-flutter/releases/download/v2.0.0/anvil-standard-flutter.tar.gz"
+    },
+    "lifecycle": {
+        "state": "deprecated",
+        "removalDate": "2027-01-31T00:00:00Z"
+    },
+    "trust": {
+        "contentDigests": [
+            {
+                "algorithm": "sha-256",
+                "encoding": "base16",
+                "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+        ],
+        "attestation": {
+            "algorithm": "ed25519",
+            "signature": "c2lnbmF0dXJlLXZhbHVlLWJhc2U2NC1lbmNvZGVkLWRlbW8tc2lnbmF0dXJlLTEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5",
+            "publicKey": "cHVibGljLWtleS1iYXNlNjQtZW5jb2RlZC1kZW1vLXB1YmxpYy1rZXktMTIzNDU2Nzg5MA=="
+        }
+    }
+}

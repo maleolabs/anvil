@@ -1,0 +1,113 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "anvil-standard-rails-command-contract-full",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.1.0", "7.2.0"],
+    "title": "Full command contract declaration (positive fixture)",
+    "description": "Positive fixture: a conforming command contract declaration. Declares the full capability surface — two lifecycle phases (migrate, cache-warm) each with declared failure and rollback semantics, three verification checks in the two contract categories (structural + lifecycle-conformity), one configuration extension under the 'rails' namespace with two keys, and two templates (build, ci). Declares the lifecycle-phase exchange: the activation sequence prepare, configure, migrate, cache-warm, verify, promote with verify fixed immediately before promote, and the rollback exchange affirmations (forward transition restoring the previously active Release, executing the declared per-phase reversal). Declares the verification exchange at the fixed 'verify' position with the full rule set (fixed position, no-op gate bound, adds-never-weakens, outcomes merge into the runtime's verification report). Declares the configuration exchange (namespace isolation enforced, values passed through, extensions travel with the standard). Affirms the complete exchange rule set C1–C7 plus the declared-surface bound (emptyDeclarationProceedsWithGenericOperations).",
+    "capability": {
+        "lifecyclePhases": [
+            {
+                "id": "migrate",
+                "description": "Applies the framework's database migrations.",
+                "failureSemantics": {
+                    "failureMeaningDeclared": true
+                },
+                "rollbackSemantics": {
+                    "reversalDeclared": true,
+                    "irreversible": false
+                }
+            },
+            {
+                "id": "cache-warm",
+                "description": "Warms the framework's caches for the new Release.",
+                "failureSemantics": {
+                    "failureMeaningDeclared": true
+                },
+                "rollbackSemantics": {
+                    "reversalDeclared": true,
+                    "irreversible": false
+                }
+            }
+        ],
+        "verificationChecks": [
+            {
+                "id": "rails-lockfile-present",
+                "category": "structural",
+                "description": "The artifact contains the framework lockfile."
+            },
+            {
+                "id": "rails-config-files-present",
+                "category": "structural",
+                "description": "The artifact contains the framework configuration files."
+            },
+            {
+                "id": "rails-migrations-before-promotion",
+                "category": "lifecycle-conformity",
+                "description": "Migrations are timed relative to promotion."
+            }
+        ],
+        "configExtensions": [
+            {
+                "namespace": "rails",
+                "keys": [
+                    {
+                        "name": "ruby-version",
+                        "description": "Ruby version used to build the artifact.",
+                        "default": "3.2.0",
+                        "required": true
+                    },
+                    {
+                        "name": "bundle-flags",
+                        "description": "Extra flags passed to bundler.",
+                        "default": "--jobs 4"
+                    }
+                ]
+            }
+        ],
+        "templates": [
+            {
+                "id": "build",
+                "description": "The framework's build pipeline definition generated at project init."
+            },
+            {
+                "id": "ci",
+                "description": "The framework's CI pipeline definition generated at project init."
+            }
+        ]
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,migrate,cache-warm,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

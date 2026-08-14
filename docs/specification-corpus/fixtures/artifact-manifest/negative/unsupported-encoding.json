@@ -1,0 +1,21 @@
+{
+    "description": "Violates §4.1 / identity.contentHash.encoding enum: the encoding is not in the supported set. Only base16, base32, and base64 are valid encodings for the digest. An unrecognized encoding prevents deterministic comparison of content hashes.",
+    "id": "negative-unsupported-encoding",
+    "contractVersion": "1.0.0",
+    "identity": {
+        "contentHash": {
+            "algorithm": "sha-256",
+            "encoding": "hex-uppercase",
+            "digest": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+    },
+    "manifestLocation": {
+        "path": ".anvil/manifest.json",
+        "format": "json"
+    },
+    "verificationEvidence": {
+        "verifiedAt": "2026-08-04T12:00:00Z",
+        "verifier": "anvil-runtime-v2.0.0",
+        "algorithm": "sha-256"
+    }
+}

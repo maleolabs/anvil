@@ -1,0 +1,448 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "urn:anvil:spec:command-contract:1.0.0",
+    "title": "Standard Command Contract — Delivery Lifecycle Specification (ANVIL)",
+    "description": "Machine-readable authority for the standard command contract, corpus document 'command-contract' (TS-013-03-02; human-readable counterpart TS-013-03-01). Encodes the exchange contract between the Anvil Runtime (Core) and delivery lifecycle standards (command-contract.md §1, §4; ADR-021 §3.4; Transition Plan §5.8–§5.9): the capability declaration — the declared surface, lifecycle phases, verification checks, config extensions, templates, plus the contract-version and framework-version fields; a standard may declare nothing in a category, or nothing at all, and the runtime proceeds with its generic operations (command-contract.md §4.1; ADR-026 §3) — the declared-surface bound, encoded in consistency with the no-op gate concept of the verification contract (verification-contract.md §4.4) — the lifecycle-phase exchange — the declared activation sequence within prepare → configure → framework phases → verify → promote, per-phase failure semantics, per-phase rollback semantics (reversal declared per phase; irreversibility never blocks rollback) (command-contract.md §4.2–§4.3; lifecycle-model.md §5.1–§5.2) — the verification exchange — declared checks at the fixed pre-promote position, zero declared checks is a no-op gate, checks add and never weaken gates, outcomes merge into the runtime's verification report (command-contract.md §4.4; verification-contract.md §4.2, §4.4, G4) — the configuration-extension exchange — extended keys under the framework's own namespace, the runtime enforces namespace isolation and passes values through, the standard validates its own values, extensions are distribution content (command-contract.md §4.5; 007 §7) — and the exchange rules C1–C7 (command-contract.md §4.6). The runtime invokes only declared capability; undeclared capability is never called (C1; Manifesto §7; 007 §3; Transition Plan §5.9). Declarations that invoke undeclared capability, weaken a rule, or are malformed are rejected. Where this schema and command-contract.md disagree, the schema governs (ADR-029 §3).",
+    "$comment": "Dialect: draft-07, chosen for the widest validator support (python jsonschema, ajv, and mature independent implementations) — maximizing engine-path-independence per ADR-029 §3 and Transition Plan §5.10; no draft-2020-12-only feature is required. Version line (ADR-024 §3.1): the specification carries its own semver line decoupled from runtime releases; the contract major version is the unit of compatibility. This document is corpus version 1.0.0. A breaking change to this contract — any change to the exchange semantics that breaks compatibility — is a governed event requiring an ADR and shipping with a Core major version (ADR-035 §3.1; command-contract.md §2.4); specification artifacts publish via the spec/ tag line (ADR-024 §3.5). $id is a stable URN — it references the corpus document (command-contract) on its version line and is independent of engine or repository paths; resolvable publication URL mechanics are EPIC-013 scope. Engine-path independence: this schema references no engine paths, no engine internals, and no standard content — a future re-home of the specification is a move, not a rewrite (ADR-029 §3; Transition Plan §5.2, §5.10). Concrete exchange formats — command names, payload shapes, process conventions — are deliberately not specified here: format-level decisions are deferred to EPIC-013 implementation design (command-contract.md §5, §8); this schema defines the declaration shape, not the formats. Draft-07 cannot cross-validate references between arrays: declared-capability resolution (sequence phase names against capability.lifecyclePhases ids, position bindings against declared checks, key namespaces against declared namespaces) is enforced by the runtime at adoption and re-verified at execution — undeclared capability is never called (C1; ADR-024 §3.6); the schema enforces the declaration surface: shape, categories, positions, sequence bounds, and the rule floors.",
+    "type": "object",
+    "required": [
+        "id",
+        "contractVersion",
+        "frameworkVersion",
+        "capability",
+        "lifecycleExchange",
+        "verificationExchange",
+        "configurationExchange",
+        "exchangeRules"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "Optional declaration of the schema this command contract declaration targets (the $id of command-contract.schema.json)."
+        },
+        "title": {
+            "type": "string",
+            "description": "Optional human-readable title of the command contract declaration."
+        },
+        "description": {
+            "type": "string",
+            "description": "Optional human-readable description of the command contract declaration."
+        },
+        "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$",
+            "description": "Stable identifier of the command contract declaration (the exchange surface a standard declares). Follows the corpus id convention: lowercase alphanumeric with hyphens."
+        },
+        "contractVersion": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+            "description": "Target contract version of the delivery lifecycle specification (ADR-024 §3.1; command-contract.md §4.1): semver, decoupled from runtime releases; major version is the compatibility unit. The declaration gains this field so compatibility is a validation fact, not an assumption (Transition Plan §5.9; 006-g §2). A declaration that targets an unsupported contract version is rejected by the runtime before any lifecycle operation."
+        },
+        "frameworkVersion": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+            },
+            "description": "Framework-version support scope (command-contract.md §4.1; 007 §3; 006-h §3.5): the set of framework versions the release supports, declared per release so compatibility with the adopting project's framework version is a validation fact, not an assumption. The declaration gains this field alongside contractVersion (Transition Plan §5.9; 006-g §2); a release declares at least one supported framework version, and a declaration that omits or malforms the scope is rejected at adoption (ADR-023 §3)."
+        },
+        "capability": {
+            "$ref": "#/definitions/capability"
+        },
+        "lifecycleExchange": {
+            "$ref": "#/definitions/lifecycleExchange"
+        },
+        "verificationExchange": {
+            "$ref": "#/definitions/verificationExchange"
+        },
+        "configurationExchange": {
+            "$ref": "#/definitions/configurationExchange"
+        },
+        "exchangeRules": {
+            "$ref": "#/definitions/exchangeRules"
+        }
+    },
+    "definitions": {
+        "capability": {
+            "type": "object",
+            "description": "The declared capability surface (command-contract.md §4.1; 007 §3; 006-i §2): the lifecycle phases, verification checks, config extensions, and templates the standard provides, declared before any of it is invoked — the declaration is the invocation boundary (006-i §3). Exactly the four contract categories may be declared; a category not declared by the contract is undeclared capability and is rejected. Every category is declared explicitly and may be empty: a standard may declare nothing in a category, or nothing at all — the runtime then proceeds with its generic operations for the lifecycle positions the standard does not cover (command-contract.md §4.1; ADR-026 §3); declaring nothing does not weaken the exchange (exchangeRules.emptyDeclarationProceedsWithGenericOperations). The runtime invokes only declared capability; undeclared capability is never called (C1; Manifesto §7). Duplicated declarations (deep equality) are rejected; id-based uniqueness is additionally enforced by the runtime at adoption.",
+            "required": [
+                "lifecyclePhases",
+                "verificationChecks",
+                "configExtensions",
+                "templates"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "lifecyclePhases": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/phaseDeclaration"
+                    },
+                    "description": "Declared lifecycle phases (command-contract.md §4.1–§4.3; 007 §5): the standard's framework-specific activation steps — migrations, cache warming, queue recycling — with their declared failure semantics and rollback semantics. May be empty: no framework phases declared — the runtime proceeds with its generic operations at the framework-phases position. The declared sequence in which these phases execute is declared by lifecycleExchange.activation.phaseSequence; the runtime invokes only declared phases, in the declared order (C2; 007 §5)."
+                },
+                "verificationChecks": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/checkDeclaration"
+                    },
+                    "description": "Declared verification checks (command-contract.md §4.1, §4.4; 007 §6): the checks the standard declares as its verification content, in exactly the two contract categories — structural (the artifact contains what the framework requires) and lifecycle-conformity (framework behavior at lifecycle points). May be empty: zero declared checks — the verify position remains and is a no-op gate, not an open door (verification-contract.md §4.4). A check whose category the contract does not declare is undeclared capability and is rejected. The evidence and gate semantics of the declared checks belong to the verification contract, not to this document (command-contract.md §4.4; ADR-033 §3)."
+                },
+                "configExtensions": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/configExtensionDeclaration"
+                    },
+                    "description": "Declared configuration extensions (command-contract.md §4.1, §4.5; 007 §7): framework-specific configuration keys and their validation rules, under the framework's own namespace. May be empty: no extended configuration surface declared. Extensions are distribution content that travels with the standard, never with the runtime (Transition Plan A10); the runtime enforces namespace isolation and passes values through to the standard's own validation (C6; 007 §7)."
+                },
+                "templates": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/templateDeclaration"
+                    },
+                    "description": "Declared templates (command-contract.md §4.1; 007 §7): the build pipeline definitions generated at project init (anvil init --framework). May be empty: no templates declared. Templates are distribution content, not engine content — the standard is the author, the runtime is the executor of the generated pipeline (007 §7; Transition Plan A10). Template formats are deferred to EPIC-013 implementation design (command-contract.md §5)."
+                }
+            }
+        },
+        "phaseDeclaration": {
+            "type": "object",
+            "required": [
+                "id",
+                "failureSemantics",
+                "rollbackSemantics"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "description": "Stable identifier of the declared phase (e.g. 'migrate', 'config-cache'). The activation sequence (lifecycleExchange.activation.phaseSequence) references declared phases by name; the schema validates the id shape only — draft-07 cannot cross-validate sequence names against declared ids, so sequence-to-declaration resolution is additionally enforced by the runtime at adoption: undeclared capability is never called (C1; Manifesto §7; 007 §5)."
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Optional human-readable description of what this phase does during activation."
+                },
+                "failureSemantics": {
+                    "$ref": "#/definitions/failureSemantics"
+                },
+                "rollbackSemantics": {
+                    "$ref": "#/definitions/rollbackSemantics"
+                }
+            }
+        },
+        "failureSemantics": {
+            "type": "object",
+            "description": "Declared failure semantics (command-contract.md §4.2; 007 §5): what a failing phase means for activation and for rollback is declared by the standard for each phase. The concrete failure content is standard-supplied content; the declaration shape is fixed here, and formats are deferred to EPIC-013 implementation design (command-contract.md §5).",
+            "required": [
+                "failureMeaningDeclared"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "failureMeaningDeclared": {
+                    "const": true,
+                    "description": "§4.2 / 007 §5: the phase declares what a failure means for activation and for rollback — content within a defined lifecycle; a standard supplies content, it does not invent positions or stages (C3; Manifesto §3.1). A phase that omits the declaration, or asserts 'false', leaves its failure behavior assumed rather than declared and is rejected."
+                }
+            }
+        },
+        "rollbackSemantics": {
+            "type": "object",
+            "description": "Declared rollback semantics (command-contract.md §4.3; 007 §5): how the phase is reversed, declared per phase. Rollback executes the declared rollback semantics for the standard's framework phases through the same declared-capability rule as activation; a phase may be irreversible — the declaration documents the irreversibility, and irreversibility never blocks rollback (C4; lifecycle-model.md §5.2).",
+            "required": [
+                "reversalDeclared",
+                "irreversible"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "reversalDeclared": {
+                    "const": true,
+                    "description": "§4.3 / 007 §5: the standard declares how this phase is reversed — per-phase reversal is part of the declared surface. A phase that omits the declaration, or asserts 'false', leaves its reversal assumed rather than declared and is rejected."
+                },
+                "irreversible": {
+                    "type": "boolean",
+                    "description": "Whether the phase is irreversible (§4.3 / 007 §5): a phase may be irreversible; the standard documents the irreversibility. 'true' documents that the phase has no reversal; rollback proceeds regardless — irreversibility never blocks rollback (C4; lifecycle-model.md §5.2)."
+                }
+            }
+        },
+        "checkDeclaration": {
+            "type": "object",
+            "required": [
+                "id",
+                "category"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "description": "Stable identifier of the declared check. The verification contract's position bindings reference checks by id (verification-contract.schema.json positions.*.checks); the schema validates the id shape only — id-to-declared-check resolution is enforced by the runtime at adoption: undeclared capability is never called (C1; Manifesto §7; Transition Plan §5.9)."
+                },
+                "category": {
+                    "type": "string",
+                    "enum": [
+                        "structural",
+                        "lifecycle-conformity"
+                    ],
+                    "description": "The check category (command-contract.md §4.4; 007 §6; verification-contract.md §6.2): 'structural' — the artifact contains what the framework requires (files, structures); the verified v1.x surface, preserved. 'lifecycle-conformity' — framework behavior at lifecycle points: shared-resource wiring, migration timing relative to promotion, queue restart, rollback behavior; the v2 verification depth. Exactly these two categories exist; any other category is capability this contract does not declare — e.g. integrity is owned by the artifact manifest contract (artifact-manifest.md §5), not standard content — and is rejected as undeclared capability."
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Optional human-readable description of what this check verifies."
+                }
+            }
+        },
+        "configExtensionDeclaration": {
+            "type": "object",
+            "required": [
+                "namespace",
+                "keys"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "namespace": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "description": "The framework's own namespace for this extension (command-contract.md §4.5; 007 §7): a single dot-free, space-free segment (the v1.x adapter namespace convention, preserved — 005 §6.1). Extended configuration lives under the framework's own namespace; the runtime enforces namespace isolation and passes values through (C6; 007 §7). A namespace with multiple segments does not declare a single framework namespace and is rejected."
+                },
+                "keys": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/configKeyDeclaration"
+                    },
+                    "description": "The declared framework-specific configuration keys and their validation rules, under this extension's namespace (command-contract.md §4.5; 007 §7). At least one key must be declared per extension; the standard validates its own extended values (C6)."
+                }
+            }
+        },
+        "configKeyDeclaration": {
+            "type": "object",
+            "required": [
+                "name",
+                "description"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "description": "The key name within the extension's namespace (the v1.x fully-qualified form is 'framework.<namespace>.<key>', 005 §6.3; the v2 declaration carries the namespace separately — the runtime qualifies keys under the declared namespace and enforces isolation)."
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "What the key configures."
+                },
+                "default": {
+                    "type": "string",
+                    "description": "Optional default value used when the key is not provided. String-only by design: the v1.x contract declared ConfigKey.default as a string (005 §6, §6.3) and the concept is preserved (command-contract.md §4.5); value types are deliberately not extended here."
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "Whether the key must be provided (validation rule the standard enforces on its own extended values, C6)."
+                }
+            }
+        },
+        "templateDeclaration": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "description": "Stable identifier of the declared template (e.g. 'build', 'ci' — the framework's build and CI pipeline definitions, 005 §5.7)."
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Optional human-readable description of the generated pipeline this template produces."
+                }
+            }
+        },
+        "lifecycleExchange": {
+            "type": "object",
+            "description": "The lifecycle-phase exchange (command-contract.md §4.2–§4.3; lifecycle-model.md §5.1–§5.2): how the standard's declared activation phases are exchanged with the runtime. The phase sequence is the specification's; the phase content is the standard's — the runtime invokes only declared phases, in the declared order (C2); a standard supplies content within the defined lifecycle, it does not invent phases, positions, or stages (C3).",
+            "required": [
+                "activation",
+                "rollback"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "activation": {
+                    "$ref": "#/definitions/activation"
+                },
+                "rollback": {
+                    "$ref": "#/definitions/rollbackExchange"
+                }
+            }
+        },
+        "activation": {
+            "type": "object",
+            "description": "The activation phase exchange (command-contract.md §4.2; lifecycle-model.md §5.1): the standard's declared activation steps carried in a declared sequence, within the activation phase sequence defined by the specification — prepare → configure → framework phases → verify → promote. Position 1 is prepare (runtime-owned preparation), position 2 is configure (runtime-owned configuration of shared resources for the new Release), position 3 is the standard's declared framework phases (0..n) in the declared sequence, position 4 is verify (the fixed contract-level position immediately before the atomic promotion), position 5 is promote (the atomic commitment point).",
+            "required": [
+                "phaseSequence"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "phaseSequence": {
+                    "type": "string",
+                    "pattern": "^prepare,configure(,((?!(?:prepare|Prepare|configure|Configure|verify|Verify|promote|Promote)(?=,|$))[^,]+))*,verify,promote$",
+                    "description": "Comma-separated declaration of the full activation phase sequence in execution order (command-contract.md §4.2; lifecycle-model.md §5.1). Fixed positions: 'prepare' first, 'configure' second, 'verify' immediately before 'promote', 'promote' last (the atomic commitment point). Between configure and verify, 0..n declared framework phases appear, in the declared order — the executed order (C2). Framework phase names must not collide with reserved phase names (case-insensitive); a sequence that omits promote, reorders prepare/configure, or places verify after promote is rejected. A declaration with zero framework phases declares the sequence exactly prepare,configure,verify,promote — the runtime proceeds with its generic operations at the framework-phases position (command-contract.md §4.1)."
+                }
+            }
+        },
+        "rollbackExchange": {
+            "type": "object",
+            "description": "The rollback exchange (command-contract.md §4.3; lifecycle-model.md §5.2): rollback is a first-class lifecycle operation, not a reverse activation (Manifesto §5.7). The contract carries the standard's declared rollback semantics; each rule is encoded as a required const-true declaration — a declaration that omits a rule or asserts a weaker value is rejected.",
+            "required": [
+                "isForwardTransition",
+                "restoresPreviouslyActiveRelease",
+                "executesDeclaredPerPhaseReversal"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "isForwardTransition": {
+                    "const": true,
+                    "description": "§4.3 / Manifesto §5.7: rollback is a forward transition, not a reverse activation — legality is defined by lifecycle state, not by the contract's shape (lifecycle-model.md §5.2). A declaration that asserts 'false' here asserts rollback as reverse activation and is rejected."
+                },
+                "restoresPreviouslyActiveRelease": {
+                    "const": true,
+                    "description": "§4.3: rollback restores the previously active Release by the forward transition (lifecycle-model.md §5.2 R5: the rollback target is the Archived Release with the newest archival timestamp among Releases that were previously Active). A declaration that asserts 'false' here is rejected."
+                },
+                "executesDeclaredPerPhaseReversal": {
+                    "const": true,
+                    "description": "§4.3: rollback executes the declared rollback semantics for the standard's framework phases through the same declared-capability rule as activation (007 §5; lifecycle-model.md §5.2) — only declared phases are reversed; undeclared capability is never called (C1). A declaration that asserts 'false' here is rejected."
+                }
+            }
+        },
+        "verificationExchange": {
+            "type": "object",
+            "description": "The verification exchange (command-contract.md §4.4; verification-contract.md §4.2, §4.4): verification content is exchanged through this contract, but the gate semantics and evidence requirements it carries belong to the verification contract, not to this document and not to any standard (007 §6; ADR-033 §3). The position is fixed and the checks are declared capability; each rule is encoded as a required const-true declaration — a declaration that omits a rule or asserts a weaker value is rejected.",
+            "required": [
+                "position",
+                "rules"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "position": {
+                    "type": "string",
+                    "const": "verify",
+                    "description": "The fixed contract-level position of the verification exchange (command-contract.md §4.4; lifecycle-model.md §5.1): immediately before the atomic promotion. The position is fixed by the specification; a standard supplies content within the defined lifecycle, it does not invent gates or move gate positions (C3; Manifesto §3.1; verification-contract.md §4.2). Any other position is rejected."
+                },
+                "rules": {
+                    "type": "object",
+                    "description": "The verification exchange rules (command-contract.md §4.4): the exchange-level facts that bind the runtime and the standard. The full gate set (G1–G6) and evidence requirements (E1–E5) are encoded by the verification contract (verification-contract.schema.json), not re-encoded here.",
+                    "required": [
+                        "positionFixedBeforePromotion",
+                        "zeroDeclaredChecksKeepsNoOpGate",
+                        "standardAddsChecksNeverWeakensGates",
+                        "outcomesMergeIntoVerificationReport"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "positionFixedBeforePromotion": {
+                            "const": true,
+                            "description": "§4.4 / lifecycle-model.md §5.1: verification occupies the fixed contract-level position immediately before the atomic promotion. A declaration that asserts 'false' here moves or removes the gate position and is rejected."
+                        },
+                        "zeroDeclaredChecksKeepsNoOpGate": {
+                            "const": true,
+                            "description": "§4.4 / verification-contract.md §4.4: a standard may declare zero verify checks; the phase is a no-op gate, not an open door — the gate position remains and the gate remains (consistent with gates.emptyDeclarationKeepsGate in verification-contract.schema.json). A declaration that asserts 'false' here asserts the gate can be opened by declaring nothing and is rejected."
+                        },
+                        "standardAddsChecksNeverWeakensGates": {
+                            "const": true,
+                            "description": "C5 / §4.4 / verification-contract G4: a standard adds checks; it never weakens gates — verification content is declared against the verification contract; gates remain mandatory and unskippable (007 §6; ADR-033 §3). A declaration that asserts 'false' here weakens the gate and is rejected."
+                        },
+                        "outcomesMergeIntoVerificationReport": {
+                            "const": true,
+                            "description": "§4.4 / 007 §6: the exchange of verification results is part of this contract's surface — outcomes merge into the runtime's verification report and are recorded as lifecycle evidence; the evidence semantics are the verification contract's (verification-contract.md §5.3, E3–E4). A declaration that asserts 'false' here is rejected."
+                        }
+                    }
+                }
+            }
+        },
+        "configurationExchange": {
+            "type": "object",
+            "description": "The configuration-extension exchange (command-contract.md §4.5; 007 §7): how extended configuration is exchanged — under the framework's own namespace, with the runtime enforcing isolation and passing values through. Each rule is encoded as a required const-true declaration; a declaration that omits a rule or asserts a weaker value is rejected.",
+            "required": [
+                "namespaceIsolationEnforced",
+                "valuesPassedThrough",
+                "extensionsTravelWithStandard"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "namespaceIsolationEnforced": {
+                    "const": true,
+                    "description": "§4.5 / 007 §7: extended configuration lives under the framework's own namespace; the runtime enforces namespace isolation (concept preserved from the v1.x contract, 005 §6.1). A declaration that asserts 'false' here asserts extensions may leak into Core's namespace and is rejected."
+                },
+                "valuesPassedThrough": {
+                    "const": true,
+                    "description": "§4.5 / 007 §7: the runtime passes extended values through to the standard's own validation — the runtime does not interpret framework-specific values. A declaration that asserts 'false' here is rejected."
+                },
+                "extensionsTravelWithStandard": {
+                    "const": true,
+                    "description": "§4.5 / Transition Plan A10: extensions are distribution content, not engine content — configuration extensions travel with the standard, never with the runtime. A declaration that asserts 'false' here is rejected."
+                }
+            }
+        },
+        "exchangeRules": {
+            "type": "object",
+            "description": "The exchange rules (command-contract.md §4.6): the rules that make the exchange enforceable — an invocation that violates one is rejected, never attempted (C7). Each rule is encoded as a required const-true declaration: the rule set is a floor, not a ceiling — a declaration that omits a rule or asserts a weaker value is rejected; an invented rule is undeclared capability and is rejected. The declared-surface bound is encoded alongside the C1–C7 rules, in consistency with the no-op gate concept of the verification contract (verification-contract.md §4.4).",
+            "required": [
+                "onlyDeclaredCapabilityInvoked",
+                "declaredOrderIsExecutedOrder",
+                "contentWithinDefinedLifecycle",
+                "irreversibilityNeverBlocksRollback",
+                "checksAddNeverWeaken",
+                "standardValidatesOwnConfiguration",
+                "contractViolationIsRejected",
+                "emptyDeclarationProceedsWithGenericOperations"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "onlyDeclaredCapabilityInvoked": {
+                    "const": true,
+                    "description": "C1: only declared capability is invoked — the runtime invokes only declared capability; undeclared capability is never called (Manifesto §7; 007 §3; Transition Plan §5.9; lifecycle-model.md §5.1). A declaration that asserts 'false' here weakens the invocation rule and is rejected."
+                },
+                "declaredOrderIsExecutedOrder": {
+                    "const": true,
+                    "description": "C2: declared order is the executed order — declared phases run in the declared sequence, within the specification-defined activation sequence (007 §5; Manifesto §5.5; lifecycle-model.md §5.1). A declaration that asserts 'false' here is rejected."
+                },
+                "contentWithinDefinedLifecycle": {
+                    "const": true,
+                    "description": "C3: content within a defined lifecycle — a standard supplies content within the defined lifecycle; it invents neither phases nor positions (Manifesto §3.1; 007 §5). A declaration that asserts 'false' here is rejected."
+                },
+                "irreversibilityNeverBlocksRollback": {
+                    "const": true,
+                    "description": "C4: irreversibility never blocks rollback — irreversible phases are documented (rollbackSemantics.irreversible); rollback proceeds regardless (007 §5; lifecycle-model.md §5.2). A declaration that asserts 'false' here is rejected."
+                },
+                "checksAddNeverWeaken": {
+                    "const": true,
+                    "description": "C5: checks add, never weaken — verification checks are declared against the verification contract; a standard never weakens gates (007 §6; ADR-033 §3; verification-contract G4). A declaration that asserts 'false' here is rejected."
+                },
+                "standardValidatesOwnConfiguration": {
+                    "const": true,
+                    "description": "C6: the standard validates its own configuration — extended values are validated by the standard; the runtime enforces namespace isolation and passes values through (007 §7). A declaration that asserts 'false' here is rejected."
+                },
+                "contractViolationIsRejected": {
+                    "const": true,
+                    "description": "C7: a standard that violates the contract is rejected, not patched — the registry rejects it at adoption; the runtime does not work around it (Transition Plan §5.5; 007 §2). A declaration that asserts 'false' here is rejected."
+                },
+                "emptyDeclarationProceedsWithGenericOperations": {
+                    "const": true,
+                    "description": "§4.1 declared-surface bound: a standard may declare nothing in a category, or nothing at all; the runtime proceeds with its generic operations for the lifecycle positions the standard does not cover (command-contract.md §4.1; ADR-026 §3). Declaring nothing is legal and does not weaken the exchange — the bound is a no-op, not an open door, in consistency with the no-op gate concept of the verification contract (verification-contract.md §4.4). A declaration that asserts 'false' here asserts that an empty declaration opens or weakens the exchange and is rejected."
+                }
+            }
+        }
+    }
+}

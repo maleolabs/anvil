@@ -1,0 +1,65 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "anvil-standard-rails-command-contract-config-only",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.1.0", "7.2.0"],
+    "title": "Configuration-only command contract declaration (positive fixture)",
+    "description": "Positive fixture: a conforming command contract declaration that declares capability in exactly one category — configuration extensions, under the framework's own namespace 'rails', with two declared keys (ruby-version required with a default, bundle-flags with a default). The lifecycle-phases, verification-checks, and templates categories declare nothing. The configuration exchange affirms the namespace-isolation rules (namespace isolation enforced, values passed through, extensions travel with the standard); the activation sequence is exactly prepare, configure, verify, promote. The full exchange rule set C1–C7 plus the declared-surface bound is affirmed.",
+    "capability": {
+        "lifecyclePhases": [],
+        "verificationChecks": [],
+        "configExtensions": [
+            {
+                "namespace": "rails",
+                "keys": [
+                    {
+                        "name": "ruby-version",
+                        "description": "Ruby version used to build the artifact.",
+                        "default": "3.2.0",
+                        "required": true
+                    },
+                    {
+                        "name": "bundle-flags",
+                        "description": "Extra flags passed to bundler.",
+                        "default": "--jobs 4"
+                    }
+                ]
+            }
+        ],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}
