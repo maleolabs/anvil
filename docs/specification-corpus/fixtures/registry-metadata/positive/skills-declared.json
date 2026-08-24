@@ -1,0 +1,60 @@
+{
+    "$schema": "urn:anvil:spec:registry-metadata:1.0.0",
+    "title": "Anvil Standard Laravel 1.2.3 (skills declared)",
+    "description": "Positive forward-compatibility fixture (TS-021-04; ADR-037 D2): the standard declares two skills in the optional additive skills section. Each skill's asset is covered by an attested named digest entry in trust.contentDigests (TS-014-04-04) — the asset binding the registry client parser enforces. A release without skills[] behaves exactly as before; this fixture proves a skills-bearing document parses (old-parses-new).",
+    "id": "anvil-standard-laravel",
+    "version": "1.2.3",
+    "contractVersion": "1.0.0",
+    "capability": {
+        "frameworkVersion": [
+            "5.1.0",
+            "5.2.0"
+        ]
+    },
+    "distribution": {
+        "type": "github-releases",
+        "location": "https://github.com/maleolabs/anvil-standard-laravel/releases/download/v1.2.3/anvil-standard-laravel.tar.gz"
+    },
+    "lifecycle": {
+        "state": "published"
+    },
+    "trust": {
+        "contentDigests": [
+            {
+                "algorithm": "sha-256",
+                "encoding": "base16",
+                "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+                "algorithm": "sha-256",
+                "encoding": "base16",
+                "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+                "name": "anvil-skill-overview-1-0-0"
+            },
+            {
+                "algorithm": "sha-256",
+                "encoding": "base16",
+                "digest": "2222222222222222222222222222222222222222222222222222222222222222",
+                "name": "anvil-skill-lifecycle-1-0-0"
+            }
+        ],
+        "attestation": {
+            "algorithm": "ed25519",
+            "signature": "c2lnbmF0dXJlLXZhbHVlLWJhc2U2NC1lbmNvZGVkLWRlbW8tc2lnbmF0dXJlLTEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5",
+            "publicKey": "cHVibGljLWtleS1iYXNlNjQtZW5jb2RlZC1kZW1vLXB1YmxpYy1rZXktMTIzNDU2Nzg5MA=="
+        }
+    },
+    "skills": [
+        {
+            "name": "overview",
+            "version": "1.0.0",
+            "asset": "anvil-skill-overview-1-0-0",
+            "description": "What Anvil is and how to use it inside a Laravel project."
+        },
+        {
+            "name": "lifecycle",
+            "version": "1.0.0",
+            "asset": "anvil-skill-lifecycle-1-0-0"
+        }
+    ]
+}

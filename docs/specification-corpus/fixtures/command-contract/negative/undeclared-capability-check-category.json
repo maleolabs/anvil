@@ -1,0 +1,54 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "negative-undeclared-capability-check-category",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Negative: undeclared verification check category",
+    "description": "Violates C1 / command-contract.md §4.4 (verification-contract.md §6.2; Manifesto §7): a declared verification check carries category 'integrity'. The contract grants standards exactly two check categories — structural and lifecycle-conformity; integrity is owned by the artifact manifest contract (artifact-manifest.md §5), not standard content. A check whose category the contract does not declare is undeclared capability and is rejected by the checks[].category enum.",
+    "capability": {
+        "lifecyclePhases": [],
+        "verificationChecks": [
+            {
+                "id": "artifact-content-hash-check",
+                "category": "integrity",
+                "description": "The artifact content hash matches the embedded manifest."
+            }
+        ],
+        "configExtensions": [],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

@@ -1,0 +1,53 @@
+{
+    "$schema": "urn:anvil:spec:lifecycle-model:1.0.0",
+    "id": "anvil-release-lifecycle",
+    "contractVersion": "1.0.0",
+    "title": "Full main-path lifecycle definition",
+    "description": "Positive fixture: a conforming lifecycle definition whose state machine contains the full legal main path Ready -> Activating -> Active -> Rolling Back -> Rolled Back -> Archived -> Removed, plus every other legal edge of the contract (including Archived -> Active rollback restore and Failed -> Ready/Archived/Removed). Activation declares two framework phases and one verify check; rollback, installation, and invariants conform to the contract.",
+    "states": {
+        "Ready": {
+            "transitions": ["Activating", "Archived", "Removed"]
+        },
+        "Activating": {
+            "transitions": ["Active", "Rolling Back", "Failed"]
+        },
+        "Active": {
+            "transitions": ["Rolling Back", "Archived"]
+        },
+        "Rolling Back": {
+            "transitions": ["Rolled Back", "Failed"]
+        },
+        "Rolled Back": {
+            "transitions": ["Archived", "Removed"]
+        },
+        "Archived": {
+            "transitions": ["Active", "Removed"]
+        },
+        "Failed": {
+            "transitions": ["Ready", "Archived", "Removed"]
+        },
+        "Removed": {
+            "transitions": []
+        }
+    },
+    "activation": {
+        "phaseSequence": "prepare,configure,migrate,cache-warm,verify,promote",
+        "verify": {
+            "checks": ["post-activation-health"]
+        }
+    },
+    "rollback": {
+        "targetSelection": "newest-archived-previously-active",
+        "targetState": "Archived"
+    },
+    "installation": {
+        "operation": "install",
+        "createsState": "Ready",
+        "isStateTransition": false
+    },
+    "invariants": {
+        "oneActiveRelease": true,
+        "activationIsAtomic": true,
+        "interruptedIsNotAState": true
+    }
+}

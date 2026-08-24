@@ -1,0 +1,43 @@
+{
+    "description": "Violates G4 / G2 (verification-contract.md §4.3–§4.4): a declared check carries 'skippable': true — an optional check weakens the gate set. The gate set is a floor, not a ceiling; verification is enforced as a transition, not requested as an option. The contract has no 'optional check' concept: 'skippable' is not part of the check declaration shape and is rejected by additionalProperties.",
+    "id": "negative-gate-weakening-optional-check",
+    "contractVersion": "1.0.0",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [
+        {
+            "id": "rails-config-files-present",
+            "category": "structural",
+            "skippable": true,
+            "evidence": {
+                "recheckable": true,
+                "embeddedOrRecorded": true,
+                "recorded": true
+            }
+        }
+    ],
+    "positions": {
+        "verifyStage": {
+            "checks": [
+                "rails-config-files-present"
+            ]
+        },
+        "verifyPhase": {
+            "checks": []
+        }
+    }
+}

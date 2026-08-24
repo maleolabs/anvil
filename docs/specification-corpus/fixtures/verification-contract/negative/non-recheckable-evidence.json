@@ -1,0 +1,43 @@
+{
+    "description": "Violates E2 / E5 (verification-contract.md §5.2, §5.4): a declared check's evidence declares 'recheckable': false. Evidence must be re-checkable — any consumer can re-verify the same evidence; evidence that cannot be re-checked is invalid and rejected at declaration time. The per-check evidence declaration encodes this rejection: 'false' fails the recheckable const.",
+    "id": "negative-non-recheckable-evidence",
+    "contractVersion": "1.0.0",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [
+        {
+            "id": "rails-migrations-before-promotion",
+            "category": "lifecycle-conformity",
+            "description": "Migrations are timed relative to promotion.",
+            "evidence": {
+                "recheckable": false,
+                "embeddedOrRecorded": true,
+                "recorded": true
+            }
+        }
+    ],
+    "positions": {
+        "verifyStage": {
+            "checks": []
+        },
+        "verifyPhase": {
+            "checks": [
+                "rails-migrations-before-promotion"
+            ]
+        }
+    }
+}

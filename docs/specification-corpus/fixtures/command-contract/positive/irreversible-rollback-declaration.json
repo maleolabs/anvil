@@ -1,0 +1,71 @@
+{
+    "$schema": "urn:anvil:spec:command-contract:1.0.0",
+    "id": "anvil-standard-rails-command-contract-irreversible-rollback",
+    "contractVersion": "1.0.0",
+    "frameworkVersion": ["7.2.0"],
+    "title": "Irreversible-phase command contract declaration (positive fixture)",
+    "description": "Positive fixture: a conforming command contract declaration whose lifecycle-phase exchange includes an irreversible phase — 'db-schema-change' declares rollbackSemantics.reversalDeclared true and irreversible true: the standard documents the irreversibility; irreversibility never blocks rollback (C4; lifecycle-model.md §5.2). The 'cache-warm' phase declares a reversal. The declared-surface bound is exercised per category: verification checks, config extensions, and templates declare nothing. The full exchange rule set C1–C7 plus the declared-surface bound is affirmed.",
+    "capability": {
+        "lifecyclePhases": [
+            {
+                "id": "db-schema-change",
+                "description": "Applies an irreversible database schema change.",
+                "failureSemantics": {
+                    "failureMeaningDeclared": true
+                },
+                "rollbackSemantics": {
+                    "reversalDeclared": true,
+                    "irreversible": true
+                }
+            },
+            {
+                "id": "cache-warm",
+                "description": "Warms the framework's caches for the new Release.",
+                "failureSemantics": {
+                    "failureMeaningDeclared": true
+                },
+                "rollbackSemantics": {
+                    "reversalDeclared": true,
+                    "irreversible": false
+                }
+            }
+        ],
+        "verificationChecks": [],
+        "configExtensions": [],
+        "templates": []
+    },
+    "lifecycleExchange": {
+        "activation": {
+            "phaseSequence": "prepare,configure,db-schema-change,cache-warm,verify,promote"
+        },
+        "rollback": {
+            "isForwardTransition": true,
+            "restoresPreviouslyActiveRelease": true,
+            "executesDeclaredPerPhaseReversal": true
+        }
+    },
+    "verificationExchange": {
+        "position": "verify",
+        "rules": {
+            "positionFixedBeforePromotion": true,
+            "zeroDeclaredChecksKeepsNoOpGate": true,
+            "standardAddsChecksNeverWeakensGates": true,
+            "outcomesMergeIntoVerificationReport": true
+        }
+    },
+    "configurationExchange": {
+        "namespaceIsolationEnforced": true,
+        "valuesPassedThrough": true,
+        "extensionsTravelWithStandard": true
+    },
+    "exchangeRules": {
+        "onlyDeclaredCapabilityInvoked": true,
+        "declaredOrderIsExecutedOrder": true,
+        "contentWithinDefinedLifecycle": true,
+        "irreversibilityNeverBlocksRollback": true,
+        "checksAddNeverWeaken": true,
+        "standardValidatesOwnConfiguration": true,
+        "contractViolationIsRejected": true,
+        "emptyDeclarationProceedsWithGenericOperations": true
+    }
+}

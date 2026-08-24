@@ -1,0 +1,43 @@
+{
+    "description": "Violates the declared-capability rule (verification-contract.md §6.2; Manifesto §7): a check declares category 'integrity'. The contract grants standards exactly two check categories — structural and lifecycle-conformity; integrity is owned by the artifact manifest contract (artifact-manifest.md §5), not standard content. The runtime invokes only declared capability; a check whose category the contract does not declare is undeclared capability and is rejected by the category enum.",
+    "id": "negative-undeclared-capability-category",
+    "contractVersion": "1.0.0",
+    "gates": {
+        "verificationIsMandatory": true,
+        "enforcedAsTransition": true,
+        "verificationPrecedesAdvancement": true,
+        "standardAddsChecksNeverWeakensGates": true,
+        "allVerificationLayersMandatory": true,
+        "failedVerificationRejectsOperation": true,
+        "emptyDeclarationKeepsGate": true
+    },
+    "evidence": {
+        "claimIsNotEvidence": true,
+        "evidenceIsRecheckable": true,
+        "outcomesMergeIntoVerificationReport": true,
+        "outcomesRecordedAsLifecycleEvidence": true,
+        "nonRecheckableEvidenceIsInvalid": true
+    },
+    "checks": [
+        {
+            "id": "artifact-content-hash-check",
+            "category": "integrity",
+            "description": "The artifact content hash matches the embedded manifest.",
+            "evidence": {
+                "recheckable": true,
+                "embeddedOrRecorded": true,
+                "recorded": true
+            }
+        }
+    ],
+    "positions": {
+        "verifyStage": {
+            "checks": [
+                "artifact-content-hash-check"
+            ]
+        },
+        "verifyPhase": {
+            "checks": []
+        }
+    }
+}
