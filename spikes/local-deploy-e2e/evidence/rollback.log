@@ -1,0 +1,3 @@
+rolled_back=01a035f4277a64dc5543abd090eea7e1 stage=rolled back
+restored=01a035f426166085aec16dd690426c87 stage=active
+rollback eligible after: false

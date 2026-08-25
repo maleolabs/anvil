@@ -1,0 +1,133 @@
+# Automates Anvil releases using Anvil itself.
+#
+# Triggered by pushing a git tag matching v* (e.g., v1.2.0).
+# The workflow:
+#   1. Extracts the version from the tag
+#   2. Detects pre-release from tag suffix (-alpha, -beta, -rc)
+#   3. Runs CI quality gates (full pipeline or go-native, see below)
+#   4. Builds the CLI binary for multiple platforms
+#   5. Packages the source artifact via anvil artifact package
+#   6. Creates a GitHub Release (stable or pre-release) with all assets
+#
+# Releases run in BOTH the private upstream (full quality gates via
+# `anvil pipeline ci`) and the public mirror (go-native quality checks).
+# scripts/ and internal docs are stripped from the mirror tree, so the
+# pipeline's scripted proof steps are replaced by `go vet` + `go test`,
+# which structurally cover the same proofs via internal/frameworkfree
+# and internal/nongating tests. The step selection is presence-based
+# (hashFiles('scripts/*.sh')), not repo-name-based.
+#
+# Custom-branch edge: if a mirror customization branch ever adds
+# scripts/*.sh, the presence trigger selects the full `anvil pipeline ci`
+# path on the mirror, which requires the full tree (scripts/ + internal
+# docs). Mirror branches must preserve the tree shape — customizations
+# (e.g. main, develop) must be merged from the upstream branch, not
+# re-created from scratch.
+#
+# The version is determined by the git tag — the developer's decision.
+# Anvil executes the build and packaging; it does not decide the version.
+#
+# Version in anvil.yaml must match the tag before tagging.
+# Use scripts/bump.sh to manage version bumping, committing, and tagging.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Set up Anvil
+        run: |
+          go build -o /usr/local/bin/anvil .
+
+      - name: Extract version and detect release type
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+          # Detect pre-release by tag convention: alpha or beta suffix
+          if [[ "$VERSION" == *-alpha* || "$VERSION" == *-beta* || "$VERSION" == *-rc* ]]; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run CI pipeline (full quality gates)
+        if: hashFiles('scripts/*.sh') != ''
+        run: |
+          anvil pipeline ci
+
+      - name: Run CI quality checks (go-native, mirror tree)
+        if: hashFiles('scripts/*.sh') == ''
+        run: |
+          go vet ./...
+          go test ./...
+
+      - name: Build binaries
+        run: |
+          mkdir -p dist/binaries
+          anvil pipeline build --output dist/binaries
+
+      - name: Package source artifact
+        run: |
+          anvil artifact package --output dist/artifacts
+
+      - name: Stage install script
+        run: |
+          cp install.sh dist/binaries/install.sh
+          chmod +x dist/binaries/install.sh
+
+      - name: Generate checksums
+        working-directory: dist
+        run: |
+          sha256sum binaries/* > SHA256SUMS.txt
+          sha256sum artifacts/* >> SHA256SUMS.txt
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PRERELEASE="${{ steps.version.outputs.prerelease }}"
+
+          PRERELEASE_FLAG=""
+          if [[ "$PRERELEASE" == "true" ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+
+          # Re-sync remediation path: re-running on an already-released
+          # tag would make `gh release create` fail with "release already
+          # exists". Fall back to uploading the assets (--clobber) when
+          # the release is already present.
+          if gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "v$VERSION" dist/binaries/* dist/artifacts/* dist/SHA256SUMS.txt --clobber
+          else
+            gh release create "v$VERSION" \
+              --title "v$VERSION" \
+              --generate-notes \
+              $PRERELEASE_FLAG \
+              dist/binaries/* \
+              dist/artifacts/* \
+              dist/SHA256SUMS.txt
+          fi
