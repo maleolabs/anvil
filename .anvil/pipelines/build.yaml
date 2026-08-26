@@ -1,0 +1,70 @@
+pipeline:
+    name: build
+    stages:
+        - name: dependencies
+          tasks:
+            - name: download
+              command: go
+              args:
+                - mod
+                - download
+            - name: verify
+              command: go
+              args:
+                - mod
+                - verify
+        - name: compile
+          tasks:
+            - name: linux-amd64
+              command: sh
+              args:
+                - -c
+                - |
+                  VERSION=$(git describe --tags --always 2>/dev/null || echo "0.0.0-dev")
+                  go build -ldflags="-X maleolabs.com/anvil/cmd.CliVersion=${VERSION}" -o ${ANVIL_OUTPUT_DIR}/anvil-linux-amd64 .
+              env:
+                GOOS: linux
+                GOARCH: amd64
+            - name: linux-arm64
+              command: sh
+              args:
+                - -c
+                - |
+                  VERSION=$(git describe --tags --always 2>/dev/null || echo "0.0.0-dev")
+                  go build -ldflags="-X maleolabs.com/anvil/cmd.CliVersion=${VERSION}" -o ${ANVIL_OUTPUT_DIR}/anvil-linux-arm64 .
+              env:
+                GOOS: linux
+                GOARCH: arm64
+            - name: darwin-amd64
+              command: sh
+              args:
+                - -c
+                - |
+                  VERSION=$(git describe --tags --always 2>/dev/null || echo "0.0.0-dev")
+                  go build -ldflags="-X maleolabs.com/anvil/cmd.CliVersion=${VERSION}" -o ${ANVIL_OUTPUT_DIR}/anvil-darwin-amd64 .
+              env:
+                GOOS: darwin
+                GOARCH: amd64
+            - name: darwin-arm64
+              command: sh
+              args:
+                - -c
+                - |
+                  VERSION=$(git describe --tags --always 2>/dev/null || echo "0.0.0-dev")
+                  go build -ldflags="-X maleolabs.com/anvil/cmd.CliVersion=${VERSION}" -o ${ANVIL_OUTPUT_DIR}/anvil-darwin-arm64 .
+              env:
+                GOOS: darwin
+                GOARCH: arm64
+            # Adapter binaries: the in-repo adapter build tasks were
+            # REMOVED by the repository split (ADR-025 §6.2) — the
+            # Laravel tasks in TS-016-01-01 (anvil-standard-laravel) and
+            # the Flutter tasks in TS-016-02-01 (anvil-standard-flutter).
+            # The anvil-adapter-<framework> executables are built and
+            # released from their own standard repositories, never from
+            # Core (the pre-split TS-007-034 tasks built them after the
+            # CLI tasks; the ldflags stamp mirrored the CLI pattern, and
+            # the linker ignored the -X flag because adapters do not link
+            # maleolabs.com/anvil/cmd). The Core release path builds NO
+            # adapter binaries; TS-016-03-03 (Sprint ANVIL-V2-S5) verified
+            # this state across Core CI, the release pipeline, and the
+            # scripts surface — no adapter build/publish steps remain.

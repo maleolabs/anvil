@@ -1,0 +1,4 @@
+version: 1
+project: anvil
+name: forge-anvil-cli
+namespace: anvil-cli

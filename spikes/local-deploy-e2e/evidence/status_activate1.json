@@ -1,0 +1,82 @@
+{
+  "after_action": "activate1",
+  "lifecycle": {
+    "ProjectID": "spike-e2e-project",
+    "Active": {
+      "ReleaseID": "01a035f426166085aec16dd690426c87",
+      "Version": "1.0.0",
+      "Stage": "active"
+    },
+    "Installed": [
+      {
+        "ReleaseID": "01a035f426166085aec16dd690426c87",
+        "Version": "1.0.0",
+        "Stage": "active"
+      }
+    ],
+    "Rollback": {
+      "Eligible": false,
+      "ActiveReleaseID": "01a035f426166085aec16dd690426c87",
+      "TargetReleaseID": "",
+      "Reason": "no rollback target — no previously Active (Archived) Release"
+    },
+    "RuntimeState": {
+      "Recorded": true,
+      "ActiveReleaseID": "01a035f426166085aec16dd690426c87",
+      "RuntimeCondition": "normal",
+      "SharedResource": "accessible",
+      "LastUpdated": "2026-08-25T06:46:28.302044127+08:00",
+      "LoadError": ""
+    }
+  },
+  "active_release": {
+    "id": "01a035f426166085aec16dd690426c87",
+    "artifact_id": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+    "version": "1.0.0",
+    "source": "spike-e2e-project",
+    "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz",
+    "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+    "stage": 2,
+    "created_at": "2026-08-24T22:46:28Z",
+    "transitions": [
+      {
+        "timestamp": "2026-08-24T22:46:28Z",
+        "from": 0,
+        "to": 1,
+        "outcome": "success"
+      },
+      {
+        "timestamp": "2026-08-24T22:46:28Z",
+        "from": 1,
+        "to": 2,
+        "outcome": "success"
+      }
+    ]
+  },
+  "installed_list": [
+    {
+      "id": "01a035f426166085aec16dd690426c87",
+      "artifact_id": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+      "version": "1.0.0",
+      "source": "spike-e2e-project",
+      "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz",
+      "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+      "stage": 2,
+      "created_at": "2026-08-24T22:46:28Z",
+      "transitions": [
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 0,
+          "to": 1,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 1,
+          "to": 2,
+          "outcome": "success"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "version": "1",
+  "status": "error",
+  "error": "Deploy failed: artifact verification FAIL — install rejected"
+}
