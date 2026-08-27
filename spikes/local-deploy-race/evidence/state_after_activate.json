@@ -1,0 +1,97 @@
+{
+  "after_action": "after-activate-race",
+  "lifecycle": {
+    "ProjectID": "spike-race-project",
+    "Active": {
+      "ReleaseID": "01a03607ef25900a642b6e9d6e65d039",
+      "Version": "1.0.0-ci",
+      "Stage": "active"
+    },
+    "Installed": [
+      {
+        "ReleaseID": "01a03607eed5426bd89b89acf5842c41",
+        "Version": "1.0.0-local",
+        "Stage": "ready"
+      },
+      {
+        "ReleaseID": "01a03607ef25900a642b6e9d6e65d039",
+        "Version": "1.0.0-ci",
+        "Stage": "active"
+      }
+    ],
+    "Rollback": {
+      "Eligible": false,
+      "ActiveReleaseID": "01a03607ef25900a642b6e9d6e65d039",
+      "TargetReleaseID": "",
+      "Reason": "no rollback target — no previously Active (Archived) Release"
+    },
+    "RuntimeState": {
+      "Recorded": true,
+      "ActiveReleaseID": "01a03607ef25900a642b6e9d6e65d039",
+      "RuntimeCondition": "normal",
+      "SharedResource": "accessible",
+      "LastUpdated": "2026-08-25T07:08:04.856181975+08:00",
+      "LoadError": ""
+    }
+  },
+  "active_release": {
+    "id": "01a03607ef25900a642b6e9d6e65d039",
+    "artifact_id": "0784c74cc3fb65868b01326f975c7f5f6c61065646fb540ede702fc3c2fc2248",
+    "version": "1.0.0-ci",
+    "source": "spike-race-project",
+    "artifact_path": "/tmp/spike-race-server-1412825/install/spike-race-project/artifacts/01a03607ef25900a642b6e9d6e65d039.tar.gz",
+    "runtime_path": "/tmp/spike-race-server-1412825/install/spike-race-project",
+    "stage": 2,
+    "created_at": "2026-08-24T23:08:04Z",
+    "transitions": [
+      {
+        "timestamp": "2026-08-24T23:08:04Z",
+        "from": 0,
+        "to": 1,
+        "outcome": "success"
+      },
+      {
+        "timestamp": "2026-08-24T23:08:04Z",
+        "from": 1,
+        "to": 2,
+        "outcome": "success"
+      }
+    ]
+  },
+  "installed_list": [
+    {
+      "id": "01a03607eed5426bd89b89acf5842c41",
+      "artifact_id": "c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22",
+      "version": "1.0.0-local",
+      "source": "spike-race-project",
+      "artifact_path": "/tmp/spike-race-server-1412825/install/spike-race-project/artifacts/01a03607eed5426bd89b89acf5842c41.tar.gz",
+      "runtime_path": "/tmp/spike-race-server-1412825/install/spike-race-project",
+      "stage": 0,
+      "created_at": "2026-08-24T23:08:04Z"
+    },
+    {
+      "id": "01a03607ef25900a642b6e9d6e65d039",
+      "artifact_id": "0784c74cc3fb65868b01326f975c7f5f6c61065646fb540ede702fc3c2fc2248",
+      "version": "1.0.0-ci",
+      "source": "spike-race-project",
+      "artifact_path": "/tmp/spike-race-server-1412825/install/spike-race-project/artifacts/01a03607ef25900a642b6e9d6e65d039.tar.gz",
+      "runtime_path": "/tmp/spike-race-server-1412825/install/spike-race-project",
+      "stage": 2,
+      "created_at": "2026-08-24T23:08:04Z",
+      "transitions": [
+        {
+          "timestamp": "2026-08-24T23:08:04Z",
+          "from": 0,
+          "to": 1,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T23:08:04Z",
+          "from": 1,
+          "to": 2,
+          "outcome": "success"
+        }
+      ]
+    }
+  ]
+}

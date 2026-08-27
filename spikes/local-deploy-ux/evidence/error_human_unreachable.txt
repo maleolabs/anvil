@@ -1,0 +1,4 @@
+exit_code: 1
+Error: Deploy failed: host unreachable deploy@staging.example.com.
+Reason: Could not connect to deploy@staging.example.com (DNS failure or connection refused). Underlying: dial tcp staging.example.com:22: no such host.
+Resolution: Verify server.targets.<env> in anvil.yaml: host/user must be resolvable. Try ssh deploy@staging.example.com 'echo ok' manually. Retry after DNS/network fix..

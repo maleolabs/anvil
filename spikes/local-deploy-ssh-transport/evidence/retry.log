@@ -1,0 +1,9 @@
+[retry] artifact artifact-20260825-061657.482636120.tar.gz size=5244987
+[push] artifact-20260825-061657.482636120.tar.gz -> /tmp/spike-remote-2183001043/retry-test/artifact-20260825-061657.482636120.tar.gz (5244987 bytes)
+[retry] first push (injected disconnect) kind=partial_write err=simulated disconnect at 2622493 bytes (mid-transfer)
+[push] artifact-20260825-061657.482636120.tar.gz -> /tmp/spike-remote-2183001043/retry-test/artifact-20260825-061657.482636120.tar.gz (5244987 bytes)
+[push] success artifact-20260825-061657.482636120.tar.gz (5244987 bytes) in 500ms
+[retry] second push (retry) success in 500ms
+[retry] checksums match=true src=4a477ad48a40dde2 dst=4a477ad48a40dde2
+
+[summary] firstKind=partial_write secondKind= retryMs=500 checksumValid=true checksumsMatch=true src=4a477ad48a40dde292db4a0331e1de79a7ffd4858cb50bd665b10076216720d4 dst=4a477ad48a40dde292db4a0331e1de79a7ffd4858cb50bd665b10076216720d4
