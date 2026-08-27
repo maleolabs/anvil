@@ -1,0 +1,6 @@
+{
+  "document_id": "compatibility-matrix",
+  "contract_version": "1.0.0",
+  "supported_majors": [1],
+  "maintained_under": "Maintained as part of the specification corpus release process and published via the spec/ tag line, which never shares a tag with engine artifacts (ADR-024 §3.5)."
+}
