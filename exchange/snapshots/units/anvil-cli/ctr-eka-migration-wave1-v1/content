@@ -1,0 +1,1 @@
+{"objective":"Wave-1 migrasi spine-first: vis/req/arc/spec/std/adr/scp/epc ke EKA workspace drafts (namespace anvil-cli). Container planned, never activated di sesi planning-only.","workItems":"ts:eka-wave1-vis-manifesto, ts:eka-wave1-adr-batch, ts:eka-wave1-spec-corpus","changeLog":"Wave-1 planned — holds spine migration work items, dependsOn plan:eka-migration (approved)"}

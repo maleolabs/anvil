@@ -1,0 +1,14 @@
+{
+  "skills": [
+    {
+      "name": "flutter-conventions",
+      "version": "1.0.0",
+      "description": "Flutter project conventions under the Anvil delivery lifecycle standard: hybrid build model, scaffold, build pipeline, configuration surface, and verification expectations. Use when working on a Flutter project managed by Anvil."
+    },
+    {
+      "name": "flutter-delivery",
+      "version": "1.0.0",
+      "description": "The Flutter delivery lifecycle under Anvil: activation phases for the hybrid deployment model (pub_get before promotion, platform_sync), rollback and failure semantics, and how to adopt the lifecycle for a Flutter project."
+    }
+  ]
+}
