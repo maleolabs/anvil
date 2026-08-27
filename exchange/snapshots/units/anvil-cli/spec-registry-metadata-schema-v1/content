@@ -1,0 +1,1 @@
+{"purpose":"Machine-readable schema for registry-metadata-schema specification.","content":"JSON Schema for registry-metadata-schema. Source: docs/specification-corpus/registry-metadata.schema.json. Schema governs machine-checkable contract per ADR-029."}

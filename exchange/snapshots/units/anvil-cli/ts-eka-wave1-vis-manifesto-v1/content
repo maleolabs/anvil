@@ -1,0 +1,1 @@
+{"description":"Migrasi ANVIL_MANIFESTO + PRD-001/002 + amendments ke EKA: vis:anvil-manifesto, req- (4) dengan amends relations, state default draft, real dates/authors, gap handling.","acceptanceCriteria":"vis:anvil-manifesto published draft, req PRD-001/002 + 2 amendments published dengan derives-from vis, eka validate PASS, eka get discovery populated"}
