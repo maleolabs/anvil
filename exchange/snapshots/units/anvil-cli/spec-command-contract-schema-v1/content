@@ -1,0 +1,1 @@
+{"purpose":"Machine-readable schema for command-contract-schema specification.","content":"JSON Schema for command-contract-schema. Source: docs/specification-corpus/command-contract.schema.json. Schema governs machine-checkable contract per ADR-029."}

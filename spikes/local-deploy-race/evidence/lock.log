@@ -1,0 +1,16 @@
+Lock file: /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock
+State file: /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.json
+Contenders: 8 Successes: 1 Failures: 7
+Holder: install
+State parseable: true
+Errors:
+  - another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+  - another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+  - another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+  - another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); operation "install" in progress since 2026-08-24T23:08:04Z by pid 1412825; retry after it completes
+  - another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+  - another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+  - another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+
+State dump:
+{"active_release_id":"","runtime_condition":"normal","shared_resource_status":"accessible","last_updated":"2026-08-25T07:08:04.607644017+08:00"}
