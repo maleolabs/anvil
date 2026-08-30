@@ -1,0 +1,17 @@
+tool,os,display,output,size_bytes,overhead_bytes,payload_bytes,build_ms,simulated,icon_verified,name_rendered,success
+nsis,windows,NSIS,anvil-Setup.exe,54067200,1638400,52428800,2300,true,true,anvil-Setup.exe,true
+wix,windows,WiX Toolset,anvil.msi,56729600,4300800,52428800,8800,true,true,anvil.msi,true
+inno,windows,Inno Setup,anvil-Setup-inno.exe,53657600,1228800,52428800,3150,true,true,anvil-Setup-inno.exe,true
+deb,linux,deb (dpkg),anvil_1.0.0_amd64.deb,53248000,819200,52428800,1200,true,true,anvil_1.0.0_amd64.deb,true
+appimage,linux,AppImage,anvil.AppImage,65011712,12582912,52428800,3950,true,true,anvil.AppImage,true
+makeself,linux,Makeself,anvil.run,52477952,49152,52428800,900,true,true,anvil.run,true
+
+summary,value
+installer_name,anvil
+payload_mb,50
+total_builders,6
+success,6
+smallest_overhead,makeself (49152 bytes)
+largest_overhead,appimage (12582912 bytes)
+fastest,makeself (900ms)
+slowest,wix (8800ms)

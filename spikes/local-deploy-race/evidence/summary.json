@@ -1,0 +1,274 @@
+{
+  "artifact_local": {
+    "path": "/tmp/spike-race-artifacts-1412825/artifact-20260825-070804.487190862.tar.gz",
+    "manifest": {
+      "artifact_id": "c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22",
+      "version": "1.0.0-local",
+      "created_at": "2026-08-24T23:08:04Z",
+      "source": "spike-race-project",
+      "checksum": "c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22",
+      "checksum_type": "sha-256",
+      "project_id": "spike-race-project"
+    },
+    "manifest_json": "ewogICJhcnRpZmFjdF9pZCI6ICJjMGIyNjRhNGMxNWU1MmMwYWM2N2I3ZDg4M2U3NjE0OWQxNTYwZGM2MDZlOTc0YTkzZDhkMmE5Mjc2YjRiZTIyIiwKICAidmVyc2lvbiI6ICIxLjAuMC1sb2NhbCIsCiAgImNyZWF0ZWRfYXQiOiAiMjAyNi0wOC0yNFQyMzowODowNFoiLAogICJzb3VyY2UiOiAic3Bpa2UtcmFjZS1wcm9qZWN0IiwKICAiY2hlY2tzdW0iOiAiYzBiMjY0YTRjMTVlNTJjMGFjNjdiN2Q4ODNlNzYxNDlkMTU2MGRjNjA2ZTk3NGE5M2Q4ZDJhOTI3NmI0YmUyMiIsCiAgImNoZWNrc3VtX3R5cGUiOiAic2hhLTI1NiIsCiAgInByb2plY3RfaWQiOiAic3Bpa2UtcmFjZS1wcm9qZWN0Igp9",
+    "size_bytes": 6063
+  },
+  "artifact_ci": {
+    "path": "/tmp/spike-race-artifacts-1412825/artifact-20260825-070804.561511849.tar.gz",
+    "manifest": {
+      "artifact_id": "0784c74cc3fb65868b01326f975c7f5f6c61065646fb540ede702fc3c2fc2248",
+      "version": "1.0.0-ci",
+      "created_at": "2026-08-24T23:08:04Z",
+      "source": "spike-race-project",
+      "checksum": "0784c74cc3fb65868b01326f975c7f5f6c61065646fb540ede702fc3c2fc2248",
+      "checksum_type": "sha-256",
+      "project_id": "spike-race-project"
+    },
+    "manifest_json": "ewogICJhcnRpZmFjdF9pZCI6ICIwNzg0Yzc0Y2MzZmI2NTg2OGIwMTMyNmY5NzVjN2Y1ZjZjNjEwNjU2NDZmYjU0MGVkZTcwMmZjM2MyZmMyMjQ4IiwKICAidmVyc2lvbiI6ICIxLjAuMC1jaSIsCiAgImNyZWF0ZWRfYXQiOiAiMjAyNi0wOC0yNFQyMzowODowNFoiLAogICJzb3VyY2UiOiAic3Bpa2UtcmFjZS1wcm9qZWN0IiwKICAiY2hlY2tzdW0iOiAiMDc4NGM3NGNjM2ZiNjU4NjhiMDEzMjZmOTc1YzdmNWY2YzYxMDY1NjQ2ZmI1NDBlZGU3MDJmYzNjMmZjMjI0OCIsCiAgImNoZWNrc3VtX3R5cGUiOiAic2hhLTI1NiIsCiAgInByb2plY3RfaWQiOiAic3Bpa2UtcmFjZS1wcm9qZWN0Igp9",
+    "size_bytes": 6058
+  },
+  "before_state": {
+    "after_action": "before",
+    "lifecycle": {
+      "ProjectID": "spike-race-project",
+      "Active": null,
+      "Installed": [],
+      "Rollback": {
+        "Eligible": false,
+        "ActiveReleaseID": "",
+        "TargetReleaseID": "",
+        "Reason": "no Active Release — nothing to roll back"
+      },
+      "RuntimeState": {
+        "Recorded": false,
+        "ActiveReleaseID": "",
+        "RuntimeCondition": "",
+        "SharedResource": "",
+        "LastUpdated": "0001-01-01T00:00:00Z",
+        "LoadError": ""
+      }
+    },
+    "installed_list": []
+  },
+  "after_install_race": {
+    "after_action": "after-install-race",
+    "lifecycle": {
+      "ProjectID": "spike-race-project",
+      "Active": null,
+      "Installed": [
+        {
+          "ReleaseID": "01a03607eed5426bd89b89acf5842c41",
+          "Version": "1.0.0-local",
+          "Stage": "ready"
+        }
+      ],
+      "Rollback": {
+        "Eligible": false,
+        "ActiveReleaseID": "",
+        "TargetReleaseID": "",
+        "Reason": "no Active Release — nothing to roll back"
+      },
+      "RuntimeState": {
+        "Recorded": true,
+        "ActiveReleaseID": "",
+        "RuntimeCondition": "normal",
+        "SharedResource": "accessible",
+        "LastUpdated": "2026-08-25T07:08:04.733813636+08:00",
+        "LoadError": ""
+      }
+    },
+    "installed_list": [
+      {
+        "id": "01a03607eed5426bd89b89acf5842c41",
+        "artifact_id": "c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22",
+        "version": "1.0.0-local",
+        "source": "spike-race-project",
+        "artifact_path": "/tmp/spike-race-server-1412825/install/spike-race-project/artifacts/01a03607eed5426bd89b89acf5842c41.tar.gz",
+        "runtime_path": "/tmp/spike-race-server-1412825/install/spike-race-project",
+        "stage": 0,
+        "created_at": "2026-08-24T23:08:04Z"
+      }
+    ]
+  },
+  "after_activate_race": {
+    "after_action": "after-activate-race",
+    "lifecycle": {
+      "ProjectID": "spike-race-project",
+      "Active": {
+        "ReleaseID": "01a03607ef25900a642b6e9d6e65d039",
+        "Version": "1.0.0-ci",
+        "Stage": "active"
+      },
+      "Installed": [
+        {
+          "ReleaseID": "01a03607eed5426bd89b89acf5842c41",
+          "Version": "1.0.0-local",
+          "Stage": "ready"
+        },
+        {
+          "ReleaseID": "01a03607ef25900a642b6e9d6e65d039",
+          "Version": "1.0.0-ci",
+          "Stage": "active"
+        }
+      ],
+      "Rollback": {
+        "Eligible": false,
+        "ActiveReleaseID": "01a03607ef25900a642b6e9d6e65d039",
+        "TargetReleaseID": "",
+        "Reason": "no rollback target — no previously Active (Archived) Release"
+      },
+      "RuntimeState": {
+        "Recorded": true,
+        "ActiveReleaseID": "01a03607ef25900a642b6e9d6e65d039",
+        "RuntimeCondition": "normal",
+        "SharedResource": "accessible",
+        "LastUpdated": "2026-08-25T07:08:04.856181975+08:00",
+        "LoadError": ""
+      }
+    },
+    "active_release": {
+      "id": "01a03607ef25900a642b6e9d6e65d039",
+      "artifact_id": "0784c74cc3fb65868b01326f975c7f5f6c61065646fb540ede702fc3c2fc2248",
+      "version": "1.0.0-ci",
+      "source": "spike-race-project",
+      "artifact_path": "/tmp/spike-race-server-1412825/install/spike-race-project/artifacts/01a03607ef25900a642b6e9d6e65d039.tar.gz",
+      "runtime_path": "/tmp/spike-race-server-1412825/install/spike-race-project",
+      "stage": 2,
+      "created_at": "2026-08-24T23:08:04Z",
+      "transitions": [
+        {
+          "timestamp": "2026-08-24T23:08:04Z",
+          "from": 0,
+          "to": 1,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T23:08:04Z",
+          "from": 1,
+          "to": 2,
+          "outcome": "success"
+        }
+      ]
+    },
+    "installed_list": [
+      {
+        "id": "01a03607eed5426bd89b89acf5842c41",
+        "artifact_id": "c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22",
+        "version": "1.0.0-local",
+        "source": "spike-race-project",
+        "artifact_path": "/tmp/spike-race-server-1412825/install/spike-race-project/artifacts/01a03607eed5426bd89b89acf5842c41.tar.gz",
+        "runtime_path": "/tmp/spike-race-server-1412825/install/spike-race-project",
+        "stage": 0,
+        "created_at": "2026-08-24T23:08:04Z"
+      },
+      {
+        "id": "01a03607ef25900a642b6e9d6e65d039",
+        "artifact_id": "0784c74cc3fb65868b01326f975c7f5f6c61065646fb540ede702fc3c2fc2248",
+        "version": "1.0.0-ci",
+        "source": "spike-race-project",
+        "artifact_path": "/tmp/spike-race-server-1412825/install/spike-race-project/artifacts/01a03607ef25900a642b6e9d6e65d039.tar.gz",
+        "runtime_path": "/tmp/spike-race-server-1412825/install/spike-race-project",
+        "stage": 2,
+        "created_at": "2026-08-24T23:08:04Z",
+        "transitions": [
+          {
+            "timestamp": "2026-08-24T23:08:04Z",
+            "from": 0,
+            "to": 1,
+            "outcome": "success"
+          },
+          {
+            "timestamp": "2026-08-24T23:08:04Z",
+            "from": 1,
+            "to": 2,
+            "outcome": "success"
+          }
+        ]
+      }
+    ]
+  },
+  "lock_contention": {
+    "contenders": 8,
+    "successes": 1,
+    "failures": 7,
+    "holder_operation": "install",
+    "errors": [
+      "another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes",
+      "another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes",
+      "another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes",
+      "another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); operation \"install\" in progress since 2026-08-24T23:08:04Z by pid 1412825; retry after it completes",
+      "another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes",
+      "another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes",
+      "another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes"
+    ],
+    "lock_file": "/tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock",
+    "state_file": "/tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.json",
+    "state_parseable": true,
+    "state_dump": "{\"active_release_id\":\"\",\"runtime_condition\":\"normal\",\"shared_resource_status\":\"accessible\",\"last_updated\":\"2026-08-25T07:08:04.607644017+08:00\"}"
+  },
+  "concurrent_install": {
+    "operation": "install",
+    "contenders": 2,
+    "successes": 1,
+    "failures": 1,
+    "winner_release_id": "01a03607eed5426bd89b89acf5842c41",
+    "winner_artifact": "c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22",
+    "loser_errors": [
+      "another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); operation \"install\" in progress since 2026-08-24T23:08:04Z by pid 1412825; retry after it completes",
+      "another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); operation \"install\" in progress since 2026-08-24T23:08:04Z by pid 1412825; retry after it completes",
+      "another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); operation \"install\" in progress since 2026-08-24T23:08:04Z by pid 1412825; retry after it completes"
+    ],
+    "only_one_active": true,
+    "no_corruption": true,
+    "duration_ms": 125
+  },
+  "concurrent_activate": {
+    "operation": "activate",
+    "contenders": 2,
+    "successes": 1,
+    "failures": 1,
+    "winner_release_id": "01a03607ef25900a642b6e9d6e65d039",
+    "winner_artifact": "",
+    "loser_errors": [
+      "another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); operation \"activate\" in progress since 2026-08-24T23:08:04Z by pid 1412825; retry after it completes"
+    ],
+    "only_one_active": true,
+    "no_corruption": true,
+    "duration_ms": 41
+  },
+  "idempotency": {
+    "artifact_id": "c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22",
+    "attempts": 4,
+    "duplicate_errors": 4,
+    "release_count_before": 2,
+    "release_count_after": 2,
+    "duplicate_prevented": true,
+    "lock_rejected_errors": 0,
+    "duplicate_file_exists": false
+  },
+  "state_integrity": {
+    "state_file_parseable": true,
+    "releases_parseable": true,
+    "only_one_active_invariant": true,
+    "active_release_id": "01a03607ef25900a642b6e9d6e65d039",
+    "active_count": 1,
+    "state_json": "{\"active_release_id\":\"01a03607ef25900a642b6e9d6e65d039\",\"runtime_condition\":\"normal\",\"shared_resource_status\":\"accessible\",\"last_updated\":\"2026-08-25T07:08:05.052223329+08:00\"}",
+    "lock_record_cleared": true
+  },
+  "guard_recommendation": "# Guard Recommendation — Local vs CI Deploy (Input untuk ADR nanti)\n\n## Context\nSpike local-deploy-race membuktikan runtime.OperationLock flock mencegah dual-active saat local dan CI deploy bersamaan ke target yang sama. Satu pemenang deterministik, yang kalah ditolak dengan error jelas, state /.anvil tidak corrupt, retry tidak duplicate.\n\n## Rekomendasi Guard\n\n### 1. Dev Environment (allow local)\n- anvil deploy --target dev boleh dari local tanpa gate tambahan.\n- Rationale: dev butuh iterasi cepat, risiko overwrite rendah, rollback first-class tetap tersedia.\n- Guard minimal: warning log \"deploying from local to dev\" + audit trail (user, host, artifact_id).\n- Tidak perlu confirm prompt di dev, tapi tetap enforce locking (flock) agar concurrent local+CI tidak race.\n\n### 2. Staging Environment (soft gate)\n- anvil deploy --target staging boleh dari local atau CI, tapi harus eksplisit flag --confirm atau ANVIL_ALLOW_LOCAL_STAGING=1.\n- Jika CI terdeteksi (env CI=true atau GITHUB_ACTIONS), local deploy ke staging ditolak kecuali allowlist.\n- Pesan error: \"staging deploy from local requires --confirm (concurrent risk) — use CI pipeline or set allowlist\".\n\n### 3. Prod Environment (require allowlist + confirm prompt)\n- anvil deploy --target prod hanya via CI secara default. Local langsung ditolak.\n- Allowlist: anvil.yaml / server.targets[prod].allowLocalDeploys: [user@host fingerprint] atau ANVIL_PROD_ALLOW_LOCAL=true (opsional, explicit).\n- Jika allowlist terpenuhi, tetap require interactive confirm prompt: Confirm deploy local artifact \u003cid\u003e to prod? (yes/no): — timeout 30s, default no.\n- Non-interactive (CI) bypass prompt tapi tetap audit + locking.\n- Audit: prod deploy log harus capture deployer identity (SSH key fingerprint / CI job url) untuk traceability.\n\n### 4. Mekanisme Teknis (untuk ADR)\n- Enforce via ServerReleaseCoordinator.Install/Activate sudah pakai runtime.OperationLock flock — tidak perlu perubahan.\n- Tambahkan anvil deploy pre-flight check: if target.env == \"prod\" \u0026\u0026 !isCI \u0026\u0026 !isAllowlisted(user) { deny or prompt }\n- Idempotency: Install sudah reject duplicate artifact_id already installed — retry aman.\n- State dumps (runtime-state.json + .anvil/state/releases/*.json) tetap authoritative; observability anvil status query via server.QueryLifecycleStatus (read-only, ADR-036).\n\n### 5. Evidence Spike\n- Concurrent run logs + state dumps before/after + lock behavior proof ada di spikes/local-deploy-race/evidence/race.log dan summary.json.\n- Lock file \u003cinstallRoot\u003e/runtime-state.lock mode 0600, holder record di runtime-state.json.operation_lock.\n\n## Decision Input untuk ADR\n- Opsi A (rekomendasi): dev allow local, prod require allowlist+confirm (hybrid C dari FND).\n- Opsi B: preview-only channel (local hanya ke dev/staging, prod CI-only tanpa allowlist).\n- Perlu ADR baru adr:local-deploy-guard sebelum anvil deploy masuk Planning-\u003eExecution.\n",
+  "install_releases": [
+    {
+      "id": "01a03607eed5426bd89b89acf5842c41",
+      "artifact_id": "c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22",
+      "version": "1.0.0-local",
+      "source": "spike-race-project",
+      "artifact_path": "/tmp/spike-race-server-1412825/install/spike-race-project/artifacts/01a03607eed5426bd89b89acf5842c41.tar.gz",
+      "runtime_path": "/tmp/spike-race-server-1412825/install/spike-race-project",
+      "stage": 0,
+      "created_at": "2026-08-24T23:08:04Z"
+    }
+  ],
+  "activate_winners": [
+    "01a03607ef25900a642b6e9d6e65d039"
+  ]
+}

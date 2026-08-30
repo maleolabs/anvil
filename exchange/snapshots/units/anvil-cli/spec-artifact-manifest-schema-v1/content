@@ -1,0 +1,1 @@
+{"purpose":"Machine-readable schema for artifact-manifest-schema specification.","content":"JSON Schema for artifact-manifest-schema. Source: docs/specification-corpus/artifact-manifest.schema.json. Schema governs machine-checkable contract per ADR-029."}

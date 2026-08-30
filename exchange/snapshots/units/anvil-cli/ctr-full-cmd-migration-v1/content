@@ -1,0 +1,1 @@
+{"objective":"Execute full cmd/* Platform Theme migration","workItems":"sto:migrate-cmd-development, sto:migrate-cmd-deployment, sto:migrate-cmd-server, sto:migrate-cmd-system","changeLog":"Created for full cmd/* debt — 259 sites"}
