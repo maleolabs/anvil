@@ -1,0 +1,4 @@
+exit_code: 4
+Error: Deploy failed: permission denied on deploy@staging.example.com.
+Reason: Authenticated as deploy@staging.example.com but remote denied write via SSH (deploy dir not writable or user not allowed). Underlying: permission denied: remote dir not writable for deploy@staging.example.com.
+Resolution: On deploy@staging.example.com ensure deploy user owns the install dir and has write permission (ssh deploy@staging.example.com 'ls -ld <installDir>'). Check server_init was run. No credential is leaked..

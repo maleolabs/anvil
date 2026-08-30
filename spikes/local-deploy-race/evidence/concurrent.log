@@ -1,0 +1,147 @@
+=== Spike 3 Race Harness ===
+project=spike-race-project deployer=race-tester sizeMB=1
+serverRoot=/tmp/spike-race-server-1412825
+installRoot=/tmp/spike-race-server-1412825/install/spike-race-project
+artifactsDir=/tmp/spike-race-artifacts-1412825
+remoteStagingDir=/tmp/spike-race-remote-1412825
+=== Build artifacts: local vs CI ===
+[build] local id=c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22 version=1.0.0-local checksum=c0b264a4c15e size=6063
+[build] ci id=0784c74cc3fb65868b01326f975c7f5f6c61065646fb540ede702fc3c2fc2248 version=1.0.0-ci checksum=0784c74cc3fb size=6058
+=== Negotiate + Push both artifacts ===
+[negotiate] PASS compatible=true reason=target is compatible with artifact
+[push] success target=spike-race-target remote=/tmp/spike-race-remote-1412825/artifact-20260825-070804.487190862.tar.gz
+[negotiate] PASS compatible=true reason=target is compatible with artifact
+[push] success target=spike-race-target remote=/tmp/spike-race-remote-1412825/artifact-20260825-070804.561511849.tar.gz
+=== State dump BEFORE race ===
+=== Status after before ===
+Project: spike-race-project
+Active: <none>
+Installed: 0
+Rollback eligible=false reason=no Active Release — nothing to roll back
+RuntimeState recorded=false active= condition= shared=
+Direct GetActiveRelease: <none>
+ListReleases total=0
+
+--- State dump before ---
+runtime-state.json: open /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.json: no such file or directory
+releases count=0
+--- end dump ---
+=== AC2: Raw OperationLock contention (8 contenders, flock) ===
+[lock] contenders=8 successes=1 failures=7 holder=install
+  [lock] reject: another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+  [lock] reject: another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+  [lock] reject: another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+  [lock] reject: another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); operation "install" in progress since 2026-08-24T23:08:04Z by pid 1412825; retry after it completes
+  [lock] reject: another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+  [lock] reject: another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+  [lock] reject: another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); retry after it completes
+=== AC1+AC2: Concurrent Install race (local vs CI) with lock hold simulation ===
+[install-race] holder acquired lock for 300ms to simulate in-flight deploy
+[install-race] holder released, now retry installs sequentially (deterministic winner = first retry)
+[install-race] successes=1 failures=1 winner=01a03607eed5426bd89b89acf5842c41 duration=125ms onlyOneActive=true noCorruption=true
+  [install-race] loser error: another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); operation "install" in progress since 2026-08-24T23:08:04Z by pid 1412825; retry after it completes
+  [install-race] loser error: another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); operation "install" in progress since 2026-08-24T23:08:04Z by pid 1412825; retry after it completes
+  [install-race] loser error: another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); operation "install" in progress since 2026-08-24T23:08:04Z by pid 1412825; retry after it completes
+=== Status after after-install-race ===
+Project: spike-race-project
+Active: <none>
+Installed: 1
+  - 01a03607eed5426bd89b89acf5842c41 version=1.0.0-local stage=ready
+Rollback eligible=false reason=no Active Release — nothing to roll back
+RuntimeState recorded=true active= condition=normal shared=accessible
+Direct GetActiveRelease: <none>
+ListReleases total=1
+  * 01a03607eed5426bd89b89acf5842c41 stage=ready artifact=c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22
+
+--- State dump after-install-race ---
+runtime-state.json (144 bytes): {"active_release_id":"","runtime_condition":"normal","shared_resource_status":"accessible","last_updated":"2026-08-25T07:08:04.733813636+08:00"}
+releases count=1
+  release 01a03607eed5426bd89b89acf5842c41 stage=ready artifact=c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22 version=1.0.0-local
+lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock exists mode=600 size=0
+--- end dump ---
+[install-race] installing CI artifact sequentially for activate race
+[prep] releases ready: local=01a03607eed5426bd89b89acf5842c41 ci=01a03607ef25900a642b6e9d6e65d039
+=== State BEFORE activate race ===
+=== Status after before-activate-race ===
+Project: spike-race-project
+Active: <none>
+Installed: 2
+  - 01a03607eed5426bd89b89acf5842c41 version=1.0.0-local stage=ready
+  - 01a03607ef25900a642b6e9d6e65d039 version=1.0.0-ci stage=ready
+Rollback eligible=false reason=no Active Release — nothing to roll back
+RuntimeState recorded=true active= condition=normal shared=accessible
+Direct GetActiveRelease: <none>
+ListReleases total=2
+  * 01a03607eed5426bd89b89acf5842c41 stage=ready artifact=c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22
+  * 01a03607ef25900a642b6e9d6e65d039 stage=ready artifact=0784c74cc3fb65868b01326f975c7f5f6c61065646fb540ede702fc3c2fc2248
+
+=== AC1+AC2: Concurrent Activate race (local vs CI) ===
+[activate-race] successes=1 failures=1 winner=01a03607ef25900a642b6e9d6e65d039 duration=41ms onlyOneActive=true noCorruption=true
+  [activate-race] loser error: another lifecycle operation is in progress for this server (lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock); operation "activate" in progress since 2026-08-24T23:08:04Z by pid 1412825; retry after it completes
+=== Status after after-activate-race ===
+Project: spike-race-project
+Active: 01a03607ef25900a642b6e9d6e65d039 (version=1.0.0-ci stage=active)
+Installed: 2
+  - 01a03607eed5426bd89b89acf5842c41 version=1.0.0-local stage=ready
+  - 01a03607ef25900a642b6e9d6e65d039 version=1.0.0-ci stage=active
+Rollback eligible=false reason=no rollback target — no previously Active (Archived) Release
+RuntimeState recorded=true active=01a03607ef25900a642b6e9d6e65d039 condition=normal shared=accessible
+Direct GetActiveRelease: 01a03607ef25900a642b6e9d6e65d039 stage=active version=1.0.0-ci
+ListReleases total=2
+  * 01a03607eed5426bd89b89acf5842c41 stage=ready artifact=c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22
+  * 01a03607ef25900a642b6e9d6e65d039 stage=active artifact=0784c74cc3fb65868b01326f975c7f5f6c61065646fb540ede702fc3c2fc2248
+
+--- State dump after-activate-race ---
+runtime-state.json (176 bytes): {"active_release_id":"01a03607ef25900a642b6e9d6e65d039","runtime_condition":"normal","shared_resource_status":"accessible","last_updated":"2026-08-25T07:08:04.856181975+08:00"}
+releases count=2
+  release 01a03607eed5426bd89b89acf5842c41 stage=ready artifact=c0b264a4c15e52c0ac67b7d883e76149d1560dc606e974a93d8d2a9276b4be22 version=1.0.0-local
+  release 01a03607ef25900a642b6e9d6e65d039 stage=active artifact=0784c74cc3fb65868b01326f975c7f5f6c61065646fb540ede702fc3c2fc2248 version=1.0.0-ci
+lock file /tmp/spike-race-server-1412825/install/spike-race-project/runtime-state.lock exists mode=600 size=0
+--- end dump ---
+[race] deterministic winner verified: active=01a03607ef25900a642b6e9d6e65d039 (one of local/ci)
+=== AC3: Idempotency — retry same artifact must not duplicate ===
+[idempotency] attempts=4 duplicateErrors=4 lockRejected=0 before=2 after=2 prevented=true
+=== State integrity final ===
+[integrity] stateParseable=true releasesParseable=true onlyOneActive=true activeCount=1 active=01a03607ef25900a642b6e9d6e65d039 lockCleared=true
+=== AC4: Guard recommendation (dev allow local, prod require allowlist/confirm) ===
+# Guard Recommendation — Local vs CI Deploy (Input untuk ADR nanti)
+
+## Context
+Spike local-deploy-race membuktikan runtime.OperationLock flock mencegah dual-active saat local dan CI deploy bersamaan ke target yang sama. Satu pemenang deterministik, yang kalah ditolak dengan error jelas, state /.anvil tidak corrupt, retry tidak duplicate.
+
+## Rekomendasi Guard
+
+### 1. Dev Environment (allow local)
+- anvil deploy --target dev boleh dari local tanpa gate tambahan.
+- Rationale: dev butuh iterasi cepat, risiko overwrite rendah, rollback first-class tetap tersedia.
+- Guard minimal: warning log "deploying from local to dev" + audit trail (user, host, artifact_id).
+- Tidak perlu confirm prompt di dev, tapi tetap enforce locking (flock) agar concurrent local+CI tidak race.
+
+### 2. Staging Environment (soft gate)
+- anvil deploy --target staging boleh dari local atau CI, tapi harus eksplisit flag --confirm atau ANVIL_ALLOW_LOCAL_STAGING=1.
+- Jika CI terdeteksi (env CI=true atau GITHUB_ACTIONS), local deploy ke staging ditolak kecuali allowlist.
+- Pesan error: "staging deploy from local requires --confirm (concurrent risk) — use CI pipeline or set allowlist".
+
+### 3. Prod Environment (require allowlist + confirm prompt)
+- anvil deploy --target prod hanya via CI secara default. Local langsung ditolak.
+- Allowlist: anvil.yaml / server.targets[prod].allowLocalDeploys: [user@host fingerprint] atau ANVIL_PROD_ALLOW_LOCAL=true (opsional, explicit).
+- Jika allowlist terpenuhi, tetap require interactive confirm prompt: Confirm deploy local artifact <id> to prod? (yes/no): — timeout 30s, default no.
+- Non-interactive (CI) bypass prompt tapi tetap audit + locking.
+- Audit: prod deploy log harus capture deployer identity (SSH key fingerprint / CI job url) untuk traceability.
+
+### 4. Mekanisme Teknis (untuk ADR)
+- Enforce via ServerReleaseCoordinator.Install/Activate sudah pakai runtime.OperationLock flock — tidak perlu perubahan.
+- Tambahkan anvil deploy pre-flight check: if target.env == "prod" && !isCI && !isAllowlisted(user) { deny or prompt }
+- Idempotency: Install sudah reject duplicate artifact_id already installed — retry aman.
+- State dumps (runtime-state.json + .anvil/state/releases/*.json) tetap authoritative; observability anvil status query via server.QueryLifecycleStatus (read-only, ADR-036).
+
+### 5. Evidence Spike
+- Concurrent run logs + state dumps before/after + lock behavior proof ada di spikes/local-deploy-race/evidence/race.log dan summary.json.
+- Lock file <installRoot>/runtime-state.lock mode 0600, holder record di runtime-state.json.operation_lock.
+
+## Decision Input untuk ADR
+- Opsi A (rekomendasi): dev allow local, prod require allowlist+confirm (hybrid C dari FND).
+- Opsi B: preview-only channel (local hanya ke dev/staging, prod CI-only tanpa allowlist).
+- Perlu ADR baru adr:local-deploy-guard sebelum anvil deploy masuk Planning->Execution.
+
+=== RACE SUCCESS: all ACs satisfied ===
