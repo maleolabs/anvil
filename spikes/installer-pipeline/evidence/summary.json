@@ -1,0 +1,199 @@
+{
+  "installer_config": {
+    "name": "DemoApp",
+    "icon": "spikes/installer-pipeline/fixtures/app.ico",
+    "artifactSource": ".",
+    "osTargets": [
+      "windows",
+      "linux"
+    ],
+    "resolvedFrom": "project:anvil.yaml"
+  },
+  "env_overrides": {},
+  "build_windows": {
+    "target": "windows",
+    "dry_run": false,
+    "artifact_id": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+    "version": "1.0.0",
+    "checksum": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+    "checksum_type": "sha-256",
+    "project_id": "DemoApp",
+    "artifact_path": "/tmp/anvil-installer-pkg-2695572158/artifact-20260827-115920.927865201.tar.gz",
+    "manifest": {
+      "artifact_id": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+      "version": "1.0.0",
+      "created_at": "2026-08-27T15:59:20Z",
+      "source": "DemoApp",
+      "checksum": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+      "checksum_type": "sha-256",
+      "project_id": "DemoApp"
+    },
+    "verify": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "Archive validity",
+          "passed": true,
+          "details": "valid"
+        },
+        {
+          "name": "Manifest presence",
+          "passed": true,
+          "details": "found"
+        },
+        {
+          "name": "Manifest content",
+          "passed": true,
+          "details": "complete"
+        },
+        {
+          "name": "Project identity",
+          "passed": true,
+          "details": "valid"
+        },
+        {
+          "name": "Checksum match",
+          "passed": true,
+          "details": "verified"
+        },
+        {
+          "name": "Artifact immutability",
+          "passed": true,
+          "details": "verified"
+        }
+      ]
+    },
+    "installer": {
+      "output_path": "dist/installer/DemoApp-Setup.exe",
+      "file_name": "DemoApp-Setup.exe",
+      "size_bytes": 1678311,
+      "simulated": true,
+      "log": ""
+    },
+    "installer_path": "dist/installer/DemoApp-Setup.exe",
+    "idempotent": true,
+    "duration_ms": 24
+  },
+  "build_linux": {
+    "target": "linux",
+    "dry_run": false,
+    "artifact_id": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+    "version": "1.0.0",
+    "checksum": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+    "checksum_type": "sha-256",
+    "project_id": "DemoApp",
+    "artifact_path": "/tmp/anvil-installer-pkg-2384832132/artifact-20260827-115920.953018349.tar.gz",
+    "manifest": {
+      "artifact_id": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+      "version": "1.0.0",
+      "created_at": "2026-08-27T15:59:20Z",
+      "source": "DemoApp",
+      "checksum": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+      "checksum_type": "sha-256",
+      "project_id": "DemoApp"
+    },
+    "verify": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "Archive validity",
+          "passed": true,
+          "details": "valid"
+        },
+        {
+          "name": "Manifest presence",
+          "passed": true,
+          "details": "found"
+        },
+        {
+          "name": "Manifest content",
+          "passed": true,
+          "details": "complete"
+        },
+        {
+          "name": "Project identity",
+          "passed": true,
+          "details": "valid"
+        },
+        {
+          "name": "Checksum match",
+          "passed": true,
+          "details": "verified"
+        },
+        {
+          "name": "Artifact immutability",
+          "passed": true,
+          "details": "verified"
+        }
+      ]
+    },
+    "installer": {
+      "output_path": "dist/installer/DemoApp.run",
+      "file_name": "DemoApp.run",
+      "size_bytes": 49758,
+      "simulated": true,
+      "log": "Makeself mock: DemoApp.run (49758 bytes) icon=spikes/installer-pipeline/fixtures/app.ico simulated=true\nHeader: #!/bin/sh\n# Makeself-MOCK|name=DemoApp|artifact=artifact-20260827-115920.953018349.tar.gz|checksum=c11ab3a752170191|icon=app.ico\n"
+    },
+    "installer_path": "dist/installer/DemoApp.run",
+    "duration_ms": 77
+  },
+  "dry_run": {
+    "target": "windows",
+    "dry_run": true,
+    "artifact_id": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+    "version": "1.0.0",
+    "checksum": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+    "checksum_type": "sha-256",
+    "project_id": "DemoApp",
+    "artifact_path": "/tmp/anvil-installer-pkg-2859362600/artifact-20260827-115921.140408665.tar.gz",
+    "manifest": {
+      "artifact_id": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+      "version": "1.0.0",
+      "created_at": "2026-08-27T15:59:21Z",
+      "source": "DemoApp",
+      "checksum": "c11ab3a752170191dc3fb1d753417e9a92e09d15db649f74ae01ad0817096328",
+      "checksum_type": "sha-256",
+      "project_id": "DemoApp"
+    },
+    "verify": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "Archive validity",
+          "passed": true,
+          "details": "valid"
+        },
+        {
+          "name": "Manifest presence",
+          "passed": true,
+          "details": "found"
+        },
+        {
+          "name": "Manifest content",
+          "passed": true,
+          "details": "complete"
+        },
+        {
+          "name": "Project identity",
+          "passed": true,
+          "details": "valid"
+        },
+        {
+          "name": "Checksum match",
+          "passed": true,
+          "details": "verified"
+        },
+        {
+          "name": "Artifact immutability",
+          "passed": true,
+          "details": "verified"
+        }
+      ]
+    },
+    "duration_ms": 6
+  },
+  "tamper_passed": true,
+  "idempotent_ok": true,
+  "human_json_consistent": true,
+  "redact_ok": true
+}

@@ -1,0 +1,1 @@
+{"objective":"Eksekusi 4 spike local-deploy secara parallel, kumpulkan evidence untuk FND decision.","workItems":"spk:local-deploy-ssh-transport, spk:local-deploy-e2e, spk:local-deploy-race, spk:local-deploy-ux","changeLog":""}

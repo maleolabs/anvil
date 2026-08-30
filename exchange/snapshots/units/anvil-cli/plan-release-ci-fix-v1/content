@@ -1,0 +1,1 @@
+{"objective":"Fix release-blocking test failures: HelpFunc writer pinning breaks subsequent command executions in test harness","scope":"Remove SetOut swap from SetHelpFunc (renderHelp writes to explicit w; pinning resolved writer onto child commands redirects all later output to stale buffers). Verify full ./cmd suite green like v2.3.2.","outOfScope":"Business logic."}
