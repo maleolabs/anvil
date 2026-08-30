@@ -1,0 +1,55 @@
+{
+  "identifier": "com.anvil.installer",
+  "productName": "Anvil Installer",
+  "app": {
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+    },
+    "windows": [
+      {
+        "height": 700,
+        "title": "anvil",
+        "width": 600
+      }
+    ]
+  },
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
+  },
+  "bundle": {
+    "active": true,
+    "linux": {
+      "appimage": {
+        "bundleMediaFramework": false
+      },
+      "deb": {}
+    },
+    "resources": [
+      "resources/installer-artifact.tar.gz",
+      "resources/installer-artifact.sha256",
+      "resources/forms.json",
+      "resources/setup.json"
+    ],
+    "targets": [
+      "appimage",
+      "deb",
+      "msi",
+      "nsis"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "nsis": {},
+      "wix": {}
+    }
+  },
+  "plugins": {
+    "dialog": {
+      "open": true,
+      "save": false
+    }
+  }
+}

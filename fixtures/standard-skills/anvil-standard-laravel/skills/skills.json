@@ -1,0 +1,14 @@
+{
+  "skills": [
+    {
+      "name": "laravel-conventions",
+      "version": "1.0.0",
+      "description": "Laravel project conventions under the Anvil delivery lifecycle standard: scaffold, build pipeline, configuration surface, and verification expectations. Use when working inside a Laravel project managed by Anvil."
+    },
+    {
+      "name": "laravel-delivery",
+      "version": "1.0.0",
+      "description": "The Laravel delivery lifecycle under Anvil: activation phases (migrate after promotion, config/route/event caches), rollback and failure semantics, and how to adopt the lifecycle for a Laravel project."
+    }
+  ]
+}
