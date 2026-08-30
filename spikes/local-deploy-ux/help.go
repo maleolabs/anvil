@@ -1,0 +1,74 @@
+package spklocaldeployux
+
+// ── Mock `anvil deploy --help` (AC4) ─────────────────────────────────
+//
+// This is the spike's proof help text — NOT the prod command. It demonstrates
+// the intended surface validated by UX review. The prod command will copy this
+// contract when implemented.
+
+const deployHelpLong = `Deploy the current project to a target environment via SSH (full lifecycle).
+
+The lifecycle is build → verify → push → install → activate, enforced by the
+Anvil runtime on the target. Verification-before-trust gates activate; the
+artifact's embedded manifest.json is the identity source (artifact_id from content).
+
+Examples:
+  anvil deploy --target staging                         # full deploy to staging
+  anvil deploy --target staging --dry-run               # build+verify only, no install (AC1)
+  anvil deploy --target staging --dry-run --json        # machine-readable (envelope v1)
+  anvil deploy --target production --json               # deploy with JSON envelope
+  anvil deploy --target staging --help                  # this help
+
+Targets are declared in anvil.yaml:
+
+  server:
+    targets:
+      staging:
+        host: staging.example.com
+        user: deploy
+        sshKeyPath: ~/.ssh/id_ed25519
+      production:
+        host: prod.example.com
+        user: deploy
+        sshKeyPath: ~/.ssh/id_ed25519
+
+Progress:
+  Push progress prints per-chunk % (e.g. "Push artifact.tar.gz 45% (460KB/1MB)").
+  Verify step prints per-check PASS/FAIL before install (verification step).
+
+Exit codes (stable, automation-safe):
+  0  Success — deploy completed (or dry-run verify PASS)
+  1  General error — network/timeout/unreachable/verify FAIL (retryable; Shows SSH target user@host. See --help)
+  2  Configuration error — unknown --target or malformed anvil.yaml (fix config, not retry)
+  4  Precondition error — SSH auth fail / permission denied (check key, agent, remote perms; secrets never leaked)
+
+On network failure (timeout, unreachable):
+  Error: connection timeout / host unreachable
+  Reason: shows SSH target user@host and underlying dial error
+  Resolution: suggests "anvil deploy --target <env>" retry + "ssh -v user@host 'echo ok'" check. Exit 1.
+
+On auth failure (wrong key, permission denied):
+  Error: SSH authentication failed / permission denied for user@host
+  Reason: key rejected or not writable (no secret in message)
+  Resolution: check anvil.yaml server.targets.<env>.sshKeyPath (0600), ssh-add, test ssh -i <key>. Exit 4. No key material leaked.
+
+Secrets are never printed: DEPLOY_SSH_KEY, private key content, and full key paths are redacted to [REDACTED].
+`
+
+// DeployHelpText returns the mock `anvil deploy --help` output (flags + long description).
+func DeployHelpText() string {
+	return `Usage:
+  anvil deploy --target <env> [--dry-run] [--json] [--help]
+
+Flags:
+  --target string   Target environment declared in anvil.yaml server.targets (required)
+  --dry-run         Build and verify only; do not push or install (AC1)
+  --json            Machine-readable JSON envelope {"version":"1","status":"success|error"} (consistent with human)
+  --help            Show this help
+  -h, --help        Help for deploy
+
+` + deployHelpLong
+}
+
+// HelpSnapshotPath is the evidence filename for the help snapshot.
+const HelpSnapshotPath = "help.txt"

@@ -1,0 +1,66 @@
+{
+  "artifact": {
+    "path": "/tmp/spike-installer-artifacts-1193667/artifact-20260827-112852.766024016.tar.gz",
+    "manifest": {
+      "artifact_id": "92f634fb0a75d5c12921961b7aeebf3d3f61eb0af9f1d73fc681362c455b1130",
+      "version": "1.0.0",
+      "created_at": "2026-08-27T15:28:52Z",
+      "source": "spike-installer-boundary",
+      "checksum": "92f634fb0a75d5c12921961b7aeebf3d3f61eb0af9f1d73fc681362c455b1130",
+      "checksum_type": "sha-256",
+      "project_id": "spike-installer-boundary"
+    },
+    "size_bytes": 872
+  },
+  "installer": {
+    "path": "/tmp/spike-installer-out-1193667/anvil-installer-linux-makeself-1.0.0.zip",
+    "variant": "linux-makeself",
+    "version": "1.0.0",
+    "artifact_id": "92f634fb0a75d5c12921961b7aeebf3d3f61eb0af9f1d73fc681362c455b1130",
+    "size_bytes": 2398
+  },
+  "verify": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "Archive validity",
+        "passed": true,
+        "details": "valid"
+      },
+      {
+        "name": "Manifest presence",
+        "passed": true,
+        "details": "found"
+      },
+      {
+        "name": "Manifest content",
+        "passed": true,
+        "details": "complete"
+      },
+      {
+        "name": "Project identity",
+        "passed": true,
+        "details": "valid"
+      },
+      {
+        "name": "Checksum match",
+        "passed": true,
+        "details": "verified"
+      },
+      {
+        "name": "Artifact immutability",
+        "passed": true,
+        "details": "verified"
+      }
+    ]
+  },
+  "standard_result": {
+    "migrated": true,
+    "seeded": true,
+    "storage_linked": true,
+    "super_admin_exists": true
+  },
+  "idempotent_ok": true,
+  "cancel_recovered": true,
+  "migrate_fail_rolled_back": true
+}

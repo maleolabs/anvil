@@ -1,0 +1,149 @@
+=== Spike 2 E2E Harness ===
+project=spike-e2e-project deployer=e2e-tester sizeMB=1
+serverRoot=/tmp/spike-e2e-server-1399824
+installRoot=/tmp/spike-e2e-server-1399824/install/spike-e2e-project
+artifactsDir=/tmp/spike-e2e-artifacts-1399824
+remoteStagingDir=/tmp/spike-e2e-remote-1399824
+=== AC1: Build artifact1 ===
+[build] artifact1 id=17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094 version=1.0.0 checksum=17ad7668390ad98b size=6040 path=artifact-20260825-064627.975387685.tar.gz
+=== Verify /tmp/spike-e2e-artifacts-1399824/artifact-20260825-064627.975387685.tar.gz ===
+Passed: true
+  Archive validity       passed=true  valid
+  Manifest presence      passed=true  found
+  Manifest content       passed=true  complete
+  Project identity       passed=true  valid
+  Checksum match         passed=true  verified
+  Artifact immutability  passed=true  verified
+
+=== AC2: Negotiate + Push + Install artifact1 ===
+[negotiate] PASS compatible=true reason=target is compatible with artifact
+[push] success target=spike-target-1 remote=/tmp/spike-e2e-remote-1399824/artifact-20260825-064627.975387685.tar.gz
+[audit] 2026-08-24T22:46:28.173263751Z user=e2e-tester action=install artifact=17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094 release=01a035f426166085aec16dd690426c87
+[install] success release=01a035f426166085aec16dd690426c87 artifact=17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094 version=1.0.0
+=== AC3: Verify gate PASS → Activate artifact1 ===
+[verify] /tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz PASS (6 checks)
+  ✔ Archive validity       passed=true  valid
+  ✔ Manifest presence      passed=true  found
+  ✔ Manifest content       passed=true  complete
+  ✔ Project identity       passed=true  valid
+  ✔ Checksum match         passed=true  verified
+  ✔ Artifact immutability  passed=true  verified
+[verify] /tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz PASS (6 checks)
+  ✔ Archive validity       passed=true  valid
+  ✔ Manifest presence      passed=true  found
+  ✔ Manifest content       passed=true  complete
+  ✔ Project identity       passed=true  valid
+  ✔ Checksum match         passed=true  verified
+  ✔ Artifact immutability  passed=true  verified
+[audit] 2026-08-24T22:46:28.251586604Z user=e2e-tester action=verify artifact= release=01a035f426166085aec16dd690426c87
+[audit] 2026-08-24T22:46:28.293562302Z user=e2e-tester action=activate artifact= release=01a035f426166085aec16dd690426c87
+[activate] success release=01a035f426166085aec16dd690426c87
+=== AC3 negative: tampered artifact → verify FAIL → Activate rejected ===
+=== Verify /tmp/spike-e2e-artifacts-1399824/tampered.tar.gz ===
+Passed: false
+  Archive validity       passed=true  valid
+  Manifest presence      passed=false not found: read tar entry: archive/tar: invalid tar header
+  Manifest content       passed=false manifest not available
+  Project identity       passed=false manifest not available
+  Checksum match         passed=false manifest not available for checksum comparison
+  Artifact immutability  passed=false verification error: read manifest: read tar entry: archive/tar: invalid tar header
+
+[verify] /tmp/spike-e2e-artifacts-1399824/tampered.tar.gz FAIL (6 checks)
+  ✔ Archive validity       passed=true  valid
+  ✘ Manifest presence      passed=false not found: read tar entry: archive/tar: invalid tar header
+  ✘ Manifest content       passed=false manifest not available
+  ✘ Project identity       passed=false manifest not available
+  ✘ Checksum match         passed=false manifest not available for checksum comparison
+  ✘ Artifact immutability  passed=false verification error: read manifest: read tar entry: archive/tar: invalid tar header
+[gate] negative PASS: tampered artifact correctly rejected: verification-before-trust: artifact FAILED verification (Manifest presence: not found: read tar entry: archive/tar: invalid tar header) — Activate rejected
+[gate] Install correctly rejected tampered artifact: artifact must be verified first: artifact verification failed: Manifest presence: not found: read tar entry: archive/tar: invalid tar header; Manifest content: manifest not available; Project identity: manifest not available; Checksum match: manifest not available for checksum comparison; Artifact immutability: verification error: read manifest: read tar entry: archive/tar: invalid tar header
+=== AC4: Status after activate1 ===
+=== Status after activate1 ===
+Project: spike-e2e-project
+Active: 01a035f426166085aec16dd690426c87 (version=1.0.0 stage=active)
+Installed: 1
+  - 01a035f426166085aec16dd690426c87 version=1.0.0 stage=active
+Rollback eligible=false reason=no rollback target — no previously Active (Archived) Release
+RuntimeState recorded=true active=01a035f426166085aec16dd690426c87 condition=normal shared=accessible
+Direct GetActiveRelease: 01a035f426166085aec16dd690426c87 stage=active version=1.0.0
+ListReleases total=1
+  * 01a035f426166085aec16dd690426c87 stage=active artifact=17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094
+
+=== AC4: Build artifact2 v2 → Negotiate → Push → Install → Activate ===
+=== Verify /tmp/spike-e2e-artifacts-1399824/artifact-20260825-064628.340162352.tar.gz ===
+Passed: true
+  Archive validity       passed=true  valid
+  Manifest presence      passed=true  found
+  Manifest content       passed=true  complete
+  Project identity       passed=true  valid
+  Checksum match         passed=true  verified
+  Artifact immutability  passed=true  verified
+
+[negotiate] PASS compatible=true reason=target is compatible with artifact
+[push] success target=spike-target-1 remote=/tmp/spike-e2e-remote-1399824/artifact-20260825-064628.340162352.tar.gz
+[audit] 2026-08-24T22:46:28.517140241Z user=e2e-tester action=install artifact=ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c release=01a035f4277a64dc5543abd090eea7e1
+[install] success release=01a035f4277a64dc5543abd090eea7e1 artifact=ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c version=2.0.0
+[verify] /tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f4277a64dc5543abd090eea7e1.tar.gz PASS (6 checks)
+  ✔ Archive validity       passed=true  valid
+  ✔ Manifest presence      passed=true  found
+  ✔ Manifest content       passed=true  complete
+  ✔ Project identity       passed=true  valid
+  ✔ Checksum match         passed=true  verified
+  ✔ Artifact immutability  passed=true  verified
+[audit] 2026-08-24T22:46:28.557564878Z user=e2e-tester action=verify artifact= release=01a035f4277a64dc5543abd090eea7e1
+[audit] 2026-08-24T22:46:28.603203051Z user=e2e-tester action=activate artifact= release=01a035f4277a64dc5543abd090eea7e1
+[activate] success release=01a035f4277a64dc5543abd090eea7e1
+=== Status after activate2 ===
+Project: spike-e2e-project
+Active: 01a035f4277a64dc5543abd090eea7e1 (version=2.0.0 stage=active)
+Installed: 2
+  - 01a035f426166085aec16dd690426c87 version=1.0.0 stage=archived
+  - 01a035f4277a64dc5543abd090eea7e1 version=2.0.0 stage=active
+Rollback eligible=true target=01a035f426166085aec16dd690426c87 active=01a035f4277a64dc5543abd090eea7e1
+RuntimeState recorded=true active=01a035f4277a64dc5543abd090eea7e1 condition=normal shared=accessible
+Direct GetActiveRelease: 01a035f4277a64dc5543abd090eea7e1 stage=active version=2.0.0
+ListReleases total=2
+  * 01a035f426166085aec16dd690426c87 stage=archived artifact=17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094
+  * 01a035f4277a64dc5543abd090eea7e1 stage=active artifact=ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c
+
+=== AC4: Rollback → restore activate1 ===
+[audit] 2026-08-24T22:46:28.605599126Z user=e2e-tester action=rollback artifact= release=01a035f426166085aec16dd690426c87
+[rollback] success rolled_back=01a035f4277a64dc5543abd090eea7e1 restored=01a035f426166085aec16dd690426c87
+=== Status after rollback ===
+Project: spike-e2e-project
+Active: 01a035f426166085aec16dd690426c87 (version=1.0.0 stage=active)
+Installed: 2
+  - 01a035f426166085aec16dd690426c87 version=1.0.0 stage=active
+  - 01a035f4277a64dc5543abd090eea7e1 version=2.0.0 stage=rolled back
+Rollback eligible=false reason=no rollback target — no previously Active (Archived) Release
+RuntimeState recorded=true active=01a035f426166085aec16dd690426c87 condition=normal shared=accessible
+Direct GetActiveRelease: 01a035f426166085aec16dd690426c87 stage=active version=1.0.0
+ListReleases total=2
+  * 01a035f426166085aec16dd690426c87 stage=active artifact=17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094
+  * 01a035f4277a64dc5543abd090eea7e1 stage=rolled back artifact=ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c
+
+=== AC4: Lifecycle invariant check ===
+rel1 01a035f426166085aec16dd690426c87 stage=active (expected active)
+  release 01a035f426166085aec16dd690426c87 stage=active version=1.0.0
+  release 01a035f4277a64dc5543abd090eea7e1 stage=rolled back version=2.0.0
+=== AC5: Audit trail ===
+[audit] 1: 2026-08-24T22:46:28.173263751Z user=e2e-tester action=install release=01a035f426166085aec16dd690426c87 artifact=17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094
+[audit] 2: 2026-08-24T22:46:28.251586604Z user=e2e-tester action=verify release=01a035f426166085aec16dd690426c87 artifact=
+[audit] 3: 2026-08-24T22:46:28.293562302Z user=e2e-tester action=activate release=01a035f426166085aec16dd690426c87 artifact=
+[audit] 4: 2026-08-24T22:46:28.517140241Z user=e2e-tester action=install release=01a035f4277a64dc5543abd090eea7e1 artifact=ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c
+[audit] 5: 2026-08-24T22:46:28.557564878Z user=e2e-tester action=verify release=01a035f4277a64dc5543abd090eea7e1 artifact=
+[audit] 6: 2026-08-24T22:46:28.603203051Z user=e2e-tester action=activate release=01a035f4277a64dc5543abd090eea7e1 artifact=
+[audit] 7: 2026-08-24T22:46:28.605599126Z user=e2e-tester action=rollback release=01a035f426166085aec16dd690426c87 artifact=
+=== E2E SUCCESS: all ACs satisfied ===
+
+=== Evidence written to spikes/local-deploy-e2e/evidence ===
+  - spikes/local-deploy-e2e/evidence/e2e.log
+  - spikes/local-deploy-e2e/evidence/verify.log
+  - status_activate1.json
+  - status_activate2.json
+  - status_rollback.json
+  - spikes/local-deploy-e2e/evidence/rollback.log
+  - spikes/local-deploy-e2e/evidence/artifact1.json
+  - spikes/local-deploy-e2e/evidence/artifact2.json
+  - summary.json
+All ACs PASS. E2E proof complete.

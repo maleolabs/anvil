@@ -1,0 +1,1 @@
+{"description":"Migrate Server Runtime domain (server_*, server, server_status already partial, server_release*, server_project_*, server_doctor/readiness/config) to Style. Use Header for runtime, StyledTable for releases/projects, Tree for lifecycle.","acceptanceCriteria":"AC1: Server cmds via Style.W+Container, Header+Table modern, AC2: colors, AC3: vet/test pass."}

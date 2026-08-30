@@ -1,0 +1,13 @@
+{
+  "ac1_tamper_rejected": true,
+  "ac1_guidance_present": true,
+  "ac1_identity_checksum": "cfeae3c7a23063d0a35a69e9e8259ab28c1619886278b5b39cc826332671526e",
+  "ac2_payload_integrity": true,
+  "ac2_repack_detected": true,
+  "ac3_redacted": true,
+  "ac3_samples": 6,
+  "ac4_offline_pass": true,
+  "ac4_no_registry_call": true,
+  "duration_ms": 66,
+  "generated_at": "2026-08-27T16:13:23Z"
+}
