@@ -1,0 +1,17 @@
+Deploy dry-run --target staging
+  Step: Build artifact... 
+  Step: Build artifact ✓ (0.0s)
+    artifact_id: 336702b5c35e270a2d1345637bb1a9922edeb5b16c2daae9cc8da605d3b47a4a
+    version: 0.1.0
+    checksum: 336702b5c35e270a2d1345637bb1a9922edeb5b16c2daae9cc8da605d3b47a4a (sha-256)
+    path: artifact-20260825-072226.129710374.tar.gz
+  Step: Verify artifact... 
+[PASS] Verify 6 checks PASS
+[PASS] Archive validity: valid
+[PASS] Manifest presence: found
+[PASS] Manifest content: complete
+[PASS] Project identity: valid
+[PASS] Checksum match: verified
+[PASS] Artifact immutability: verified
+Dry-run complete — no install performed (build+verify only) (0.0s)
+Tip: remove --dry-run to push and install.

@@ -1,0 +1,84 @@
+=== anvil deploy --target staging --dry-run (human) ===
+Deploy dry-run --target staging
+  Step: Build artifact... 
+  Step: Build artifact ✓ (0.0s)
+    artifact_id: 336702b5c35e270a2d1345637bb1a9922edeb5b16c2daae9cc8da605d3b47a4a
+    version: 0.1.0
+    checksum: 336702b5c35e270a2d1345637bb1a9922edeb5b16c2daae9cc8da605d3b47a4a (sha-256)
+    path: artifact-20260825-072226.129710374.tar.gz
+  Step: Verify artifact... 
+[PASS] Verify 6 checks PASS
+[PASS] Archive validity: valid
+[PASS] Manifest presence: found
+[PASS] Manifest content: complete
+[PASS] Project identity: valid
+[PASS] Checksum match: verified
+[PASS] Artifact immutability: verified
+Dry-run complete — no install performed (build+verify only) (0.0s)
+Tip: remove --dry-run to push and install.
+
+
+=== anvil deploy --target staging --dry-run --json (machine) ===
+{
+  "version": "1",
+  "status": "success",
+  "data": {
+    "artifact_id": "336702b5c35e270a2d1345637bb1a9922edeb5b16c2daae9cc8da605d3b47a4a",
+    "artifact_path": "/tmp/spk-ux-artifacts-3586864898/artifact-20260825-072226.129710374.tar.gz",
+    "checksum": "336702b5c35e270a2d1345637bb1a9922edeb5b16c2daae9cc8da605d3b47a4a",
+    "checksum_type": "sha-256",
+    "dry_run": true,
+    "project_id": "spike-test-project",
+    "target": "staging",
+    "verify": {
+      "checks": [
+        {
+          "name": "Archive validity",
+          "passed": true,
+          "details": "valid"
+        },
+        {
+          "name": "Manifest presence",
+          "passed": true,
+          "details": "found"
+        },
+        {
+          "name": "Manifest content",
+          "passed": true,
+          "details": "complete"
+        },
+        {
+          "name": "Project identity",
+          "passed": true,
+          "details": "valid"
+        },
+        {
+          "name": "Checksum match",
+          "passed": true,
+          "details": "verified"
+        },
+        {
+          "name": "Artifact immutability",
+          "passed": true,
+          "details": "verified"
+        }
+      ],
+      "passed": true
+    },
+    "version": "0.1.0"
+  }
+}
+
+
+=== manifest ===
+{
+  "artifact_id": "336702b5c35e270a2d1345637bb1a9922edeb5b16c2daae9cc8da605d3b47a4a",
+  "version": "0.1.0",
+  "created_at": "2026-08-24T23:22:26Z",
+  "source": "spike-local-deploy-ux",
+  "checksum": "336702b5c35e270a2d1345637bb1a9922edeb5b16c2daae9cc8da605d3b47a4a",
+  "checksum_type": "sha-256",
+  "project_id": "spike-test-project"
+}
+
+[consistency] PASS — human and JSON share artifact_id=336702b5c35e270a2d1345637bb1a9922edeb5b16c2daae9cc8da605d3b47a4a version=0.1.0 checksum=336702b5c35e270a
