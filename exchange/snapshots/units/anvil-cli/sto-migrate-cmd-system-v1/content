@@ -1,0 +1,1 @@
+{"description":"Migrate System domain (system_inspect, conventions, update --check already partial, help already done, deployment_info) to Style. Use Tree/Timeline for inspect, StyledTable for conventions, Container.","acceptanceCriteria":"AC1: System cmds via Style.W+Container, Tree/Timeline for inspect, AC2: colors, AC3: tests pass."}

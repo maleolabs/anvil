@@ -1,0 +1,4 @@
+exit_code: 4
+Error: Deploy failed: SSH authentication failed for deploy@staging.example.com.
+Reason: Server rejected key for deploy@staging.example.com (wrong key or ssh-agent has no key). Underlying: id_ed25519 [REDACTED_PATH].
+Resolution: Check the key for env in anvil.yaml server.targets.<env>.sshKeyPath (file must exist, 0600). Add key to agent: ssh-add <key>. Test: ssh -i <key> deploy@staging.example.com 'echo ok'. No secret is printed in this message..

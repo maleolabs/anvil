@@ -1,0 +1,4 @@
+exit_code: 1
+Error: Deploy failed: connection timeout while pushing to deploy@staging.example.com.
+Reason: SSH dial to deploy@staging.example.com timed out (network stall or host unreachable). Underlying: dial tcp staging.example.com:22: i/o timeout.
+Resolution: Retry: anvil deploy --target <env> (same artifact is resumable). Check host deploy@staging.example.com is reachable: ssh -v deploy@staging.example.com 'echo ok'. If persistent, verify firewall / security group..
