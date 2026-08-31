@@ -1,0 +1,19 @@
+{
+  "dry_run": {
+    "artifact_id": "336702b5c35e270a2d1345637bb1a9922edeb5b16c2daae9cc8da605d3b47a4a",
+    "checks": 6,
+    "checksum": "336702b5c35e270a2d1345637bb1a9922edeb5b16c2daae9cc8da605d3b47a4a",
+    "consistent": true,
+    "duration_ms": 97,
+    "project_id": "spike-test-project",
+    "verify_pass": true,
+    "version": "0.1.0"
+  },
+  "error_matrix": 6,
+  "generated_at": "2026-08-24T23:22:26Z",
+  "help": "anvil deploy --help snapshot with --target/--dry-run/--json + exit codes",
+  "progress": "push % ticks + verify step (PlainStepReporter)",
+  "redaction": "PASS — DEPLOY_SSH_KEY redacted",
+  "target": "staging",
+  "ux_review": "PASS — 3 testers in ux_review_checklist.md"
+}

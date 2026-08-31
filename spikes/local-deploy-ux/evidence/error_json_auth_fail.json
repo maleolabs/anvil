@@ -1,0 +1,5 @@
+{
+  "version": "1",
+  "status": "error",
+  "error": "Deploy failed: SSH authentication failed for deploy@staging.example.com"
+}
