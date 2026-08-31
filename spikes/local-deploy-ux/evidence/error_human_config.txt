@@ -1,0 +1,5 @@
+exit_code: 2
+Error: Deploy failed: unknown target env.
+Reason: server.targets.<env> not found in anvil.yaml. Underlying: server.targets.staging not found in anvil.yaml.
+Resolution: Add the env under server.targets in anvil.yaml: targets:
+  staging: {host: ..., user: ..., sshKeyPath: ...}. Or use --target with an existing env. See anvil deploy --help..

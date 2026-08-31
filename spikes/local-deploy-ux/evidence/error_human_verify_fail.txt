@@ -1,0 +1,4 @@
+exit_code: 1
+Error: Deploy failed: artifact verification FAIL — install rejected.
+Reason: verification-before-trust gate FAIL (checksum or manifest mismatch). Underlying: checksum mismatch: manifest != computed abc.
+Resolution: Do not retry the same artifact — rebuild: anvil deploy --target <env> will rebuild, re-verify, then push. If repeat FAIL, check source filtering or disk corruption. Run with --dry-run to inspect verify checks..

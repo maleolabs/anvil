@@ -1,0 +1,271 @@
+# Build and publish tagged Anvil releases, including native GUI installers.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Set up Anvil
+        run: go build -o /usr/local/bin/anvil .
+
+      - name: Extract version and detect release type
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [[ "$VERSION" == *-alpha* || "$VERSION" == *-beta* || "$VERSION" == *-rc* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run CI pipeline (full quality gates)
+        if: hashFiles('scripts/*.sh') != ''
+        run: anvil pipeline ci
+
+      - name: Run CI quality checks (go-native, mirror tree)
+        if: hashFiles('scripts/*.sh') == ''
+        run: |
+          go vet ./...
+          go test ./...
+
+      - name: Build binaries
+        run: |
+          mkdir -p dist/binaries
+          anvil pipeline build --output dist/binaries
+
+      - name: Package source artifact
+        run: |
+          mkdir -p dist/artifacts
+          anvil artifact package --output dist/artifacts
+          test "$(find dist/artifacts -maxdepth 1 -type f -name '*.tar.gz' | wc -l)" -eq 1
+
+      - name: Stage install script and checksums
+        run: |
+          cp install.sh dist/binaries/install.sh
+          chmod +x dist/binaries/install.sh
+          (cd dist && sha256sum binaries/* artifacts/* > SHA256SUMS.txt)
+
+      - name: Upload reusable source artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-source-artifact
+          path: dist/artifacts/*.tar.gz
+          if-no-files-found: error
+
+      - name: Upload release binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-binaries
+          path: |
+            dist/binaries/*
+            dist/artifacts/*
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+
+  native:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ubuntu-appimage
+            runner: ubuntu-22.04
+            target: linux
+            format: appimage
+          - name: ubuntu-deb
+            runner: ubuntu-22.04
+            target: linux
+            format: deb
+          - name: fedora-rpm
+            runner: [self-hosted, linux, x64, fedora]
+            target: linux
+            format: rpm
+          - name: windows-msi
+            runner: windows-2022
+            target: windows
+            format: msi
+          - name: windows-nsis
+            runner: windows-2022
+            target: windows
+            format: nsis
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download reusable source artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-source-artifact
+          path: dist/source
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux packaging tools
+        if: runner.os == 'Linux'
+        run: |
+          if command -v apt-get >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev libxdo-dev file dpkg-dev rpm patchelf libfuse2
+          elif command -v dnf >/dev/null; then
+            sudo dnf install -y webkit2gtk4.1-devel libsoup3-devel libappindicator-gtk3-devel librsvg2-devel libxdo-devel file rpm-build patchelf
+          fi
+          cargo install tauri-cli --version '^2' --locked
+
+      - name: Install Windows packaging tools
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: cargo install tauri-cli --version '^2' --locked
+
+      - name: Build Anvil
+        if: runner.os == 'Linux'
+        run: go build -o anvil .
+
+      - name: Build Anvil
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: go build -o anvil.exe .
+
+      - name: Build native Linux installer
+        if: runner.os == 'Linux'
+        run: |
+          rm -rf .anvil/installers dist/installer
+          ARTIFACT_PATH="$(find dist/source -maxdepth 1 -type f -name '*.tar.gz' -print -quit)"
+          test -n "$ARTIFACT_PATH"
+          ./anvil installer build --target linux --gui --format "${{ matrix.format }}" --artifact "$ARTIFACT_PATH" --json
+          mkdir -p dist/installer
+          case "${{ matrix.format }}" in
+            appimage) find .anvil/installers -maxdepth 1 -type f -name '*.AppImage' -exec cp {} dist/installer/ \; ;;
+            deb) find .anvil/installers -maxdepth 1 -type f -name '*.deb' -exec cp {} dist/installer/ \; ;;
+            rpm) find .anvil/installers -maxdepth 1 -type f -name '*.rpm' -exec cp {} dist/installer/ \; ;;
+          esac
+
+      - name: Build native Windows MSI
+        if: matrix.format == 'msi'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $artifact = (Get-ChildItem dist/source -Filter *.tar.gz | Select-Object -First 1).FullName
+          if (-not $artifact) { throw 'source artifact missing' }
+          Remove-Item -Recurse -Force .anvil/installers, dist/installer -ErrorAction SilentlyContinue
+          .\anvil.exe installer build --target windows --gui --format msi --artifact $artifact --json
+          if ($LASTEXITCODE -ne 0) { throw "native MSI bundle failed with exit code $LASTEXITCODE" }
+          New-Item -ItemType Directory -Force dist/installer | Out-Null
+          $msi = Get-ChildItem .anvil/installers -File -Filter *.msi | Select-Object -First 1
+          if (-not $msi) { throw 'native MSI bundle missing after installer build' }
+          Copy-Item $msi.FullName dist/installer/
+
+      - name: Build native Windows NSIS installer
+        if: matrix.format == 'nsis'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $artifact = (Get-ChildItem dist/source -Filter *.tar.gz | Select-Object -First 1).FullName
+          if (-not $artifact) { throw 'source artifact missing' }
+          Remove-Item -Recurse -Force .anvil/installers, dist/installer -ErrorAction SilentlyContinue
+          .\anvil.exe installer build --target windows --gui --format nsis --artifact $artifact --json
+          if ($LASTEXITCODE -ne 0) { throw "native NSIS bundle failed with exit code $LASTEXITCODE" }
+          New-Item -ItemType Directory -Force dist/installer | Out-Null
+          $exe = Get-ChildItem .anvil/installers -File -Filter *.exe | Select-Object -First 1
+          if (-not $exe) { throw 'native NSIS bundle missing after installer build' }
+          Copy-Item $exe.FullName dist/installer/
+
+      - name: Validate native Linux package
+        if: runner.os == 'Linux'
+        run: |
+          set -eu
+          package="$(find dist/installer -maxdepth 1 -type f -print -quit)"
+          test -n "$package"
+          file "$package"
+          case "${{ matrix.format }}" in
+            appimage) test -x "$package"; APPIMAGE_EXTRACT_AND_RUN=1 "$package" --appimage-version ;;
+            deb) dpkg-deb --info "$package" >/dev/null ;;
+            rpm) rpm -Kv "$package" ;;
+          esac
+
+      - name: Validate native Windows package
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $package = Get-ChildItem dist/installer -File | Select-Object -First 1
+          if (-not $package) { throw 'native package missing' }
+          if ($package.Length -le 0) { throw 'empty native package' }
+          if ($package.Extension -eq '.msi') { msiexec.exe /a $package.FullName /qn /quiet /norestart /l*v "$env:TEMP\anvil-msi.log" }
+          elseif ($package.Extension -eq '.exe') { if ($package.Length -le 0) { throw 'empty NSIS package' } }
+
+      - name: Upload native installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-${{ matrix.name }}
+          path: dist/installer/*
+          if-no-files-found: error
+
+  publish:
+    needs: [prepare, native]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download release binaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-binaries
+          path: dist
+          merge-multiple: true
+
+      - name: Download native installers
+        uses: actions/download-artifact@v4
+        with:
+          pattern: native-*
+          path: dist/native
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          PRERELEASE_FLAG=""
+          if [[ "${{ needs.prepare.outputs.prerelease }}" == "true" ]]; then PRERELEASE_FLAG="--prerelease"; fi
+          if gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "v$VERSION" dist/binaries/* dist/artifacts/* dist/SHA256SUMS.txt dist/native/* --clobber
+          else
+            gh release create "v$VERSION" --title "v$VERSION" --generate-notes $PRERELEASE_FLAG \
+              dist/binaries/* dist/artifacts/* dist/SHA256SUMS.txt dist/native/*
+          fi

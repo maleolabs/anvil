@@ -1,0 +1,665 @@
+{
+  "artifact1": {
+    "Path": "/tmp/spike-e2e-artifacts-1399824/artifact-20260825-064627.975387685.tar.gz",
+    "Manifest": {
+      "artifact_id": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+      "version": "1.0.0",
+      "created_at": "2026-08-24T22:46:27Z",
+      "source": "spike-e2e-project",
+      "checksum": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+      "checksum_type": "sha-256",
+      "project_id": "spike-e2e-project"
+    },
+    "ManifestJSON": "ewogICJhcnRpZmFjdF9pZCI6ICIxN2FkNzY2ODM5MGFkOThiZmM1ODM2Njc2YmZjNzAwNmQxZGM5MDMxYTM4ZjQ3ZmNhN2M5ZTU5YTQwZGZmMDk0IiwKICAidmVyc2lvbiI6ICIxLjAuMCIsCiAgImNyZWF0ZWRfYXQiOiAiMjAyNi0wOC0yNFQyMjo0NjoyN1oiLAogICJzb3VyY2UiOiAic3Bpa2UtZTJlLXByb2plY3QiLAogICJjaGVja3N1bSI6ICIxN2FkNzY2ODM5MGFkOThiZmM1ODM2Njc2YmZjNzAwNmQxZGM5MDMxYTM4ZjQ3ZmNhN2M5ZTU5YTQwZGZmMDk0IiwKICAiY2hlY2tzdW1fdHlwZSI6ICJzaGEtMjU2IiwKICAicHJvamVjdF9pZCI6ICJzcGlrZS1lMmUtcHJvamVjdCIKfQ==",
+    "SizeBytes": 6040
+  },
+  "artifact2": {
+    "Path": "/tmp/spike-e2e-artifacts-1399824/artifact-20260825-064628.340162352.tar.gz",
+    "Manifest": {
+      "artifact_id": "ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c",
+      "version": "2.0.0",
+      "created_at": "2026-08-24T22:46:28Z",
+      "source": "spike-e2e-project",
+      "checksum": "ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c",
+      "checksum_type": "sha-256",
+      "project_id": "spike-e2e-project"
+    },
+    "ManifestJSON": "ewogICJhcnRpZmFjdF9pZCI6ICJmZmViZDkzZWFmNjhhN2U4M2RlOWQzOWI5MWI3ZjE0MWZkMzdjNDU2ZGRkOGNlMWNlNzI4MDg5YTA5MTZlNzljIiwKICAidmVyc2lvbiI6ICIyLjAuMCIsCiAgImNyZWF0ZWRfYXQiOiAiMjAyNi0wOC0yNFQyMjo0NjoyOFoiLAogICJzb3VyY2UiOiAic3Bpa2UtZTJlLXByb2plY3QiLAogICJjaGVja3N1bSI6ICJmZmViZDkzZWFmNjhhN2U4M2RlOWQzOWI5MWI3ZjE0MWZkMzdjNDU2ZGRkOGNlMWNlNzI4MDg5YTA5MTZlNzljIiwKICAiY2hlY2tzdW1fdHlwZSI6ICJzaGEtMjU2IiwKICAicHJvamVjdF9pZCI6ICJzcGlrZS1lMmUtcHJvamVjdCIKfQ==",
+    "SizeBytes": 6043
+  },
+  "negotiate1": {
+    "compatible": true,
+    "reason": "target is compatible with artifact"
+  },
+  "negotiate2": {
+    "compatible": true,
+    "reason": "target is compatible with artifact"
+  },
+  "transport1": {
+    "success": true,
+    "target_id": "spike-target-1",
+    "remote_path": "/tmp/spike-e2e-remote-1399824/artifact-20260825-064627.975387685.tar.gz"
+  },
+  "transport2": {
+    "success": true,
+    "target_id": "spike-target-1",
+    "remote_path": "/tmp/spike-e2e-remote-1399824/artifact-20260825-064628.340162352.tar.gz"
+  },
+  "install1": {
+    "id": "01a035f426166085aec16dd690426c87",
+    "artifact_id": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+    "version": "1.0.0",
+    "source": "spike-e2e-project",
+    "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz",
+    "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+    "stage": 0,
+    "created_at": "2026-08-24T22:46:28Z"
+  },
+  "install2": {
+    "id": "01a035f4277a64dc5543abd090eea7e1",
+    "artifact_id": "ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c",
+    "version": "2.0.0",
+    "source": "spike-e2e-project",
+    "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f4277a64dc5543abd090eea7e1.tar.gz",
+    "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+    "stage": 0,
+    "created_at": "2026-08-24T22:46:28Z"
+  },
+  "verify1": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "Archive validity",
+        "passed": true,
+        "details": "valid"
+      },
+      {
+        "name": "Manifest presence",
+        "passed": true,
+        "details": "found"
+      },
+      {
+        "name": "Manifest content",
+        "passed": true,
+        "details": "complete"
+      },
+      {
+        "name": "Project identity",
+        "passed": true,
+        "details": "valid"
+      },
+      {
+        "name": "Checksum match",
+        "passed": true,
+        "details": "verified"
+      },
+      {
+        "name": "Artifact immutability",
+        "passed": true,
+        "details": "verified"
+      }
+    ]
+  },
+  "verify2": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "Archive validity",
+        "passed": true,
+        "details": "valid"
+      },
+      {
+        "name": "Manifest presence",
+        "passed": true,
+        "details": "found"
+      },
+      {
+        "name": "Manifest content",
+        "passed": true,
+        "details": "complete"
+      },
+      {
+        "name": "Project identity",
+        "passed": true,
+        "details": "valid"
+      },
+      {
+        "name": "Checksum match",
+        "passed": true,
+        "details": "verified"
+      },
+      {
+        "name": "Artifact immutability",
+        "passed": true,
+        "details": "verified"
+      }
+    ]
+  },
+  "negative_verify": {
+    "passed": false,
+    "checks": [
+      {
+        "name": "Archive validity",
+        "passed": true,
+        "details": "valid"
+      },
+      {
+        "name": "Manifest presence",
+        "passed": false,
+        "details": "not found: read tar entry: archive/tar: invalid tar header"
+      },
+      {
+        "name": "Manifest content",
+        "passed": false,
+        "details": "manifest not available"
+      },
+      {
+        "name": "Project identity",
+        "passed": false,
+        "details": "manifest not available"
+      },
+      {
+        "name": "Checksum match",
+        "passed": false,
+        "details": "manifest not available for checksum comparison"
+      },
+      {
+        "name": "Artifact immutability",
+        "passed": false,
+        "details": "verification error: read manifest: read tar entry: archive/tar: invalid tar header"
+      }
+    ]
+  },
+  "negative_reason": "verification-before-trust: artifact FAILED verification (Manifest presence: not found: read tar entry: archive/tar: invalid tar header) — Activate rejected",
+  "status_after_activate1": {
+    "after_action": "activate1",
+    "lifecycle": {
+      "ProjectID": "spike-e2e-project",
+      "Active": {
+        "ReleaseID": "01a035f426166085aec16dd690426c87",
+        "Version": "1.0.0",
+        "Stage": "active"
+      },
+      "Installed": [
+        {
+          "ReleaseID": "01a035f426166085aec16dd690426c87",
+          "Version": "1.0.0",
+          "Stage": "active"
+        }
+      ],
+      "Rollback": {
+        "Eligible": false,
+        "ActiveReleaseID": "01a035f426166085aec16dd690426c87",
+        "TargetReleaseID": "",
+        "Reason": "no rollback target — no previously Active (Archived) Release"
+      },
+      "RuntimeState": {
+        "Recorded": true,
+        "ActiveReleaseID": "01a035f426166085aec16dd690426c87",
+        "RuntimeCondition": "normal",
+        "SharedResource": "accessible",
+        "LastUpdated": "2026-08-25T06:46:28.302044127+08:00",
+        "LoadError": ""
+      }
+    },
+    "active_release": {
+      "id": "01a035f426166085aec16dd690426c87",
+      "artifact_id": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+      "version": "1.0.0",
+      "source": "spike-e2e-project",
+      "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz",
+      "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+      "stage": 2,
+      "created_at": "2026-08-24T22:46:28Z",
+      "transitions": [
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 0,
+          "to": 1,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 1,
+          "to": 2,
+          "outcome": "success"
+        }
+      ]
+    },
+    "installed_list": [
+      {
+        "id": "01a035f426166085aec16dd690426c87",
+        "artifact_id": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+        "version": "1.0.0",
+        "source": "spike-e2e-project",
+        "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz",
+        "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+        "stage": 2,
+        "created_at": "2026-08-24T22:46:28Z",
+        "transitions": [
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 0,
+            "to": 1,
+            "outcome": "success"
+          },
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 1,
+            "to": 2,
+            "outcome": "success"
+          }
+        ]
+      }
+    ]
+  },
+  "status_after_activate2": {
+    "after_action": "activate2",
+    "lifecycle": {
+      "ProjectID": "spike-e2e-project",
+      "Active": {
+        "ReleaseID": "01a035f4277a64dc5543abd090eea7e1",
+        "Version": "2.0.0",
+        "Stage": "active"
+      },
+      "Installed": [
+        {
+          "ReleaseID": "01a035f426166085aec16dd690426c87",
+          "Version": "1.0.0",
+          "Stage": "archived"
+        },
+        {
+          "ReleaseID": "01a035f4277a64dc5543abd090eea7e1",
+          "Version": "2.0.0",
+          "Stage": "active"
+        }
+      ],
+      "Rollback": {
+        "Eligible": true,
+        "ActiveReleaseID": "01a035f4277a64dc5543abd090eea7e1",
+        "TargetReleaseID": "01a035f426166085aec16dd690426c87",
+        "Reason": ""
+      },
+      "RuntimeState": {
+        "Recorded": true,
+        "ActiveReleaseID": "01a035f4277a64dc5543abd090eea7e1",
+        "RuntimeCondition": "normal",
+        "SharedResource": "accessible",
+        "LastUpdated": "2026-08-25T06:46:28.603012176+08:00",
+        "LoadError": ""
+      }
+    },
+    "active_release": {
+      "id": "01a035f4277a64dc5543abd090eea7e1",
+      "artifact_id": "ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c",
+      "version": "2.0.0",
+      "source": "spike-e2e-project",
+      "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f4277a64dc5543abd090eea7e1.tar.gz",
+      "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+      "stage": 2,
+      "created_at": "2026-08-24T22:46:28Z",
+      "transitions": [
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 0,
+          "to": 1,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 1,
+          "to": 2,
+          "outcome": "success"
+        }
+      ]
+    },
+    "installed_list": [
+      {
+        "id": "01a035f426166085aec16dd690426c87",
+        "artifact_id": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+        "version": "1.0.0",
+        "source": "spike-e2e-project",
+        "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz",
+        "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+        "stage": 5,
+        "created_at": "2026-08-24T22:46:28Z",
+        "transitions": [
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 0,
+            "to": 1,
+            "outcome": "success"
+          },
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 1,
+            "to": 2,
+            "outcome": "success"
+          },
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 2,
+            "to": 5,
+            "outcome": "success"
+          }
+        ]
+      },
+      {
+        "id": "01a035f4277a64dc5543abd090eea7e1",
+        "artifact_id": "ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c",
+        "version": "2.0.0",
+        "source": "spike-e2e-project",
+        "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f4277a64dc5543abd090eea7e1.tar.gz",
+        "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+        "stage": 2,
+        "created_at": "2026-08-24T22:46:28Z",
+        "transitions": [
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 0,
+            "to": 1,
+            "outcome": "success"
+          },
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 1,
+            "to": 2,
+            "outcome": "success"
+          }
+        ]
+      }
+    ]
+  },
+  "status_after_rollback": {
+    "after_action": "rollback",
+    "lifecycle": {
+      "ProjectID": "spike-e2e-project",
+      "Active": {
+        "ReleaseID": "01a035f426166085aec16dd690426c87",
+        "Version": "1.0.0",
+        "Stage": "active"
+      },
+      "Installed": [
+        {
+          "ReleaseID": "01a035f426166085aec16dd690426c87",
+          "Version": "1.0.0",
+          "Stage": "active"
+        },
+        {
+          "ReleaseID": "01a035f4277a64dc5543abd090eea7e1",
+          "Version": "2.0.0",
+          "Stage": "rolled back"
+        }
+      ],
+      "Rollback": {
+        "Eligible": false,
+        "ActiveReleaseID": "01a035f426166085aec16dd690426c87",
+        "TargetReleaseID": "",
+        "Reason": "no rollback target — no previously Active (Archived) Release"
+      },
+      "RuntimeState": {
+        "Recorded": true,
+        "ActiveReleaseID": "01a035f426166085aec16dd690426c87",
+        "RuntimeCondition": "normal",
+        "SharedResource": "accessible",
+        "LastUpdated": "2026-08-25T06:46:28.605505391+08:00",
+        "LoadError": ""
+      }
+    },
+    "active_release": {
+      "id": "01a035f426166085aec16dd690426c87",
+      "artifact_id": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+      "version": "1.0.0",
+      "source": "spike-e2e-project",
+      "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz",
+      "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+      "stage": 2,
+      "created_at": "2026-08-24T22:46:28Z",
+      "transitions": [
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 0,
+          "to": 1,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 1,
+          "to": 2,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 2,
+          "to": 5,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 5,
+          "to": 2,
+          "outcome": "success"
+        }
+      ]
+    },
+    "installed_list": [
+      {
+        "id": "01a035f426166085aec16dd690426c87",
+        "artifact_id": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+        "version": "1.0.0",
+        "source": "spike-e2e-project",
+        "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz",
+        "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+        "stage": 2,
+        "created_at": "2026-08-24T22:46:28Z",
+        "transitions": [
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 0,
+            "to": 1,
+            "outcome": "success"
+          },
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 1,
+            "to": 2,
+            "outcome": "success"
+          },
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 2,
+            "to": 5,
+            "outcome": "success"
+          },
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 5,
+            "to": 2,
+            "outcome": "success"
+          }
+        ]
+      },
+      {
+        "id": "01a035f4277a64dc5543abd090eea7e1",
+        "artifact_id": "ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c",
+        "version": "2.0.0",
+        "source": "spike-e2e-project",
+        "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f4277a64dc5543abd090eea7e1.tar.gz",
+        "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+        "stage": 4,
+        "created_at": "2026-08-24T22:46:28Z",
+        "transitions": [
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 0,
+            "to": 1,
+            "outcome": "success"
+          },
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 1,
+            "to": 2,
+            "outcome": "success"
+          },
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 2,
+            "to": 3,
+            "outcome": "success"
+          },
+          {
+            "timestamp": "2026-08-24T22:46:28Z",
+            "from": 3,
+            "to": 4,
+            "outcome": "success"
+          }
+        ]
+      }
+    ]
+  },
+  "rollback": {
+    "RolledBackRelease": {
+      "id": "01a035f4277a64dc5543abd090eea7e1",
+      "artifact_id": "ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c",
+      "version": "2.0.0",
+      "source": "spike-e2e-project",
+      "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f4277a64dc5543abd090eea7e1.tar.gz",
+      "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+      "stage": 4,
+      "created_at": "2026-08-24T22:46:28Z",
+      "transitions": [
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 0,
+          "to": 1,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 1,
+          "to": 2,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 2,
+          "to": 3,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 3,
+          "to": 4,
+          "outcome": "success"
+        }
+      ]
+    },
+    "RestoredRelease": {
+      "id": "01a035f426166085aec16dd690426c87",
+      "artifact_id": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+      "version": "1.0.0",
+      "source": "spike-e2e-project",
+      "artifact_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz",
+      "runtime_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project",
+      "stage": 2,
+      "created_at": "2026-08-24T22:46:28Z",
+      "transitions": [
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 0,
+          "to": 1,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 1,
+          "to": 2,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 2,
+          "to": 5,
+          "outcome": "success"
+        },
+        {
+          "timestamp": "2026-08-24T22:46:28Z",
+          "from": 5,
+          "to": 2,
+          "outcome": "success"
+        }
+      ]
+    }
+  },
+  "audit": [
+    {
+      "timestamp": "2026-08-24T22:46:28.173263751Z",
+      "user": "e2e-tester",
+      "action": "install",
+      "project_id": "spike-e2e-project",
+      "artifact_id": "17ad7668390ad98bfc5836676bfc7006d1dc9031a38f47fca7c9e59a40dff094",
+      "version": "1.0.0",
+      "release_id": "01a035f426166085aec16dd690426c87",
+      "remote_path": "/tmp/spike-e2e-remote-1399824/artifact-20260825-064627.975387685.tar.gz",
+      "details": "Coordinator.Install"
+    },
+    {
+      "timestamp": "2026-08-24T22:46:28.251586604Z",
+      "user": "e2e-tester",
+      "action": "verify",
+      "project_id": "spike-e2e-project",
+      "artifact_id": "",
+      "release_id": "01a035f426166085aec16dd690426c87",
+      "remote_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f426166085aec16dd690426c87.tar.gz",
+      "details": "verify gate PASS"
+    },
+    {
+      "timestamp": "2026-08-24T22:46:28.293562302Z",
+      "user": "e2e-tester",
+      "action": "activate",
+      "project_id": "spike-e2e-project",
+      "artifact_id": "",
+      "release_id": "01a035f426166085aec16dd690426c87",
+      "details": "Coordinator.Activate"
+    },
+    {
+      "timestamp": "2026-08-24T22:46:28.517140241Z",
+      "user": "e2e-tester",
+      "action": "install",
+      "project_id": "spike-e2e-project",
+      "artifact_id": "ffebd93eaf68a7e83de9d39b91b7f141fd37c456ddd8ce1ce728089a0916e79c",
+      "version": "2.0.0",
+      "release_id": "01a035f4277a64dc5543abd090eea7e1",
+      "remote_path": "/tmp/spike-e2e-remote-1399824/artifact-20260825-064628.340162352.tar.gz",
+      "details": "Coordinator.Install"
+    },
+    {
+      "timestamp": "2026-08-24T22:46:28.557564878Z",
+      "user": "e2e-tester",
+      "action": "verify",
+      "project_id": "spike-e2e-project",
+      "artifact_id": "",
+      "release_id": "01a035f4277a64dc5543abd090eea7e1",
+      "remote_path": "/tmp/spike-e2e-server-1399824/install/spike-e2e-project/artifacts/01a035f4277a64dc5543abd090eea7e1.tar.gz",
+      "details": "verify gate PASS"
+    },
+    {
+      "timestamp": "2026-08-24T22:46:28.603203051Z",
+      "user": "e2e-tester",
+      "action": "activate",
+      "project_id": "spike-e2e-project",
+      "artifact_id": "",
+      "release_id": "01a035f4277a64dc5543abd090eea7e1",
+      "details": "Coordinator.Activate"
+    },
+    {
+      "timestamp": "2026-08-24T22:46:28.605599126Z",
+      "user": "e2e-tester",
+      "action": "rollback",
+      "project_id": "spike-e2e-project",
+      "artifact_id": "",
+      "release_id": "01a035f426166085aec16dd690426c87",
+      "details": "rollback 01a035f4277a64dc5543abd090eea7e1 -\u003e 01a035f426166085aec16dd690426c87"
+    }
+  ]
+}
