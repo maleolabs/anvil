@@ -1,0 +1,12 @@
+project:
+  name: demo-app
+  version: 1.0.0
+  description: Spike 3 installer pipeline sample
+artifact:
+  include: ["**/*"]
+  exclude: [".git/**", ".anvil/**"]
+installer:
+  name: DemoApp
+  icon: spikes/installer-pipeline/fixtures/app.ico
+  artifactSource: .
+  osTargets: [windows, linux]

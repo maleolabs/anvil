@@ -1,0 +1,13 @@
+Deploy --target staging
+  Step: Build artifact ✓ (0.3s)
+  Step: Verify artifact...
+  Step: Verify artifact ✓ (0.0s)
+[PASS] Verify 6 checks PASS
+  Step: Push artifact-20260825-072226.129710374.tar.gz...
+    Push artifact-20260825-072226.129710374.tar.gz 0% (0/1048576 bytes)
+    Push artifact-20260825-072226.129710374.tar.gz 25% (262144/1048576 bytes)
+    Push artifact-20260825-072226.129710374.tar.gz 50% (524288/1048576 bytes)
+    Push artifact-20260825-072226.129710374.tar.gz 75% (786432/1048576 bytes)
+    Push artifact-20260825-072226.129710374.tar.gz 100% (1048576/1048576 bytes)
+  Step: Push artifact-20260825-072226.129710374.tar.gz ✓ (0.0s)
+Deploy complete (0.0s)

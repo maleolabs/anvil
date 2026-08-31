@@ -1,0 +1,5 @@
+{
+  "version": "1",
+  "status": "error",
+  "error": "Deploy failed: host unreachable deploy@staging.example.com"
+}
